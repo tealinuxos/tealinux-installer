@@ -1,3 +1,4 @@
+#[tauri::command]
 pub fn lspci() -> Vec<String>
 {
     let mut vec: Vec<String> = Vec::new();
