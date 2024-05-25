@@ -1,5 +1,5 @@
 #[tauri::command]
-pub fn storage_capacity() -> u64
+pub fn get_storage_capacity() -> u64
 {
     512000
 }

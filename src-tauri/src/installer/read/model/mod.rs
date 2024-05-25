@@ -1,11 +1,11 @@
 #[tauri::command]
-pub fn model_number() -> String
+pub fn get_model_number() -> String
 {
     String::from("T480")
 }
 
 #[tauri::command]
-pub fn brand() -> String
+pub fn get_brand() -> String
 {
     String::from("ThinkPad")
 }

@@ -1,5 +1,5 @@
 #[tauri::command]
-pub fn battery_percentage() -> u8
+pub fn get_battery_percentage() -> u8
 {
     69
 }
