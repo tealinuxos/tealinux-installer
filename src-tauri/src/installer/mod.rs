@@ -4,3 +4,4 @@ pub mod fstab;
 pub mod timezone;
 pub mod internet;
 pub mod partitions;
+pub mod read;
