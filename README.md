@@ -5,7 +5,7 @@ Tauri & SvelteKit
 ## Prequisites
 - [`rust`](https://www.rust-lang.org/)
 - [`bun`](https://bun.sh)
-- [`tauri`](https://wwwrust-lang.org/)
+- [`tauri`](https://tauri.app/v1/guides/getting-started/prerequisites/)
 
 ## Running
 
@@ -13,7 +13,7 @@ Install all dependencies:
 ```bash
 bun install
 ```
-Run the project with:
+Running the project:
 
 ```bash
 bunx tauri dev
