@@ -1,5 +1,6 @@
 <script>
     import "../app.css";
 </script>
-
-<slot />
+<main class="p-4">
+    <slot />
+</main>

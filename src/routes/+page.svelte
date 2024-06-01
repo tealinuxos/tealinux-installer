@@ -1,13 +1,12 @@
 <script>
 
     import { invoke } from "@tauri-apps/api/tauri";
+    import { onMount } from "svelte";
 
     let json;
-
     let showModelName = false;
 
     async function handleGetJSON() {
-
         invoke('get_read_json').then((response) => {
             json = JSON.parse(response);
             console.log(json);
@@ -15,13 +14,52 @@
         }).await
     }
 
+    onMount(() => {
+        handleGetJSON();
+    });
+
 </script>
 
-<div class="flex flex-col justify-center p-5"> 
-    <button class="bg-black text-white" on:click="{handleGetJSON}">
-        Get JSON
-    </button>
-    {#if showModelName}
-        <h1>{json.model.brandName}</h1>
-    {/if}
-</div>
+{#if showModelName}
+    <div class="flex flex-col justify-center p-5 gap-y-4 bg-slate-200 w-fit rounded-xl shadow-xl hover:scale-105 hover:translate-x-2 hover:translate-y-2 transition-all">
+        <h1 class="font-bold ">Device Information</h1> 
+        <div class="flex justify-between">
+            <h1 class="font-bold">Battery : {json.batteryPercentage}%</h1>
+            <h1 class="font-bold flex items-center">online 
+            {#if json.online}
+                <span class="w-3 ml-2 aspect-square rounded-full bg-green-400 inline-block border border-slate-600"></span>
+            {:else}
+                <span>false</span>
+            {/if}
+            </h1>        
+        </div>
+        <hr class="border border-slate-800"/>
+        <p>{json.model.brandName+" - "+json.model.modelNumber}</p>
+        <table>
+            <tr>
+                <td>OS</td>
+                <td>: {json.operatingSystems ? json.operatingSystems.join(", ") : ""}</td>
+            </tr>
+            <tr>
+                <td>CPU</td>
+                <td>: {json.lspci.cpu ? json.lspci.cpu : ""}</td>
+            </tr>
+            <tr>
+                <td>VGA</td>
+                <td>: {json.lspci.vga ? json.lspci.vga : ""}</td>
+            </tr>
+            <tr>
+                <td>Memory Capacity</td>
+                <td>: {json.memory.capacity ? json.memory.capacity : ""} Mb</td>
+            </tr>
+            <tr>
+                <td>Memory Used</td>
+                <td>: {json.memory.used ? json.memory.used : ""} Mb</td>
+            </tr>
+            <tr>
+                <td>Memory Free</td>
+                <td>: {json.memory.capacity - json.memory.used} Mb</td>
+            </tr>
+        </table>
+    </div>
+{/if}
