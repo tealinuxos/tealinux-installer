@@ -34,7 +34,7 @@ impl Read
 pub fn get_read() -> Read
 {
     // Model
-    let model = Model::new("Thinkpad".to_string(), "T480".to_string());
+    let model = Model::new();
 
     // Memory
     let memory = Memory::new(8192, 2048);

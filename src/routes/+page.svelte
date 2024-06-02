@@ -34,7 +34,7 @@
             </h1>        
         </div>
         <hr class="border border-slate-800"/>
-        <p>{json.model.brandName+" - "+json.model.modelNumber}</p>
+        <p>{json.model.systemProductName+" - "+json.model.systemVersion}</p>
         <table>
             <tr>
                 <td>OS</td>
