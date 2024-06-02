@@ -2,10 +2,12 @@ pub mod pci;
 pub mod model;
 pub mod memory;
 pub mod storage;
+pub mod battery;
 
 use serde::{ Serialize, Deserialize };
 use model::Model;
 use memory::Memory;
+use battery::Battery;
 use pci::Pci;
 use storage::disk::Disk;
 use storage::partition::Partition;
@@ -18,16 +20,16 @@ pub struct Read
     memory: Memory,
     storage: Disk,
     operating_systems: Vec<String>,
-    battery_percentage: u32,
+    battery: Battery,
     online: bool,
     lspci: Pci
 }
 
 impl Read
 {
-    pub fn new(model: Model, memory: Memory, storage: Disk, operating_systems: Vec<String>, battery_percentage:u32, online: bool, lspci: Pci) -> Self
+    pub fn new(model: Model, memory: Memory, storage: Disk, operating_systems: Vec<String>, battery: Battery, online: bool, lspci: Pci) -> Self
     {
-        Self { model, memory, storage, operating_systems, battery_percentage, online, lspci }
+        Self { model, memory, storage, operating_systems, battery, online, lspci }
     }
 }
 
@@ -51,8 +53,11 @@ pub fn get_read() -> Read
 
     let operating_systems = vec!["Windows 10".to_string(), "Arch Linux".to_string()];
 
+    // Battery
+    let battery = Battery::new();
+
     // Pci
     let lspci = Pci::new();
 
-    Read::new(model, memory, storage, operating_systems, 69, true, lspci)
+    Read::new(model, memory, storage, operating_systems, battery, true, lspci)
 }
