@@ -3,6 +3,7 @@
 
 mod api;
 mod read;
+mod utils;
 
 use api::get_read_json;
 use users::get_current_uid;
