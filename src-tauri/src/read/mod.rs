@@ -37,7 +37,7 @@ pub fn get_read() -> Read
     let model = Model::new();
 
     // Memory
-    let memory = Memory::new(8192, 2048);
+    let memory = Memory::new();
 
     // Partitions
     let vec_partitions = vec![
@@ -52,7 +52,7 @@ pub fn get_read() -> Read
     let operating_systems = vec!["Windows 10".to_string(), "Arch Linux".to_string()];
 
     // Pci
-    let lspci = Pci::new("Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz".to_string(), "Intel Corporation UHD Graphics 620".to_string());
+    let lspci = Pci::new();
 
     Read::new(model, memory, storage, operating_systems, 69, true, lspci)
 }
