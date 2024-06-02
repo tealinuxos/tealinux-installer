@@ -25,11 +25,11 @@
         <h1 class="font-bold ">Device Information</h1> 
         <div class="flex justify-between">
             <h1 class="font-bold">Battery : {json.battery.capacity}%</h1>
-            <h1 class="font-bold flex items-center">
+            <h1 class="font-bold flex items-center">online 
             {#if json.online.status}
-                online <span class="w-3 ml-2 aspect-square rounded-full bg-green-400 inline-block border border-slate-600"></span>
+                <span class="w-3 ml-2 aspect-square rounded-full bg-green-400 inline-block border border-slate-600"></span>
             {:else}
-                offline <span class="w-3 ml-2 aspect-square rounded-full bg-red-500 inline-block border border-slate-600"></span>
+                <span>false</span>
             {/if}
             </h1>        
         </div>
