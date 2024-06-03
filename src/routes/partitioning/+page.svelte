@@ -76,11 +76,9 @@
                 {#if partition.isUnallocated}
                     
                     <td class="px-5 text-center">unallocated</td>
-                    <td class="px-5 text-center"></td>
                     <td class="px-5 text-center">unallocated</td>
                     <td class="px-5 text-center"></td>
                     <td class="px-5 text-center">unallocated</td>
-                    <td class="px-5 text-center"></td>
                     <td class="px-5 text-center">{Math.floor(partition.sizeSector.slice(0, -1) / 2048)}</td>
                     <td class="px-5 text-center"></td>
 
