@@ -63,3 +63,4 @@
         </table>
     </div>
 {/if}
+<a href="/partitioning">Partitioning</a>
