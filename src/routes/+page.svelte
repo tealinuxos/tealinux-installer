@@ -37,7 +37,13 @@
 			<p>test</p>
 			<p>babababa</p>
 
-			<h1 class="font-bold">Battery : {json.battery.capacity}%</h1>
+			<h1 class="font-bold">
+                {#if json.battery.capacity != null}
+                    Battery : {json.battery.capacity}%
+                {:else}
+                    No Battery Found
+                {/if}
+            </h1>
 			<h1 class="font-bold flex items-center">
 				{#if json.online.status}
 					online <span
