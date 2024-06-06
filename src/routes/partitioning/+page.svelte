@@ -130,3 +130,4 @@
     </table>
 
 {/if}
+<a href="/" class="px-4 py-2 bg-slate-300 rounded-md">Home</a>
