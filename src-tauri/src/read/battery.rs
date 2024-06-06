@@ -12,8 +12,9 @@ impl Battery
 {
     pub fn new() -> Self
     {
-        let capacity = command_with_output("cat /sys/class/power_supply/BAT1/capacity".to_string());
-        let capacity: u16 = capacity.parse().unwrap();
+        // let capacity = command_with_output("cat /sys/class/power_supply/BAT1/capacity".to_string());
+        // let capacity: u16 = capacity.parse().unwrap();
+        let capacity = 69;
 
         Self { capacity }
     }
