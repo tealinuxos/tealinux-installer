@@ -24,7 +24,10 @@
     <div class="flex flex-col justify-center p-5 gap-y-4 bg-slate-200 w-fit rounded-xl shadow-xl hover:scale-105 hover:translate-x-2 hover:translate-y-2 transition-all">
         <h1 class="font-bold ">Device Information</h1> 
         <div class="flex justify-between">
+
             <p>test</p>
+            <p>babababa</p>
+
             <h1 class="font-bold">Battery : {json.battery.capacity}%</h1>
             <h1 class="font-bold flex items-center">
             {#if json.online.status}
