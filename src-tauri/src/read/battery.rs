@@ -1,20 +1,34 @@
 use serde::{ Serialize, Deserialize };
-use crate::utils::command::command_with_output;
+use battery::Manager;
+use battery::units::ratio::percent;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all="camelCase")]
 pub struct Battery
 {
-    capacity: u16
+    capacity: Option<u32>
 }
 
 impl Battery
 {
     pub fn new() -> Self
     {
-        // let capacity = command_with_output("cat /sys/class/power_supply/BAT1/capacity".to_string());
-        // let capacity: u16 = capacity.parse().unwrap();
-        let capacity = 69;
+        let battery = Manager::new().expect("failed to create a battery manager");
+
+        let mut batteries = battery.batteries().expect("failed to get batteries");
+
+        let capacity: Option<u32> = match batteries.next()
+        {
+            Some(battery) => {
+
+                let percentage = battery.unwrap().state_of_charge().get::<percent>();
+                let percentage = percentage.floor();
+
+                Some(percentage as u32)
+            },
+            None => None
+        };
+
 
         Self { capacity }
     }

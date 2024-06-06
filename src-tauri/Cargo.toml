@@ -25,6 +25,7 @@ users = "0.11.0"
 gfx-hal = "0.9.0"
 gfx-backend-gl = "0.9.0"
 parted-information-extractor-lib = { git = "https://github.com/tealinuxos/parted-information-extractor-lib.git" }
+battery = "0.7.8"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
