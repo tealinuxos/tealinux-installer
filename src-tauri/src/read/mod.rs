@@ -11,7 +11,8 @@ use memory::Memory;
 use battery::Battery;
 use online::Online;
 use pci::Pci;
-use parted_information_extractor_lib::gagah_disk::{ Disk, get_disk_from_json::get_all_disk };
+use tea_partition_api_lib::{ Disk, Partition };
+use tea_partition_api_lib::read::get_partition;
 
 #[derive(Serialize)]
 #[serde(rename_all="camelCase")]
@@ -46,8 +47,7 @@ pub fn get_read() -> Read
     let operating_systems = vec!["Windows 10".to_string(), "Arch Linux".to_string()];
 
     // Storage
-    let json = get_all_disk();
-    let storage = Disk::from_value_vec(json);
+    let storage = get_partition::parted_list_partition();
 
     // Battery
     let battery = Battery::new();

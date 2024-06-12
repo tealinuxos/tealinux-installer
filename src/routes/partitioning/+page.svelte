@@ -12,7 +12,7 @@
             let json = JSON.parse(response);
             disks = json.disks
             ready = true;
-            console.log(disks[0]);
+            console.log(disks);
         }).await
     }
 
@@ -26,7 +26,7 @@
 
 <select bind:value={selectedDisk}>
     {#each disks as disk, i}
-        <option value="{i}">{disk.path}</option>
+        <option value="{i}">{disk.diskPath}</option>
     {/each}
 </select>
 
@@ -38,16 +38,18 @@
 
             {@const disk = disks[selectedDisk]}
             {@const diskSize = disk.size.slice(0, -1)}
-            {@const partitionSize = partition.sizeSector.slice(0, -1)}
+            {@const partitionPath = partition.partitionPath}
+            {@const partitionSize = partition.size.slice(0, -1)}
             {@const percentage = partitionSize / diskSize * 100}
+            {diskSize}
 
             <div style="width: {percentage}%;" class="h-[60px] text-center border-4 border-black mx-[1px] flex flex-col items-center">
 
                 {#if percentage > 5}
-                    {#if partition.isUnallocated}
+                    {#if partition.typePartisi == "free"}
                         <span>Unallocated</span>
                     {:else}
-                        <span>{disk.path + partition.number}</span>
+                        <span>{partitionPath}</span>
                     {/if}
                     
                     <span>{Math.floor(partitionSize / 2048)}</span>
@@ -72,19 +74,21 @@
         {#each disks[selectedDisk].partitions as partition}
             
             {@const disk = disks[selectedDisk]}
+            {@const partitionSize = partition.size.slice(0, -1) / 2048}
+
             <tr>
-                {#if partition.isUnallocated}
+                {#if partition.typePartisi == "free"}
                     
                     <td class="px-5 text-center">unallocated</td>
                     <td class="px-5 text-center"></td>
                     <td class="px-5 text-center">unallocated</td>
                     <td class="px-5 text-center"></td>
-                    <td class="px-5 text-center">{Math.floor(partition.sizeSector.slice(0, -1) / 2048)}</td>
+                    <td class="px-5 text-center">{Math.floor(partitionSize)}</td>
                     <td class="px-5 text-center"></td>
 
                 {:else}
 
-                    <td class="px-5 text-center">{disk.path}{partition.number}</td>
+                    <td class="px-5 text-center">{partition.partitionPath}</td>
 
                     {#if partition.name !== null}
                         <td class="px-5 text-center">{partition.name}</td>
@@ -98,9 +102,9 @@
                         <td class="px-5 text-center"></td>
                     {/if}
 
-                    <td class="px-5 text-center"></td>
+                    <td class="px-5 text-center">{partition.mountpoint}</td>
 
-                    <td class="px-5 text-center">{Math.floor(partition.sizeSector.slice(0, -1) / 2048)}</td>
+                    <td class="px-5 text-center">{Math.floor(partitionSize)}</td>
 
                     {#if partition.flags !== null}
 
