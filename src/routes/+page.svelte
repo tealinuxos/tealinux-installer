@@ -103,11 +103,10 @@
         </a>
       </div>
 
-      <div class="mr-14">
-        <!-- svelte-ignore a11y-invalid-attribute -->
+      <!-- <div class="mr-14">
         <a href="#" class="block max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
           <p class="font-normal text-gray-700 dark:text-gray-400 mx-32">Keyboard = <br>Language = <br>Time = <br>Partition = <br>Network = <br>Security = <br>User = </p>
         </a>
-      </div>
+      </div> -->
     </div>
   </div>
