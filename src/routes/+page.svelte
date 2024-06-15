@@ -1,7 +1,6 @@
 <script>
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { onMount } from 'svelte';
-	import laptop from '../assets/laptop.png';
 
 	let json;
 	let showModelName = false;
