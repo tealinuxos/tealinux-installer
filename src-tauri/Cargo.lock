@@ -82,12 +82,12 @@ dependencies = [
  "gfx-backend-gl",
  "gfx-hal",
  "online",
- "parted-information-extractor-lib",
  "serde",
  "serde_json",
  "sysinfo",
  "tauri",
  "tauri-build",
+ "tea-partition-api-lib",
  "users",
 ]
 
@@ -2102,18 +2102,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "parted-information-extractor-lib"
-version = "0.1.0"
-source = "git+https://github.com/tealinuxos/parted-information-extractor-lib.git#37aa1d620edad40806fe2b0a41eb69cf050c7473"
-dependencies = [
- "byte-unit",
- "duct",
- "serde",
- "serde_json",
- "users",
-]
-
-[[package]]
 name = "percent-encoding"
 version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3402,6 +3390,18 @@ checksum = "5993dc129e544393574288923d1ec447c857f3f644187f4fbf7d9a875fbfc4fb"
 dependencies = [
  "embed-resource",
  "toml 0.7.8",
+]
+
+[[package]]
+name = "tea-partition-api-lib"
+version = "0.2.5"
+source = "git+https://github.com/tealinuxos/tea-partition-api-lib?tag=v.0.2.5#95ccdb6f01bf9225d9798facb06be570c9e5f4ae"
+dependencies = [
+ "byte-unit",
+ "duct",
+ "serde",
+ "serde_json",
+ "users",
 ]
 
 [[package]]
