@@ -17,33 +17,23 @@ impl Pci
     {
         let cpu = command_with_output("dmidecode -s processor-version".to_string());
 
-        let instance: gfx_backend_gl::Instance = Instance::create("Installer", 1).unwrap();
-        let adapters = instance.enumerate_adapters();
+        let vga = {
 
-        let mut vga: Vec<String> = Vec::new();
+            let lshw = command_with_output("lshw -json -class display".to_string());
+            let json: Value = serde_json::from_str(&lshw).unwrap();
 
-        for adapter in adapters
-        {
-            vga.push(adapter.info.name.to_string());
-        }
+            let mut vec: Vec<String> = Vec::new();
 
-        // let vga = {
-        //
-        //     let lshw = command_with_output("lshw -json -class display".to_string());
-        //     let json: Value = serde_json::from_str(&lshw).unwrap();
-        //
-        //     let mut vec: Vec<String> = Vec::new();
-        //
-        //     let mut i = 0;
-        //
-        //     while !json[i]["product"].is_null()
-        //     {
-        //         vec.push(json[i]["product"].as_str().unwrap().to_string());
-        //         i += 1;
-        //     }
-        //
-        //     vec
-        // };
+            let mut i = 0;
+
+            while !json[i]["product"].is_null()
+            {
+                vec.push(json[i]["product"].as_str().unwrap().to_string());
+                i += 1;
+            }
+
+            vec
+        };
 
         Self { cpu, vga }
     }
