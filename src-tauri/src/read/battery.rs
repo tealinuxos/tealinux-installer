@@ -21,11 +21,19 @@ impl Battery
         {
             Some(battery) => {
 
-                let percentage = battery.unwrap().state_of_charge().get::<percent>();
-                let percentage = percentage.floor();
+                match battery
+                {
+                    Ok(bat) => {
+                        let percentage = bat.state_of_charge().get::<percent>();
+                        let percentage = percentage.floor();
 
-                Some(percentage as u32)
+                        Some(percentage as u32)
+                    }
+
+                    Err(_) => None
+                }
             },
+
             None => None
         };
 
