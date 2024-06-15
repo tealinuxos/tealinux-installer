@@ -25,7 +25,7 @@
 <main class="p-8">
 	<div class="bg-[#D9D9D9] w-full grid-cols-3 grid place-items-center py-3 px-16 h-[40vh] rounded-2xl">
 		<div class="border border-black flex flex-col items-center gap-y-1">
-			<img src="{laptop}" alt="gambar laptop" class="w-1/2">
+			<!-- <img src="{laptop}" alt="gambar laptop" class="w-1/2"> -->
 			<p class="text-2xl font-medium">82SV</p>
 			<p>Yoga Slim 7Pro 14|AP7</p>
 			<p>80 %</p>
