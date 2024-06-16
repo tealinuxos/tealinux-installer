@@ -15,8 +15,8 @@ rust-version = "1.60"
 tauri-build = { version = "1.5.2", features = [] }
 
 [dependencies]
-serde_json = { version = "1.0", features = ["preserve_order"] }
-serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0.117", features = ["preserve_order"] }
+serde = { version = "1.0.203", features = ["derive"] }
 tauri = { version = "1.6.5", features = [] }
 duct = "0.13.7"
 online = "4.0.2"
@@ -25,7 +25,8 @@ users = "0.11.0"
 gfx-hal = "0.9.0"
 gfx-backend-gl = "0.9.0"
 battery = "0.7.8"
-tea-partition-api-lib = { git = "https://github.com/tealinuxos/tea-partition-api-lib", tag = "v.0.2.5" }
+tea-partition-api-lib = { git = "https://github.com/tealinuxos/tea-partition-api-lib", tag = "v.0.2.7" }
+tea-arch-chroot-lib = { git = "https://github.com/tealinuxos/tea-arch-chroot-lib" }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
