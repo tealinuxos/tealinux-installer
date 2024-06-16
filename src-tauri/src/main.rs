@@ -4,9 +4,11 @@
 mod api;
 mod read;
 mod utils;
+mod installer;
 
-use api::get_read_json;
+use api::*;
 use users::get_current_uid;
+use installer::start_install;
 
 fn main()
 {
@@ -15,7 +17,11 @@ fn main()
         0 => {
             tauri::Builder::default()
                 .invoke_handler(tauri::generate_handler![
-                    get_read_json
+                    get_read_json,
+                    set_blueprint_json,
+                    get_locale_json,
+                    get_timezone_json,
+                    start_install
                 ])
                 .run(tauri::generate_context!())
                 .expect("error while running tauri application");
