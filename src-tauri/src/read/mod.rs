@@ -1,7 +1,6 @@
 pub mod pci;
 pub mod model;
 pub mod memory;
-pub mod storage;
 pub mod battery;
 pub mod online;
 
