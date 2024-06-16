@@ -25,7 +25,7 @@ users = "0.11.0"
 gfx-hal = "0.9.0"
 gfx-backend-gl = "0.9.0"
 battery = "0.7.8"
-tea-partition-api-lib = { git = "https://github.com/tealinuxos/tea-partition-api-lib", tag = "v.0.2.7" }
+tea-partition-api-lib = { git = "https://github.com/tealinuxos/tea-partition-api-lib", tag = "v.0.2.8" }
 tea-arch-chroot-lib = { git = "https://github.com/tealinuxos/tea-arch-chroot-lib" }
 
 [features]

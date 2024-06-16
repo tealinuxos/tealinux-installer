@@ -3554,8 +3554,8 @@ dependencies = [
 
 [[package]]
 name = "tea-partition-api-lib"
-version = "0.2.7"
-source = "git+https://github.com/tealinuxos/tea-partition-api-lib?tag=v.0.2.7#3cfe1bc211d93f0f0733735db1441c54cc6003dd"
+version = "0.2.8"
+source = "git+https://github.com/tealinuxos/tea-partition-api-lib?tag=v.0.2.8#dd37ebb249ceb7b4be4f26102358a2cc68aedb6f"
 dependencies = [
  "byte-unit",
  "duct",
