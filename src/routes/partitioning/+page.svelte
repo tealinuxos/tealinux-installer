@@ -41,7 +41,6 @@
             {@const partitionPath = partition.partitionPath}
             {@const partitionSize = partition.size.slice(0, -1)}
             {@const percentage = partitionSize / diskSize * 100}
-            {diskSize}
 
             <div style="width: {percentage}%;" class="h-[60px] text-center border-4 border-black mx-[1px] flex flex-col items-center">
 
