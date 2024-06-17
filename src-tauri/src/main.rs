@@ -4,6 +4,7 @@
 mod api;
 mod read;
 mod utils;
+mod storage;
 mod installer;
 
 use api::*;
@@ -22,7 +23,8 @@ fn main()
                     get_locale_json,
                     get_timezone_json,
                     start_install,
-                    is_online
+                    is_online,
+                    get_storage_json
                 ])
                 .run(tauri::generate_context!())
                 .expect("error while running tauri application");

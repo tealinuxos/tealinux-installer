@@ -3,6 +3,7 @@ use crate::installer::BluePrint;
 use std::fs::File;
 use std::io::Write;
 use tea_arch_chroot_lib::resource::{ Locales, Timezones };
+use crate::storage::get_storage;
 // use std::os::unix::fs::FileExt;
 
 #[tauri::command]
@@ -33,4 +34,13 @@ pub async fn get_locale_json() -> String
 pub async fn get_timezone_json() -> String
 {
     Timezones::list_json()
+}
+
+#[tauri::command]
+pub async fn get_storage_json() -> String
+{
+    let partition = get_storage().await;
+    let json = serde_json::to_string_pretty(&partition).unwrap();
+
+    json
 }
