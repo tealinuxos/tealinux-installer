@@ -9,20 +9,18 @@
     <div>
       <a href="/" class="ml-2"><img class="w-20 -mt-14 -mb-5" src="../icon/back.svg" alt="Back"></a>
     </div>
-</nav> 
+</nav>
 
-
-
-<form class="mt-5 max-w-sm mx-auto" action="/">
-    <div class="mb-5">
+<form class="mt-8 max-w-sm mx-auto" action="/">
+  <div class="relative z-0 w-full mb-5 group">
+    <input type="password" class="block py-2.5 px-0 w-full text-xl text-gray-900 bg-transparent border-0 border-b-2 border-black appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+    <!-- svelte-ignore a11y-label-has-associated-control -->
+    <label class="peer-focus:font-medium absolute text-xl text-black duration-500 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Password</label>
+  </div>
+  <div class="relative z-0 w-full mb-5 group">
+      <input type="password" class="block py-2.5 px-0 w-full text-xl text-gray-900 bg-transparent border-0 border-b-2 border-black appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
       <!-- svelte-ignore a11y-label-has-associated-control -->
-      <label class="text-2xl">Root Password</label>
-      <input type="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-    </div>
-    <div class="mb-7">
-        <!-- svelte-ignore a11y-label-has-associated-control -->
-        <label class="text-2xl">Confirm</label>
-        <input type="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-    </div>
-    <button type="submit" class="bg-green-400 border text-xl font-bold text-white rounded-lg block w-full p-2.5">DONE</button>
+      <label class="peer-focus:font-medium absolute text-xl text-black duration-500 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Confirm Password</label>
+  </div>
+  <button type="submit" class="bg-green-400 border text-xl font-bold text-white rounded-lg block w-full p-2.5">DONE</button>
 </form>  

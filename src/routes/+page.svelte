@@ -79,8 +79,7 @@
       </div>
       <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
       <div class="ml-14">
-        <!-- svelte-ignore a11y-invalid-attribute -->
-        <a href="#" class="block max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+        <a href="/user" class="block max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
           <div class="flex items-center space-x-4">
             <img src="/icon/user.svg" alt="User Creation" class="h-14">
             <h5 class="mt-2 mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">User Creation</h5>
