@@ -68,14 +68,14 @@
       </div>
 
       <div class="mr-14">
-        <!-- <a href="#" class="block max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+        <a href="/host" class="block max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
           <div class="flex items-center space-x-4">
-            <img src="/icon/security.svg" alt="Time & Date" class="h-14">
-            <h5 class="mt-3 mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Security Profile</h5>
+            <img src="/icon/host.svg" alt="Hostname" class="h-16">
+            <h5 class="mt-3 mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Host Name</h5>
           </div>
           
           <p class="font-normal text-gray-700 dark:text-gray-400">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Itaque nesciunt laudantium</p>
-        </a> -->
+        </a>
       </div>
       <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
       <div class="ml-14">
