@@ -50,6 +50,7 @@
 		{/each}
 	</div>
 	<a href="/partitioning">Partitioning</a>
+	<a href="/install">Install</a>
 </main>
 
 
