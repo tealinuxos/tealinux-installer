@@ -9,14 +9,13 @@ pub struct BluePrint
     pub account: Account,
     pub locale: Locale,
     pub timezone: Timezone,
-    // pub partition: Vec<Partition>
+    pub partition: Vec<Partition>
 }
 
-// #[derive(Debug, Serialize, Deserialize)]
-// pub struct Partition
-// {
-//     pub path: String,
-//     pub filesystem: String,
-//     pub mountpoints: Option<Vec<String>>,
-//     pub format: Option<bool>
-// }
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Partition
+{
+    pub path: Option<String>,
+    pub mountpoint: Option<String>,
+    pub format: bool
+}
