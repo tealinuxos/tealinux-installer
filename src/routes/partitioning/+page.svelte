@@ -7,17 +7,17 @@
     let selectedDisk = 0;
     let ready = false;
 
-    async function handleGetJSON() {
-        invoke('get_read_json').then((response) => {
+    async function getStorageJSON() {
+        invoke('get_storage_json').then((response) => {
             let json = JSON.parse(response);
-            disks = json.disks
+            disks = json
             ready = true;
             console.log(disks);
         }).await
     }
 
     onMount(() => {
-        handleGetJSON();
+        getStorageJSON();
     });
 
 </script>
