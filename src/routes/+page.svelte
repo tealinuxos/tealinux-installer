@@ -3,7 +3,7 @@
   </script>
   
   <div>
-    <h1 class="mt-4 text-center font-mono text-4xl">Welcome into <span class="bg-green-500">Tea</span>Linux Installer</h1>
+    <h1 class="mt-4 text-center text-4xl">Welcome into <span class="bg-green-400 px-1 text-white">Tea</span>Linux Installer</h1>
     
     <div class="mt-10 grid grid-cols-3 gap-5 place-items-center">
       
@@ -68,15 +68,14 @@
       </div>
 
       <div class="mr-14">
-        <!-- svelte-ignore a11y-invalid-attribute -->
-        <a href="#" class="block max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+        <!-- <a href="#" class="block max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
           <div class="flex items-center space-x-4">
             <img src="/icon/security.svg" alt="Time & Date" class="h-14">
             <h5 class="mt-3 mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Security Profile</h5>
           </div>
           
           <p class="font-normal text-gray-700 dark:text-gray-400">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Itaque nesciunt laudantium</p>
-        </a>
+        </a> -->
       </div>
       <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
       <div class="ml-14">
@@ -92,8 +91,7 @@
       </div>
 
       <div>
-        <!-- svelte-ignore a11y-invalid-attribute -->
-        <a href="#" class="block max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+        <a href="root" class="block max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
           <div class="flex items-center space-x-4">
             <img src="/icon/root.svg" alt="Root Password" class="h-14">
             <h5 class="mt-1 mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Root Password</h5>
