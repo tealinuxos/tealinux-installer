@@ -16,4 +16,9 @@ impl Online
 
         Self { status }
     }
+    
+    pub fn status(&self) -> bool
+    {
+        self.status
+    }
 }
