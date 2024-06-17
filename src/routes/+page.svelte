@@ -4,6 +4,7 @@
 
 	let json;
 	let showModelName = false;
+	let locales;
 
 	async function handleGetJSON() {
 		invoke('get_read_json').then((response) => {
@@ -12,9 +13,18 @@
 			showModelName = true;
 		}).await;
 	}
+	
+
+	async function handleGetLocale() {
+    invoke('get_locale_json').then((locales) => {
+        locales = JSON.parse(locales);
+		console.log(locales);
+    }).await;
+}
 
 	onMount(() => {
 		handleGetJSON();
+		handleGetLocale();
 	});
 </script>
 
@@ -44,7 +54,7 @@
 
 
 
-
+<!-- 
 {#if showModelName}
 	<div
 		class="flex flex-col justify-center p-5 gap-y-4 bg-slate-200 w-fit rounded-xl shadow-xl hover:scale-105 hover:translate-x-2 hover:translate-y-2 transition-all"
@@ -99,6 +109,12 @@
 			</tr>
 		</table>
 	</div>
+{/if}-->
+
+{#if locales}
+<h1>{locales.locales}</h1>
+{:else}
+<p>error</p>
 {/if}
 
 
