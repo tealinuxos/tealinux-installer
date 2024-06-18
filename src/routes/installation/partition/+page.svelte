@@ -74,5 +74,5 @@
         </div>
     {/each}
 </div>
-<a href="/install/loading" on:click={handleSetPartition}>Next</a>
+<a href="/installation/summary" on:click={handleSetPartition}>Next</a>
 {/if}

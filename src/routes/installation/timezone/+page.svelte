@@ -40,8 +40,8 @@
         {@const region = timezone.region}
 
         <div class="flex flex-row">
-            <input type="radio" value={region} bind:group={selectedRegion} on:change={() => showCity = true} />
-            <label>{region}</label>
+            <input type="radio" id={region + "ID"} value={region} bind:group={selectedRegion} on:change={() => showCity = true} />
+            <label for={region + "ID"}>{region}</label>
         </div>
     {/each}
 </div>
@@ -51,15 +51,15 @@
         <div class="w-1/2 float-right flex flex-col">
             {#each timezones[timezones.findIndex(timezone => timezone.region === selectedRegion)].city as city}
                 <div class="flex flex-row">
-                    <input type="radio" value={city} bind:group={selectedCity} />
-                    <label>{city}</label>
+                    <input type="radio" id={city + "ID"} value={city} bind:group={selectedCity} />
+                    <label for={city + "ID"}>{city}</label>
                 </div>
             {/each}
             {#if selectedCity != undefined}
-                <a href="/install/account" on:click={handleSetTimezone}>Next</a>
+                <a href="/installation/account" on:click={handleSetTimezone}>Next</a>
             {/if}
         </div>
     {:else}
-        <a href="/install/account" on:click={handleSetTimezone}>Next</a>
+        <a href="/installation/account" on:click={handleSetTimezone}>Next</a>
     {/if}
 {/if}

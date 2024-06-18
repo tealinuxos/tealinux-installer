@@ -21,5 +21,5 @@
     <input class="p-2" type="text" bind:value={username} placeholder="username" />
     <input class="p-2" type="text" bind:value={hostname} placeholder="hostname" />
     <input class="p-2" type="password" bind:value={password} placeholder="password" />
-    <a href="/install/partition" on:click={handleSetAccount}>Next</a>
+    <a href="/installation/partition" on:click={handleSetAccount}>Next</a>
 </form>
