@@ -1,5 +1,6 @@
 <script>
     import { goto } from "$app/navigation";
+    import { invoke } from "@tauri-apps/api/tauri";
     import "../../app.css"
 
     let username = "";
@@ -17,6 +18,7 @@
             message = "Value password harus sama dengan confirm"
             showAlert = true;
         } else {
+            await invoke("create_user", { username, password });
             goto("/");
         }
     }

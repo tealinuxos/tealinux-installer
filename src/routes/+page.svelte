@@ -1,6 +1,23 @@
 <script>
     import "../app.css"
-  </script>
+    import MetaData from "../data/Meta.json";
+
+    let user_status = false;
+    let root_status = false;
+    let hostname_status = false;
+
+    if(MetaData.User){
+      user_status = true
+    }
+
+    if(MetaData.Root){
+      root_status = true
+    }
+
+    if(MetaData.Hostname){
+      hostname_status = true
+    }
+</script>
   
   <div>
     <h1 class="mt-4 text-center text-4xl">Welcome into <span class="bg-green-400 px-1 text-white">Tea</span>Linux Installer</h1>
@@ -73,9 +90,12 @@
             <img src="/icon/host.svg" alt="Hostname" class="h-16">
             <h5 class="mt-3 mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Host Name</h5>
           </div>
-          
-          <!-- <p class="pr-96 font-normal text-green-600 w-max">Hostname setup</p> -->
-          <p class="pr-96 font-normal text-red-500 w-max">Hostname not setup properly</p>
+
+          {#if hostname_status}
+            <p class="pr-96 font-normal text-green-600 w-max">Hostname setup</p>
+          {:else}
+            <p class="pr-96 font-normal text-red-500 w-max">Hostname not setup properly</p>
+          {/if}
         </a>
       </div>
       <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
@@ -86,8 +106,11 @@
             <h5 class="mt-2 mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">User Creation</h5>
           </div>
           
-          <!-- <p class="pr-96 font-normal text-green-600 w-max">User setup</p> -->
-          <p class="pr-96 font-normal text-red-500 w-max">User not setup properly</p>
+          {#if user_status}
+            <p class="pr-96 font-normal text-green-600 w-max">User setup</p>
+          {:else}
+            <p class="pr-96 font-normal text-red-500 w-max">User not setup properly</p>
+          {/if}
         </a>
       </div>
 
@@ -97,8 +120,12 @@
             <img src="/icon/root.svg" alt="Root Password" class="h-14">
             <h5 class="mt-1 mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Root Password</h5>
           </div>
-          <!-- <p class="pr-96 font-normal text-green-600 w-max">Root Password setup</p> -->
-          <p class="pr-96 font-normal text-red-500 w-max">Root Password not setup properly</p>
+          
+          {#if root_status}
+            <p class="pr-96 font-normal text-green-600 w-max">Root Password setup</p>
+          {:else}
+            <p class="pr-96 font-normal text-red-500 w-max">Root Password not setup properly</p>
+          {/if}
         </a>
       </div>
 

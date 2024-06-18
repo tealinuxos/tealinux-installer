@@ -1,17 +1,19 @@
 <script>
   import { goto } from "$app/navigation";
+  import { invoke } from "@tauri-apps/api/tauri";
   import "../../app.css"
 
-  let username = "slix";
+  let name = "slix";
   let message = "";
   let showAlert = false;
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
       event.preventDefault();
-      if (username === "") {
+      if (name === "") {
           message = "Field hostname tidak boleh kosong"
           showAlert = true;
       }else {
+        await invoke("create_hostname", {name});
           goto("/");
       }
   }
@@ -42,9 +44,9 @@
 <form action="/" on:submit|preventDefault={handleSubmit} class="mt-8 max-w-md mx-auto">
   <div class="relative z-0 w-full mb-5 group">
       <!-- svelte-ignore a11y-autofocus -->
-      <input type="text" bind:value={username} class="block py-2.5 px-0 w-full text-xl text-gray-900 bg-transparent border-0 border-b-2 border-black appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " autofocus/>
+      <input type="text" bind:value={name} class="block py-2.5 px-0 w-full text-xl text-gray-900 bg-transparent border-0 border-b-2 border-black appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " autofocus/>
       <!-- svelte-ignore a11y-label-has-associated-control -->
-      <label class="peer-focus:font-medium absolute text-xl text-black duration-500 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Username</label>
+      <label class="peer-focus:font-medium absolute text-xl text-black duration-500 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Hostname</label>
   </div>
   
   <button type="submit" class="bg-green-400 border text-xl font-bold text-white rounded-lg block w-full p-2.5">CREATE</button>

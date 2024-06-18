@@ -1,5 +1,6 @@
 <script>
   import { goto } from "$app/navigation";
+  import { invoke } from "@tauri-apps/api/tauri";
   import "../../app.css"
 
   let password = "";
@@ -7,7 +8,7 @@
   let message = "";
   let showAlert = false;
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
       event.preventDefault();
       if (password === "" || confirmPassword === "") {
           message = "Field password dan confirm tidak boleh kosong"
@@ -16,6 +17,7 @@
           message = "Value password harus sama dengan confirm"
           showAlert = true;
       } else {
+          await invoke("create_root", {password});
           goto("/");
       }
   }
