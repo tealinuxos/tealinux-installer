@@ -11,6 +11,7 @@
 
     onMount(() => {
         isOnline();
+        console.log("/installation");
     });
 
 </script>
@@ -18,10 +19,10 @@
 <h1>Welcome to TealinuxOS Installer</h1>
 
 {#if online}
-    <a href="/install/locale">
+    <a href="/installation/locale">
         <button>Next</button>
     </a>
 {:else}
     <h3>Please connect to internet!</h3>
-    <a href="/install/locale">Bypass Internet</a>
+    <a href="/installation/locale">Bypass Internet</a>
 {/if}

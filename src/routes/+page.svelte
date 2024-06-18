@@ -49,8 +49,8 @@
 			<div class="aspect-square bg-[#D9D9D9]"></div>
 		{/each}
 	</div>
-	<a href="/partitioning">Partitioning</a>
-	<a href="/install">Install</a>
+	<!-- <a href="/partitioning">Partitioning</a> -->
+	<a href="/installation">Install</a>
 </main>
 
 
@@ -112,10 +112,10 @@
 	</div>
 {/if}-->
 
-{#if locales}
+<!-- {#if locales}
 <h1>{locales.locales}</h1>
 {:else}
 <p>error</p>
-{/if}
+{/if} -->
 
 
