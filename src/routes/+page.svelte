@@ -74,7 +74,8 @@
             <h5 class="mt-3 mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Host Name</h5>
           </div>
           
-          <p class="font-normal text-gray-700 dark:text-gray-400">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Itaque nesciunt laudantium</p>
+          <!-- <p class="pr-96 font-normal text-green-600 w-max">Hostname setup</p> -->
+          <p class="pr-96 font-normal text-red-500 w-max">Hostname not setup properly</p>
         </a>
       </div>
       <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
@@ -85,18 +86,19 @@
             <h5 class="mt-2 mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">User Creation</h5>
           </div>
           
-          <p class="font-normal text-gray-700 dark:text-gray-400">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Itaque nesciunt laudantium</p>
+          <!-- <p class="pr-96 font-normal text-green-600 w-max">User setup</p> -->
+          <p class="pr-96 font-normal text-red-500 w-max">User not setup properly</p>
         </a>
       </div>
 
       <div>
-        <a href="root" class="block max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+        <a href="/root" class="block max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
           <div class="flex items-center space-x-4">
             <img src="/icon/root.svg" alt="Root Password" class="h-14">
             <h5 class="mt-1 mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Root Password</h5>
           </div>
-          
-          <p class="font-normal text-gray-700 dark:text-gray-400">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Itaque nesciunt laudantium</p>
+          <!-- <p class="pr-96 font-normal text-green-600 w-max">Root Password setup</p> -->
+          <p class="pr-96 font-normal text-red-500 w-max">Root Password not setup properly</p>
         </a>
       </div>
 
@@ -106,4 +108,4 @@
         </a>
       </div> -->
     </div>
-  </div>
+</div>
