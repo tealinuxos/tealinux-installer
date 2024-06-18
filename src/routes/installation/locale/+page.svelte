@@ -34,14 +34,12 @@
 	function handleFocusIn() {
 		isOpen = true;
 	}
-	function handleFocusOut() {
-		isOpen = false;
-	}
 
 	function handleOptionClick(locale) {
-		searchTerm = locale.name;
-		selectedLocales = [locale.name];
-		filteredLocales.set([]);
+		if (!selectedLocales.includes(locale.name)) {
+			selectedLocales = [...selectedLocales, locale.name];
+		}
+		console.log(selectedLocales);
 	}
 
 	$: searchTerm, filterOptions();
@@ -63,24 +61,23 @@
 				on:click={handleFocusIn}
 				on:focus={handleFocusIn}
 			/>
-			{#if $filteredLocales.length > 0 && isOpen}
-				<button type="button" on:click={handleFocusOut}>close</button>
-				<div class="h-[50dvh] overflow-y-auto rounded-xl border border-slate-400">
-					{#each $filteredLocales as locale}
-						<div
-							class="flex flex-row-reverse w-full items-center justify-between py-4 px-4 border border-b-slate-400 last:border-none bg-slate-200 hover:bg-slate-100 transition-all cursor-pointer"
-						>
-							<input
-								type="checkbox"
-								name={locale.name}
-								bind:group={selectedLocales}
-								value={locale.name}
-							/>
-							<label for={locale.name}>{locale.name}</label>
-						</div>
-					{/each}
-				</div>
-			{/if}
+			<div class="h-[50dvh] overflow-y-auto rounded-xl border border-slate-400">
+				{#each $filteredLocales as locale}
+					<div
+						class="flex flex-row-reverse w-full items-center justify-between py-4 px-4 border border-b-slate-400 last:border-none bg-slate-200 hover:bg-slate-100 transition-all"
+					>
+						<input
+							type="checkbox"
+							name={locale.name}
+							class="h-6 w-6"
+							checked={selectedLocales.includes(locale.name)}
+							on:click={handleOptionClick(locale)}
+							value={locale.name}
+						/>
+						<label for={locale.name}>{locale.name}</label>
+					</div>
+				{/each}
+			</div>
 		</form>
 		<a href="/installation/timezone" on:click={handleSetLocale}>Next</a>
 	{/if}
