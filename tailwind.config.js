@@ -2,7 +2,11 @@
 export default {
   content: ['./src/**/*.{html,js,svelte}'],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        greenTealinux: "#26A768",
+      }
+    },
   },
   plugins: [],
 }
