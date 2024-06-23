@@ -1,46 +1,54 @@
 <script>
-    
-    import { invoke } from "@tauri-apps/api/tauri";
-    import { onMount } from "svelte";
-    import Tealinux from '$lib/assets/Vector.png';
+	import { invoke } from '@tauri-apps/api/tauri';
+	import { onMount } from 'svelte';
 
+	let json;
 
-    let online = false;
+	async function handleGetJSON() {
+		invoke('get_read_json').then((response) => {
+			json = JSON.parse(response);
+			console.log(json);
+			showModelName = true;
+		}).await;
+	}
 
-    const isOnline = async () => {
-        invoke("is_online").then((status) => online = status);
-    }
+	async function handleGetLocale() {
+		invoke('get_locale_json').then((locales) => {
+			locales = JSON.parse(locales);
+			console.log(locales);
+		}).await;
+	}
 
-    function toLocale() {
-        if (online) {
-            window.location.href = "/installation/locale";
-        }
-    }
-
-    onMount(() => {
-        isOnline();
-        console.log("/installation");
-    });
-
+	onMount(() => {
+		handleGetJSON();
+		handleGetLocale();
+	});
 </script>
 
-<div class="flex items-center justify-center min-h-screen">
-    <div class="text-center">  
-        <img src={Tealinux} alt="" class="mx-auto mb-4">
-        <h1 class="font-sans font-bold text-4xl">Welcome to TealinuxOS Installer</h1>
-        <h2 class="mb-4 font-sans text-2xl">Press Start to Install</h2>
+<nav class="flex flex-col flex-1 overflow-y-auto bg-white">
+	<div class="bg-[#D9D9D9] flex items-center py-4 px-8 w-full font-sans font-medium text-2xl">
+		Tealinux Installer
+	</div>
+</nav>
 
-        <div class="p-2">
-            {#if !online}
-                <h3 class="mb-2 text-red-600 font-bold">Please connect to internet!</h3>
-                 <a href="/installation/locale">Bypass Internet</a>
-            {/if}
-        <br>
-            <div>
-                <button on:click={toLocale} class=" bg-greenTealinux hover:bg-green-800 text-white font-bold py-2 px-2 rounded-full w-64 disabled:bg-green-400" disabled={!online}>
-                    Start
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+<main class="p-8">
+	<div
+		class="bg-[#D9D9D9] w-full grid-cols-3 grid place-items-center py-3 px-16 h-[40vh] rounded-2xl"
+	>
+		<div class="border border-black flex flex-col items-center gap-y-1">
+			<!-- <img src="{laptop}" alt="gambar laptop" class="w-1/2"> -->
+			<p class="text-2xl font-medium">82SV</p>
+			<p>Yoga Slim 7Pro 14|AP7</p>
+			<p>80 %</p>
+			<p>online</p>
+		</div>
+		<div>ini bagian tengah</div>
+		<div>ini bagian kanan</div>
+	</div>
+	<div class="w-full mt-8 py-4 grid grid-cols-2 gap-8 max-h-96 overflow-y-auto">
+		{#each [1, 2, 3, 4, 5, 6] as e}
+			<div class="aspect-square bg-[#D9D9D9]"></div>
+		{/each}
+	</div>
+	<a href="/installation">Install</a>
+</main>
