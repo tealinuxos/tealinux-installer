@@ -50,5 +50,5 @@
 			<div class="aspect-square bg-[#D9D9D9]"></div>
 		{/each}
 	</div>
-	<a href="/installation">Install</a>
+	<a href="/installation/locale">Install</a>
 </main>
