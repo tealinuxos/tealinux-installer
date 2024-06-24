@@ -105,3 +105,14 @@ pub async fn is_online() -> bool
 
     online.status()
 }
+
+#[tauri::command]
+pub async fn print_json()
+{
+    let file = File::open("/opt/installer.json").unwrap();
+    let reader = BufReader::new(file);
+
+    let json: BluePrint = serde_json::from_reader(reader).unwrap();
+
+    println!("{:#?}", json);
+}
