@@ -7,6 +7,13 @@ Tauri & SvelteKit
 - [`bun`](https://bun.sh)
 - [`tauri`](https://tauri.app/v1/guides/getting-started/prerequisites/)
 
+## Linux Dependency
+- lshw
+- dmidecode
+- rsync
+- fuse2
+- gcc-libs
+
 ## Running
 
 Install all dependencies:
