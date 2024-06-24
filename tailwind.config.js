@@ -5,6 +5,11 @@ export default {
     extend: {
       colors: {
         greenTealinux: "#26A768",
+      },
+      fontFamily: {
+        poppin: ['poppins', 'sans-serif'],
+        poppinsemibold: ['poppinssemibold', 'sans-serif'],
+        archivo: ['archivo', 'sans-serif'],
       }
     },
   },

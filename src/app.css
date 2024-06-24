@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind component;
 @tailwind utilities;
+
+@font-face {
+    font-family: poppins;
+    src: url("/fonts/poppins.ttf");
+}
+
+@font-face {
+    font-family: poppinssemibold;
+    src: url("/fonts/poppins-semibold.ttf");
+}
+
+@font-face {
+    font-family: archivo;
+    src: url("/fonts/archivo.ttf");
+}

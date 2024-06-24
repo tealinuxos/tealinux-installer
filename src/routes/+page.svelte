@@ -23,8 +23,8 @@
 <div class="flex items-center justify-center min-h-screen">
 	<div class="text-center">
 		<img src={Tealinux} alt="" class="mx-auto mb-4" />
-		<h1 class="font-sans font-bold text-4xl">Welcome to TealinuxOS Installer</h1>
-		<h2 class="mb-4 font-sans text-2xl">Press Start to Install</h2>
+		<h1 class="font-archivo font-semibold text-6xl -tracking-[4.5%] mb-4">Welcome to Tealinux</h1>
+		<h2 class="font-poppin mb-4 text-4xl tracking-normal">Press start to install</h2>
 
 		<div class="p-2">
 			{#if !online}
@@ -35,10 +35,10 @@
 			<div>
 				<button
 					on:click={toLocale}
-					class=" bg-greenTealinux hover:bg-green-800 text-white font-bold py-2 px-2 rounded-full w-64 disabled:bg-green-400"
+					class=" bg-greenTealinux rounded-3xl hover:bg-green-800 text-white font-poppinsemibold text-xl py-[10px] px-28 disabled:bg-green-400 border-2 border-black/15"
 					disabled={!online}
 				>
-					Start
+					START
 				</button>
 			</div>
 		</div>
