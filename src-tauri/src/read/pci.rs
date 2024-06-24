@@ -1,7 +1,6 @@
 use serde::{ Serialize, Deserialize };
 use serde_json::Value;
 use crate::utils::command::command_with_output;
-use gfx_hal::Instance;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all="camelCase")]
