@@ -8,7 +8,7 @@
     let mainLocale = json.locale.locales[0];
     let locales = json.locale.locales.toString();
     let partitions = json.partition.filter((partition) => partition.format !== false || partition.mountpoint !== null);
-    let formattedPartitions = partitions.filter((partition) => partition.format === true);
+    let formattedPartitions = partitions.filter((partition) => partition.format !== null);
     let assignedPartitions = partitions.filter((partition) => partition.mountpoint !== null);
 
     onMount(() => {
@@ -30,7 +30,8 @@
 {#if formattedPartitions !== null}
     {#each formattedPartitions as partition}
         {@const path = partition.path}
-        <p>Format {path}</p>
+        {@const filesystem = partition.format}
+        <p>Format {path} as {filesystem}</p>
     {/each}
 {/if}
 
