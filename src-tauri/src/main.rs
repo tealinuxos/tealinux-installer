@@ -9,7 +9,7 @@ mod installer;
 
 use api::*;
 use users::get_current_uid;
-use installer::{ start_install, is_online };
+use installer::{ start_install, is_online, print_json };
 
 fn main()
 {
@@ -24,7 +24,9 @@ fn main()
                     get_timezone_json,
                     start_install,
                     is_online,
-                    get_storage_json
+                    get_storage_json,
+                    get_filesystem_json,
+                    print_json
                 ])
                 .run(tauri::generate_context!())
                 .expect("error while running tauri application");
