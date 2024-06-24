@@ -14,6 +14,10 @@
         await invoke("start_install");
     }
 
+    const printJson = async () => {
+        await invoke("print_json");
+    }
+
     onMount(() => {
         console.log(json);
         setBlueprint();
@@ -22,4 +26,5 @@
 </script>
 
 <h1>WIP</h1>
-<button on:click={startInstall}>Start Install</button>
+<button class="border-2 border-black p-2" on:click={startInstall}>Start Install(Nginstal tenan)</button>
+<button class="border-2 border-black p-2" on:click={printJson}>Print JSON</button>
