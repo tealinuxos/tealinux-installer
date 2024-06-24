@@ -15,7 +15,7 @@ pub struct BluePrint
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Partition
 {
-    pub path: Option<String>,
+    pub path: String,
     pub mountpoint: Option<String>,
-    pub format: bool
+    pub format: Option<String>
 }
