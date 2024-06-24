@@ -4,7 +4,7 @@ use std::fs::File;
 use std::io::Write;
 use tea_arch_chroot_lib::resource::{ Locales, Timezones };
 use crate::storage::get_storage;
-// use std::os::unix::fs::FileExt;
+use super::storage::filesystem::filesystem_list;
 
 #[tauri::command]
 pub async fn get_read_json() -> String
@@ -41,6 +41,16 @@ pub async fn get_storage_json() -> String
 {
     let partition = get_storage().await;
     let json = serde_json::to_string_pretty(&partition).unwrap();
+
+    json
+}
+
+#[tauri::command]
+pub async fn get_filesystem_json() -> String
+{
+    let filesystem = filesystem_list();
+
+    let json = serde_json::to_string_pretty(&filesystem).unwrap();
 
     json
 }
