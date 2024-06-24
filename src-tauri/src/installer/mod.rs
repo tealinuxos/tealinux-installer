@@ -6,7 +6,7 @@ use tea_arch_chroot_lib::prechroot::*;
 use tea_arch_chroot_lib::chroot::*;
 use tea_arch_chroot_lib::resource::FirmwareKind;
 use super::read::online::Online;
-use super::storage::{ mount, format };
+use super::storage::{ mount, format, umount_all };
 use super::storage::filesystem::filesystem_list;
 use duct::cmd;
 
@@ -94,6 +94,8 @@ pub async fn start_install()
     }
 
     println!("Bootloader Done");
+
+    umount_all().unwrap();
 
     println!("Done");
 }

@@ -75,3 +75,10 @@ pub async fn mount(partition_path: String, mountpoint: String, options: Option<V
 
     Ok(())
 }
+
+pub fn umount_all() -> Result<(), Error>
+{
+    cmd!("umount", "--all").run()?;
+
+    Ok(())
+}
