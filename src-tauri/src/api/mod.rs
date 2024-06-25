@@ -18,6 +18,23 @@ pub async fn get_read_json() -> String
 }
 
 #[tauri::command]
+pub async fn set_read_json()
+{
+    let json = self::get_read_json();
+
+    let path = Path::new("/opt/tea-installer/");
+
+    if !path.exists()
+    {
+        create_dir_all("/opt/tea-installer/");
+    }
+
+    let mut file = File::create("/opt/tea-installer/read.json").unwrap();
+
+    file.write_fmt(format_args!("{}", json)).unwrap();
+}
+
+#[tauri::command]
 pub async fn set_blueprint_json(json: String)
 {
     let path = Path::new("/opt/tea-installer/");

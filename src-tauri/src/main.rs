@@ -22,6 +22,7 @@ fn main()
                 .invoke_handler(tauri::generate_handler![
                     get_read_json,
                     set_blueprint_json,
+                    set_read_json,
                     get_locale_json,
                     get_timezone_json,
                     start_install,
