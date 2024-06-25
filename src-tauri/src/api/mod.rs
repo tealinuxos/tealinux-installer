@@ -1,10 +1,11 @@
 use crate::read::get_read;
 use crate::installer::BluePrint;
-use std::fs::File;
+use std::fs::{ File, create_dir_all };
 use std::io::Write;
 use tea_arch_chroot_lib::resource::{ Locales, Timezones };
 use crate::storage::get_storage;
 use super::storage::filesystem::filesystem_list;
+use std::path::Path;
 
 #[tauri::command]
 pub async fn get_read_json() -> String
@@ -19,8 +20,15 @@ pub async fn get_read_json() -> String
 #[tauri::command]
 pub async fn set_blueprint_json(json: String)
 {
-    // let json: BluePrint = serde_json::from_str(&json).unwrap();
-    let mut file = File::create("/opt/installer.json").unwrap();
+    let path = Path::new("/opt/tea-installer/");
+
+    if !path.exists()
+    {
+        create_dir_all("/opt/tea-installer/");
+    }
+
+    let mut file = File::create("/opt/tea-installer/installer.json").unwrap();
+
     file.write_fmt(format_args!("{}", json)).unwrap();
 }
 
