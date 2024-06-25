@@ -15,6 +15,10 @@
 		}
 	}
 
+    const setReadJSON = async () => {
+        await invoke("set_read_json");
+    };
+
 	onMount(() => {
 		isOnline();
 	});
