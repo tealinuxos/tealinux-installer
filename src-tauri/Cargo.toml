@@ -17,7 +17,7 @@ tauri-build = { version = "1.5.2", features = [] }
 [dependencies]
 serde_json = { version = "1.0.117", features = ["preserve_order"] }
 serde = { version = "1.0.203", features = ["derive"] }
-tauri = { version = "1.6.5", features = [] }
+tauri = { version = "1.6.5", features = ["process-exit"] }
 duct = "0.13.7"
 online = "4.0.2"
 sysinfo = "0.30.12"
