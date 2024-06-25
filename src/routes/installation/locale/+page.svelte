@@ -1,10 +1,10 @@
 <script>
+	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { onMount } from 'svelte';
 	import { json } from '../stores.js';
 	import { writable } from 'svelte/store';
 
-	let isOpen = false;
 	let searchTerm = '';
 
 	let locales = [];
@@ -49,6 +49,7 @@
 	});
 </script>
 
+<Sidebar />
 <section class="flex flex-col items-center">
 	<h1 class="text-center mb-16">Search Locales</h1>
 	{#if showLocales}
