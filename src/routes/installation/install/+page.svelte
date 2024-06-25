@@ -1,30 +1,44 @@
 <script>
+
     import { invoke } from "@tauri-apps/api/tauri";
+    import { listen } from "@tauri-apps/api/event";
+    import { exit } from "@tauri-apps/api/process";
     import { onMount } from "svelte";
     import { json } from "../stores.js";
 
-    const setBlueprint = async () => {
-        let blueprint = JSON.stringify(json);
-        console.log(blueprint);
+    let percentage = 0;
+    let message = "";
 
-        await invoke("set_blueprint_json", { json: blueprint });
-    }
+    const unlisten = listen("INSTALL", (event) => {
+        percentage = event.payload.percentage;
+        message = event.payload.message;
+    })
 
     const startInstall = async () => {
         await invoke("start_install");
     }
 
-    const printJson = async () => {
-        await invoke("print_json");
+    const exitOk = async () => {
+        await exit(0);
     }
 
-    onMount(() => {
-        console.log(json);
-        setBlueprint();
-    })
+    const reboot = async () => {
+        await invoke("reboot");
+    }
 
 </script>
 
-<h1>WIP</h1>
-<button class="border-2 border-black p-2" on:click={startInstall}>Start Install(Nginstal tenan)</button>
-<button class="border-2 border-black p-2" on:click={printJson}>Print JSON</button>
+<h1>Installing</h1>
+
+{#await startInstall()}
+    <div class="flex flex-col">
+        <span>{percentage}%</span>
+        <span>{message}</span>
+    </div>
+{:then}
+    <div class="flex flex-col">
+        <span>Installation Completed</span>
+        <button class="border-2 border-black p-2" on:click={exitOk}>Exit</button>
+        <button class="border-2 border-black p-2" on:click={reboot}>Reboot</button>
+    </div>
+{/await}

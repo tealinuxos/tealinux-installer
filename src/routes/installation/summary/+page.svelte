@@ -11,8 +11,19 @@
     let formattedPartitions = partitions.filter((partition) => partition.format !== null);
     let assignedPartitions = partitions.filter((partition) => partition.mountpoint !== null);
 
+    const setBlueprint = async () => {
+
+        let blueprint = JSON.stringify(json);
+
+        await invoke("set_blueprint_json", { json: blueprint });
+    }
+
+    const printJson = async () => {
+        await invoke("print_json");
+    }
+
     onMount(() => {
-        console.log(partitions);
+        setBlueprint();
     })
 
 </script>
@@ -43,4 +54,5 @@
     {/each}
 {/if}
 
-<a href="/installation/install">Begin Install</a>
+<a class="border-2 border-black p-2" href="/installation/install">Start Install (Nginstal tenan)</a>
+<button class="border-2 border-black p-2" on:click={printJson}>Print JSON</button>
