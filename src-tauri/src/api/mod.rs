@@ -20,7 +20,7 @@ pub async fn get_read_json() -> String
 #[tauri::command]
 pub async fn set_read_json()
 {
-    let json = self::get_read_json();
+    let json = self::get_read_json().await;
 
     let path = Path::new("/opt/tea-installer/");
 
