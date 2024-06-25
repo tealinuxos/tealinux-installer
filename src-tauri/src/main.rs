@@ -6,8 +6,10 @@ mod read;
 mod utils;
 mod storage;
 mod installer;
+mod system;
 
 use api::*;
+use system::reboot::reboot;
 use users::get_current_uid;
 use installer::{ start_install, is_online, print_json };
 
@@ -26,7 +28,8 @@ fn main()
                     is_online,
                     get_storage_json,
                     get_filesystem_json,
-                    print_json
+                    print_json,
+                    reboot
                 ])
                 .run(tauri::generate_context!())
                 .expect("error while running tauri application");
