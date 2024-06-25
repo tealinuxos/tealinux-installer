@@ -21,6 +21,7 @@
 
 	onMount(() => {
 		isOnline();
+        setReadJSON();
 	});
 </script>
 
