@@ -35,7 +35,7 @@ pub async fn start_install(window: Window)
 
     wait();
 
-    let file = File::open("/opt/installer.json").unwrap();
+    let file = File::open("/opt/tea-installer/installer.json").unwrap();
     let reader = BufReader::new(file);
 
     let json: BluePrint = serde_json::from_reader(reader).unwrap();
