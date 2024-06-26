@@ -5,6 +5,7 @@ export default {
     extend: {
       colors: {
         greenTealinux: "#26A768",
+        greyButton: "#929AAB",
       },
       fontFamily: {
         poppin: ['poppins', 'sans-serif'],
