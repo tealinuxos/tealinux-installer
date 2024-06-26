@@ -56,7 +56,7 @@
 	<!-- bg-slate-300 -->
 		<form class=" text-center w-[50dvw] p-8 rounded-md min-h-[50dvh]">
 			<div class="max-w-md mx-auto mb-4">
-				<h2 class="font-poppin text-left mb-2">Main Locale</h2>
+				<h2 class="font-poppin text-left mb-2 font-medium">Main Locale</h2>
 				<div class="relative flex items-center w-[421px] h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder">
 				  <input
 					type="text"
@@ -91,22 +91,22 @@
 			</div>
 
 			<div class="max-w-md mx-auto mb-4">
-				<h2 class="font-poppin text-left mb-2">Date and time</h2>
+				<h2 class="font-poppin text-left mb-2 font-medium">Date and time</h2>
 				<div class="relative flex items-center w-[421px] h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder">
 					<input type="text" id="" class="peer h-full w-full outline-none text-sm text-gray-700 pr-2 pl-8">
 				</div>
 			</div>
 
 			<div class="max-w-md mx-auto mb-4">
-				<h2 class="font-poppin text-left mb-2">Number and currency</h2>
+				<h2 class="font-poppin text-left mb-2 font-medium">Number and currency</h2>
 				<div class="relative flex items-center w-[421px] h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder">
 					<input type="text" id="" class="peer h-full w-full outline-none text-sm text-gray-700 pr-2 pl-8">
 				</div>
 			</div>
-			
+
 			<div class="max-w-md mx-auto">
 				<div class="grid grid-cols-2 gap-52 p-4">
-					<a href="#" class="text-white bg-greyButton hover:bg-gray-500 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 h-[44px] w-[76px]">Back</a>
+					<a href="/installation" class="text-white bg-greyButton hover:bg-gray-500 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 h-[44px] w-[76px]">Back</a>
 					<a href="/installation/timezone" on:click={handleSetLocale} class="text-white bg-greyButton hover:bg-gray-500 focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none h-[44px] w-[76px]">Next</a>
 				</div>
 			</div>
