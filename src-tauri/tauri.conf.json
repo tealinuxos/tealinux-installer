@@ -61,7 +61,7 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "tealinux-installer",
+        "title": "TeaLinux Installer",
         "width": 800
       }
     ]
