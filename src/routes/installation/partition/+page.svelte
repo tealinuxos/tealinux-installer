@@ -88,6 +88,7 @@
                 </div>
             {/each}
         </div>
+        <a href="/installation/account" class="pr-4">back</a>
         <a href="/installation/summary" on:click={handleSetPartition}>Next</a>
     {/await}
 {/await}
