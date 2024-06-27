@@ -59,7 +59,7 @@
 		>
 		<button
 			on:click={() => {
-				window.location.href = '/installation/locale';
+				window.location.href = '/installation/keyboard';
 			}}
 			type="button"
 			class="py-[10px] px-[20px] bg-[#929AAB] text-white font-poppin text-base rounded-lg"
