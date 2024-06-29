@@ -2,13 +2,15 @@
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { onMount } from 'svelte';
 	import { json } from '../stores.js';
-	import Sidebar from '../../../lib/components/Sidebar.svelte';
+	import Sidebar from '$lib/components/Sidebar.svelte';
+	import { fly } from 'svelte/transition';
 
 	let timezones = [];
 	let showTimezone = false;
 	let selectedTimezone = null;
 	let selectedCity = null;
 	let filteredTimezones = [];
+	let showOptions = false;
 	let searchTerm = '';
 
 	const getTimezone = async () => {
@@ -38,34 +40,41 @@
 	$: if (selectedTimezone) {
 		const parts = selectedTimezone.split('/');
 		selectedCity = parts.length > 1 ? parts[1] : null;
+		showOptions = false; // Hide options when an option is selected
 	}
 
 	onMount(() => {
 		getTimezone();
 	});
+
+	function toggleOptions() {
+		showOptions = !showOptions;
+	}
 </script>
 
 <Sidebar />
-<section class="flex flex-col items-center justify-center h-screen">
+<section class="flex flex-col items-center justify-center h-[85dvh]">
 	{#if showTimezone}
-		<form class="text-center w-[50dvw] p-8 rounded-md min-h-[50dvh]">
+		<form class="text-center p-8 rounded-md min-h-[50dvh]">
 			<div>
 				<h1 class="text-center mb-6 font-bold text-[32px] font-archivo">Select Timezone</h1>
 			</div>
 
-			<div class="max-w-md mx-auto mb-4">
+			<div class="max-w-md mx-auto relative">
 				<h2 class="font-poppin text-left mb-2">Region</h2>
 				<div
-					class="relative flex items-center w-[451px] h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder"
+					class="relative flex items-center mb-1 h-[45px] {showOptions
+						? 'rounded-t-lg'
+						: 'rounded-lg'} bg-white overflow-hidden border border-greyBorder"
 				>
 					<input
 						type="text"
 						placeholder="Select Region"
-						class="peer h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px] font-poppin"
+						class="h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px] font-poppin"
+						on:focus={toggleOptions}
 						bind:value={searchTerm}
 					/>
 					<div class="inset-y-0 left-0 flex items-center pr-4">
-						<!-- <img src={dropDown} alt="" class="h-3 w-5"> -->
 						<svg
 							width="14"
 							height="9"
@@ -83,45 +92,64 @@
 						</svg>
 					</div>
 				</div>
-			</div>
-			<div class="h-[50dvh] overflow-y-auto rounded-xl border border-slate-400">
-				{#each filteredTimezones.sort((a, b) => a.region.localeCompare(b.region)) as timezone}
-					{@const region = timezone.region}
-					{#if timezone.city}
-						{#each timezone.city as city}
-							<div
-								class="flex flex-row-reverse w-full items-center justify-between py-4 px-4 border border-b-slate-400 last:border-none bg-slate-200 hover:bg-slate-100 transition-all"
-							>
-								<input
-									required
-									type="radio"
-									id={region + 'ID'}
-									value="{region}/{city}"
-									bind:group={selectedTimezone}
-								/>
-								<label for={region + 'ID'}>{region}/{city}</label>
-							</div>
+				{#if showOptions}
+					<div
+						class="absolute z-10 w-full bg-white border border-greyBorder rounded-b-xl max-h-[30vh] overflow-y-auto"
+						in:fly={{ y: -10, duration: 1000 }}
+						out:fly={{ y: 10, duration: 300 }}
+					>
+						{#each filteredTimezones.sort((a, b) => a.region.localeCompare(b.region)) as timezone}
+							{@const region = timezone.region}
+							{#if timezone.city}
+								{#each timezone.city as city}
+									<div
+										class="flex flex-row-reverse w-full items-center justify-between py-4 px-4 border border-b-grayBorder last:border-none bg-white hover:bg-slate-100 transition-all"
+										on:click={() => {
+											selectedTimezone = `${region}/${city}`;
+											toggleOptions();
+										}}
+									>
+										<input
+											required
+											type="radio"
+											id={region + 'ID'}
+											value="{region}/{city}"
+											bind:group={selectedTimezone}
+										/>
+										<label for={region + 'ID'}>{region}/{city}</label>
+									</div>
+								{/each}
+							{:else}
+								<div
+									class="flex flex-row-reverse w-full items-center justify-between py-4 px-4 border border-b-slate-400 last:border-none bg-white hover:bg-slate-100 transition-all"
+									on:click={() => {
+										selectedTimezone = region;
+										toggleOptions();
+									}}
+								>
+									<input
+										type="radio"
+										id={region + 'ID'}
+										value={region}
+										bind:group={selectedTimezone}
+									/>
+									<label for={region + 'ID'}>{region}</label>
+								</div>
+							{/if}
 						{/each}
-					{:else}
-						<div
-							class="flex flex-row-reverse w-full items-center justify-between py-4 px-4 border border-b-slate-400 last:border-none bg-slate-200 hover:bg-slate-100 transition-all"
-						>
-							<input type="radio" id={region + 'ID'} value={region} bind:group={selectedTimezone} />
-							<label for={region + 'ID'}>{region}</label>
-						</div>
-					{/if}
-				{/each}
+					</div>
+				{/if}
 			</div>
 			<div class="max-w-md mx-auto mb-4">
 				<h2 class="font-poppin text-left mb-2 font-medium">Zone</h2>
 				<div
-					class="relative flex items-center w-[451px] h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder"
+					class="relative flex items-center h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder"
 				>
 					<input
 						type="text"
 						placeholder="select zone"
 						value={selectedCity}
-						class="peer h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px] font-poppin"
+						class="h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px] font-poppin"
 					/>
 				</div>
 			</div>
@@ -150,11 +178,11 @@
 					<input
 						type="text"
 						placeholder="21:26:21"
-						class="peer h-full w-full outline-none text-sm text-gray-700 pr-2 pl-8 font-poppin"
+						class="h-full w-full outline-none text-sm text-gray-700 pr-2 pl-8 font-poppin"
 					/>
 				</div>
 			</div>
-			<div class="max-w-md mx-auto mt-[197px]">
+			<div class="max-w-md mx-auto fixed bottom-0 mb-12">
 				<div class="grid grid-cols-2 gap-[295px]">
 					<a
 						href="/installation/keyboard"
