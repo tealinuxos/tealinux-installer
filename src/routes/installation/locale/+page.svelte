@@ -2,7 +2,6 @@
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { onMount } from 'svelte';
-	import { json } from '../stores.js';
 	import { writable } from 'svelte/store';
 
 	let searchTerm = '';

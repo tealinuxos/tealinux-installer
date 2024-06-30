@@ -2,7 +2,6 @@
 
     import { invoke } from "@tauri-apps/api/tauri";
     import { onMount } from "svelte";
-    import { json } from "../stores.js";
     import { getRead } from "../global.js";
 
     let selectedDisk = 0;

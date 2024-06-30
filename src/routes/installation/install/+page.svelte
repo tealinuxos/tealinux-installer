@@ -4,7 +4,6 @@
     import { listen } from "@tauri-apps/api/event";
     import { exit } from "@tauri-apps/api/process";
     import { onMount } from "svelte";
-    import { json } from "../stores.js";
 
     let percentage = 0;
     let message = "";

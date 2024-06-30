@@ -1,6 +1,5 @@
 <script>
 	import { onMount } from 'svelte';
-	import { json } from '../stores.js';
     import { invoke } from '@tauri-apps/api/tauri';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 
