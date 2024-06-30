@@ -1,21 +1,20 @@
 pub mod blueprint;
 mod payload;
+mod step;
 
 use std::fs::File;
 use std::io::BufReader;
 use tea_arch_chroot_lib::prechroot::*;
 use tea_arch_chroot_lib::chroot::*;
-use tea_arch_chroot_lib::resource::FirmwareKind;
 use super::read::online::Online;
-use super::storage::{ mount, format, umount_all };
-use super::storage::filesystem::filesystem_list;
+use super::storage::umount_all_target;
 use self::payload::Payload;
-use duct::cmd;
 use tauri::Window;
 use std::thread::sleep;
 use std::time::Duration;
 
 pub use self::blueprint::BluePrint;
+pub use self::blueprint::Partition;
 
 fn wait()
 {
@@ -26,75 +25,34 @@ fn wait()
 #[tauri::command]
 pub async fn start_install(window: Window)
 {
-    // Begin installation
+    // Reading JSON into Blueprint
 
     window.emit("INSTALL", Payload {
         percentage: 0,
-        message: "Reading JSON".into()
-    });
-
-    wait();
-
-    let file = File::open("/opt/tea-installer/installer.json").unwrap();
-    let reader = BufReader::new(file);
-
-    let json: BluePrint = serde_json::from_reader(reader).unwrap();
-
-    window.emit("INSTALL", Payload {
-        percentage: 10,
         message: "Starting installation".into()
     });
 
     wait();
 
-    let mut grub_efi_directory: Option<String> = None;
-    let mut grub_disk_path: Option<String> = None;
+    let blueprint = step::json::read_blueprint().unwrap();
 
-    println!("{:#?}", json);
 
     // Partitioning
 
     window.emit("INSTALL", Payload {
-        percentage: 20,
+        percentage: 10,
         message: "Partitioning disk".into()
     });
 
     wait();
 
-    for i in json.partition.iter().to_owned().rev()
-    {
-        let i_path = &i.path;
-        let i_format = &i.format;
-        let i_mountpoint = &i.mountpoint;
-
-        if i_format.is_some()
-        {
-            format(i_format.clone().unwrap(), i_path.clone()).await.unwrap();
-        }
-        if i_mountpoint.is_some()
-        {
-            if i_mountpoint.clone().unwrap().contains("boot")
-            {
-                grub_efi_directory = Some(i.mountpoint.clone().unwrap().to_string());
-                grub_disk_path = Some(i.path.clone().to_string());
-
-                cmd!("mkdir", format!("/mnt{}", i_mountpoint.clone().unwrap())).run().unwrap();
-                mount(i_path.clone(), format!("/mnt{}", &i_mountpoint.clone().unwrap()), None).await.unwrap();
-            }
-            else
-            {
-                mount(i_path.clone(), format!("/mnt{}", &i_mountpoint.clone().unwrap()), None).await.unwrap();
-            }
-        }
-    }
-
-    println!("Partitioning done");
+    step::partitioning::partitioning(&blueprint).unwrap();
 
 
-    // PreChroot
+    // RSYNC system
 
     window.emit("INSTALL", Payload {
-        percentage: 30,
+        percentage: 20,
         message: "Copying necessary files".into()
     });
 
@@ -102,10 +60,20 @@ pub async fn start_install(window: Window)
 
     rsync::start_rsync().await.unwrap();
 
-    println!("Rsync done");
+
+    // Copy kernel to new root
+
+    step::boot::copy_kernel().unwrap();
+
+    // Copy mkinitcpio preset to new root
+
+    step::boot::copy_mkinitcpio_preset().unwrap();
+
+
+    // Generate FSTAB
 
     window.emit("INSTALL", Payload {
-        percentage: 40,
+        percentage: 30,
         message: "Generating Fstab".into()
     });
 
@@ -113,73 +81,79 @@ pub async fn start_install(window: Window)
 
     fstab::generate_fstab().await.unwrap();
 
+
     // Chroot
 
     window.emit("INSTALL", Payload {
-        percentage: 50,
-        message: "Generating keyring".into()
+        percentage: 40,
+        message: "Fixing keyring".into()
     });
 
     wait();
 
     pacman::regenerate_pacman_key().unwrap();
 
+
+    // Mkinitcpio
+
+    window.emit("INSTALL", Payload {
+        percentage: 50,
+        message: "Running mkinitcpio".into()
+    });
+
+    wait();
+
+    mkinitcpio::generate_initramfs("linux").unwrap();
+
+
+    // Bootloader
+
     window.emit("INSTALL", Payload {
         percentage: 60,
-        message: "Installing necessary packages".into()
-    });
-
-    wait();
-
-    pacman::refresh_database().unwrap();
-    pacman::install_package(vec!["mkinitcpio", "linux"]).unwrap();
-
-    window.emit("INSTALL", Payload {
-        percentage: 70,
-        message: "Updating packages".into()
-    });
-
-    wait();
-
-    pacman::update_packages();
-
-    println!("Pacman done");
-
-    window.emit("INSTALL", Payload {
-        percentage: 80,
         message: "Installing bootloader".into()
     });
 
     wait();
 
-    match bootloader::get_firmware_type()
-    {
-        FirmwareKind::UEFI => {
-            bootloader::install_grub_bootloader(FirmwareKind::UEFI, None, grub_efi_directory).unwrap();
-        }
-        FirmwareKind::BIOS => {
-            bootloader::install_grub_bootloader(FirmwareKind::BIOS, grub_disk_path, None).unwrap();
-        }
-    }
+    step::bootloader::install_bootloader(&blueprint).unwrap();
 
-    println!("Bootloader Done");
+
+    // Account
+
+    window.emit("INSTALL", Payload {
+        percentage: 70,
+        message: "Creating account".into()
+    });
+
+    blueprint.account.as_ref().unwrap().set_host().unwrap();
+    blueprint.account.as_ref().unwrap().add_user().unwrap();
+
+
+    // Timezone and locale
+
+    window.emit("INSTALL", Payload {
+        percentage: 80,
+        message: "Configuring timezone and locale".into()
+    });
+
+    wait();
+
+    blueprint.locale.unwrap().set_locale().unwrap();
+    blueprint.timezone.unwrap().generate_localtime().unwrap();
+
+
+    // Finishing up
 
     window.emit("INSTALL", Payload {
         percentage: 90,
         message: "Finishing up".into()
     });
 
-    wait();
-
     Account::remove_user("tea").unwrap();
-    json.locale.set_locale().unwrap();
-    json.timezone.generate_localtime().unwrap();
-    json.account.set_host().unwrap();
-    json.account.add_user().unwrap();
 
-    println!("Locale, timezone, account, Done");
+    // Umount previously mounted partition
 
-    umount_all().unwrap();
+    umount_all_target("/mnt").unwrap();
 
     println!("Done");
 
@@ -200,7 +174,7 @@ pub async fn is_online() -> bool
 #[tauri::command]
 pub async fn print_json()
 {
-    let file = File::open("/opt/installer.json").unwrap();
+    let file = File::open("/opt/tea-installer/installer.json").unwrap();
     let reader = BufReader::new(file);
 
     let json: BluePrint = serde_json::from_reader(reader).unwrap();
