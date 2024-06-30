@@ -1,21 +1,20 @@
 <script>
 	import { onMount } from 'svelte';
 	import { json } from '../stores.js';
+    import { invoke } from '@tauri-apps/api/tauri';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 
 	let fullname, username, hostname, password, confirmPassword;
 	let passwordsMatch = false;
 
-	const handleSetAccount = () => {
+	const handleSetAccount = async () => {
 		if (password !== confirmPassword) {
 			passwordsMatch = false;
 			return;
 		}
 		passwordsMatch = true;
-		json.account.fullname = fullname;
-		json.account.username = username;
-		json.account.hostname = hostname;
-		json.account.password = password;
+
+        await invoke('blueprint_set_account', { fullname, username, hostname, password });
 	};
 
 	$: if (password && confirmPassword && password === confirmPassword) {
@@ -31,15 +30,15 @@
 		<h1 class="text-center mb-6 font-archivo text-[32px] font-bold">Account</h1>
 
 		<div class="max-w-md mx-auto mb-4">
-			<h2 class="font-poppin text-left mb-2 font-medium">Computer name</h2>
+			<h2 class="font-poppin text-left mb-2 font-medium">Full name</h2>
 			<div
 				class="relative flex items-center w-[451px] h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder"
 			>
 				<input
 					class="peer h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px]"
 					type="text"
-					bind:value={hostname}
-					placeholder="Fullname"
+					bind:value={fullname}
+					placeholder="Full name"
 				/>
 			</div>
 		</div>
@@ -59,15 +58,29 @@
 		</div>
 
 		<div class="max-w-md mx-auto mb-4">
+			<h2 class="font-poppin text-left mb-2 font-medium">Computer name</h2>
+			<div
+				class="relative flex items-center w-[451px] h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder"
+			>
+				<input
+					class="peer h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px]"
+					type="text"
+					bind:value={hostname}
+					placeholder="Computer name"
+				/>
+			</div>
+		</div>
+
+		<div class="max-w-md mx-auto mb-4">
 			<h2 class="font-poppin text-left mb-2 font-medium">Password</h2>
 			<div
 				class="relative flex items-center w-[451px] h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder"
 			>
 				<input
 					class="peer h-full w-full outline-none text-[14px] text-gray-700 pr-2 pl-[12px]"
-					type="text"
+					type="password"
 					bind:value={password}
-					placeholder="Hostname"
+					placeholder="Enter your password"
 				/>
 				<svg
 					class="mr-[16px]"
@@ -107,7 +120,7 @@
 					class="peer h-full w-full outline-none text-[14px] text-gray-700 pr-2 pl-[12px]"
 					type="password"
 					bind:value={confirmPassword}
-					placeholder="Password"
+					placeholder="Confirm your password"
 				/>
 				<svg
 					class="mr-[16px]"
