@@ -1,16 +1,13 @@
-use tea_partition_api_lib::{ Disk, Partition };
-use tea_partition_api_lib::read::get_partition;
 use std::io::Error;
 use duct::cmd;
+use std::fs::File;
+use std::io::BufReader;
+use super::installer::BluePrint;
 
 pub mod filesystem;
+pub mod btrfs;
 
-pub async fn get_storage() -> Vec<Disk>
-{
-    get_partition::parted_list_partition()
-}
-
-pub async fn format(filesystem: String, path: String) -> Result<(), Error>
+pub fn format(filesystem: &str, path: &str) -> Result<(), Error>
 {
     let command = {
 
@@ -45,13 +42,12 @@ pub async fn format(filesystem: String, path: String) -> Result<(), Error>
     Ok(())
 }
 
-pub async fn mount(partition_path: String, mountpoint: String, options: Option<Vec<String>>) -> Result<(), Error>
+pub fn mount(partition_path: &str, mountpoint: &str, options: Option<Vec<&str>>) -> Result<(), Error>
 {
     let options = {
-        if options.is_some()
+        if let Some(options) = options
         {
             let options: String = options
-                .unwrap()
                 .iter()
                 .map(|o| format!("{},", o))
                 .collect();
@@ -76,9 +72,64 @@ pub async fn mount(partition_path: String, mountpoint: String, options: Option<V
     Ok(())
 }
 
+pub fn umount(path: &str) -> Result<(), Error>
+{
+    cmd!("umount", path).run()?;
+
+    Ok(())
+}
+
+pub fn umount_all_target(target: &str) -> Result<(), Error>
+{
+    cmd!("umount", "--all-targets", target, "--recursive").run()?;
+
+    Ok(())
+}
+
 pub fn umount_all() -> Result<(), Error>
 {
-    cmd!("umount", "--all").run()?;
+    let file = File::open("/opt/tea-installer/installer.json").unwrap();
+    let reader = BufReader::new(file);
+
+    let json: BluePrint = serde_json::from_reader(reader).unwrap();
+
+    let has_root = {
+
+        let mut has_root = false;
+
+        for i in json.disk.as_ref().unwrap().iter()
+        {
+            if let Some(partition) = &i.mountpoint
+            {
+                if partition.eq("/")
+                {
+                    has_root = true;
+                }
+            }
+        }
+
+        has_root
+    };
+
+    for partition in json.disk.as_ref().unwrap().iter()
+    {
+        let mountpoint = &partition.mountpoint;
+
+        if let Some(mountpoint) = mountpoint
+        {
+            let mountpoint = format!("/mnt{}", mountpoint);
+
+            if mountpoint != "/mnt/"
+            {
+                umount(&mountpoint)?;
+            }
+        }
+    }
+
+    if has_root
+    {
+        umount("/mnt/")?;
+    }
 
     Ok(())
 }
