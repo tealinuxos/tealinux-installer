@@ -15,6 +15,9 @@
       "all": false,
       "process": {
           "exit": true
+      },
+      "dialog": {
+          "message": true
       }
     },
     "bundle": {
