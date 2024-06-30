@@ -12,6 +12,11 @@
     const unlisten = listen("INSTALL", (event) => {
         percentage = event.payload.percentage;
         message = event.payload.message;
+
+        if (message === "Installation completed")
+        {
+            alert(message);
+        }
     })
 
     const startInstall = async () => {
