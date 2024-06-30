@@ -16,7 +16,10 @@ export const getBlueprint = async () => {
 
 export const getShortLocale = (locale) => {
 
-    let shortLocale = locale.slice(0, 5).replace('_', '-').toLowerCase();
+    let pattern = /([a-z]+)_([A-Z]+)/;
+    let matched = locale.match(pattern);
+
+    let shortLocale = matched[1] + '-' + matched[2];
 
     return shortLocale;
 }
