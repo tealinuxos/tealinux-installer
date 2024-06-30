@@ -19,7 +19,7 @@ pub struct Read
 {
     model: Model,
     memory: Memory,
-    operating_systems: Vec<String>,
+    disk: Vec<Disk>,
     battery: Battery,
     online: Online,
     lspci: Pci
@@ -27,9 +27,9 @@ pub struct Read
 
 impl Read
 {
-    pub fn new(model: Model, memory: Memory, operating_systems: Vec<String>, battery: Battery, online: Online, lspci: Pci) -> Self
+    pub fn new(model: Model, memory: Memory, disk: Vec<Disk>, battery: Battery, online: Online, lspci: Pci) -> Self
     {
-        Self { model, memory, operating_systems, battery, online, lspci }
+        Self { model, memory, disk, battery, online, lspci }
     }
 }
 
@@ -41,11 +41,8 @@ pub fn get_read() -> Read
     // Memory
     let memory = Memory::new();
 
-    // Operating Systems
-    let operating_systems = vec!["Windows 10".to_string(), "Arch Linux".to_string()];
-
     // Storage
-    // let storage = get_partition::parted_list_partition();
+    let disk = get_partition::parted_list_partition();
 
     // Battery
     let battery = Battery::new();
@@ -56,5 +53,5 @@ pub fn get_read() -> Read
     // Pci
     let lspci = Pci::new();
 
-    Read::new(model, memory, operating_systems, battery, online, lspci)
+    Read::new(model, memory, disk, battery, online, lspci)
 }
