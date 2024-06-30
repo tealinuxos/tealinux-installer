@@ -23,9 +23,10 @@
 	};
 
 	const handleSetTimezone = async () => {
-		json.timezone.region = selectedTimezone.split('/')[0];
-		json.timezone.city = selectedTimezone.split('/')[1] || null;
-		console.log(json);
+		let region = selectedTimezone.split('/')[0];
+		let city = selectedTimezone.split('/')[1] || null;
+
+        await invoke('blueprint_set_timezone', { region: region, city: city });
 	};
 
 	function filterOptions() {
