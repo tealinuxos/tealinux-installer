@@ -6,16 +6,16 @@ use tea_arch_chroot_lib::chroot::Locale;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BluePrint
 {
-    pub account: Account,
-    pub locale: Locale,
-    pub timezone: Timezone,
-    pub partition: Vec<Partition>
+    pub account: Option<Account>,
+    pub locale: Option<Locale>,
+    pub timezone: Option<Timezone>,
+    pub disk: Option<Vec<Partition>>
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Partition
 {
-    pub path: String,
+    pub path: Option<String>,
     pub mountpoint: Option<String>,
     pub format: Option<String>
 }
