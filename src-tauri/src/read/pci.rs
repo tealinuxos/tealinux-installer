@@ -1,6 +1,7 @@
 use serde::{ Serialize, Deserialize };
 use serde_json::Value;
 use crate::utils::command::command_with_output;
+use duct::cmd;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all="camelCase")]
@@ -18,7 +19,11 @@ impl Pci
 
         let vga = {
 
-            let lshw = command_with_output("lshw -json -class display".to_string());
+            let lshw = cmd!("lshw", "-json", "-class", "display")
+                .stderr_null()
+                .read()
+                .unwrap();
+
             let json: Value = serde_json::from_str(&lshw).unwrap();
 
             let mut vec: Vec<String> = Vec::new();
