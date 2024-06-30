@@ -21,9 +21,7 @@
 	};
 
 	const handleSetLocale = async () => {
-		json.locale.locales = selectedLocales;
-		json.locale.main = selectedLocales[0];
-		console.log(json);
+        await invoke('blueprint_set_locale', { locale: selectedLocales[0] });
 	};
 
 	function filterOptions() {
