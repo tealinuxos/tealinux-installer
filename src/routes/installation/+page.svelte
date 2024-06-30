@@ -1,27 +1,18 @@
 <script>
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { onMount } from 'svelte';
+    import { getRead } from './global.js';
 
 	let json;
 
 	async function handleGetJSON() {
-		invoke('get_read_json').then((response) => {
-			json = JSON.parse(response);
-			console.log(json);
-			showModelName = true;
-		}).await;
-	}
-
-	async function handleGetLocale() {
-		invoke('get_locale_json').then((locales) => {
-			locales = JSON.parse(locales);
-			console.log(locales);
-		}).await;
+        getRead().then((response) => {
+            json = response;
+        });
 	}
 
 	onMount(() => {
 		handleGetJSON();
-		handleGetLocale();
 	});
 </script>
 
