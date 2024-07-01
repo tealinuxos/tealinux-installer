@@ -10,7 +10,7 @@
 
 	let locales = [];
 	let showLocales = false;
-	let selectedLocale = 'en_US.UTF-8 UTF-8';
+	let selectedLocale = null;
 	let filteredLocales = writable([]);
 
 	const getLocale = async () => {
@@ -52,19 +52,22 @@
 
     const handlePreview = () => {
 
-        let short = getShortLocale(selectedLocale);
+        if (selectedLocale != null)
+        {
+            let short = getShortLocale(selectedLocale);
 
-        timePreview = date.toLocaleDateString(short, dateOptions);
-        numberPreview = number.toLocaleString(short);
+            timePreview = date.toLocaleDateString(short, dateOptions);
+            numberPreview = number.toLocaleString(short);
 
-        let currencyCode = getCurrency(short);
+            let currencyCode = getCurrency(short);
 
-        let currency = new Intl.NumberFormat(short, {
-            style: 'currency',
-            currency: currencyCode
-        });
+            let currency = new Intl.NumberFormat(short, {
+                style: 'currency',
+                currency: currencyCode
+            });
 
-        currencyPreview = currency.format(price);
+            currencyPreview = currency.format(price);
+        }
     }
 
     $: selectedLocale, handlePreview();
