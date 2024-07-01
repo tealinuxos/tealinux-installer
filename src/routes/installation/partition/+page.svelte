@@ -4,6 +4,7 @@
     import { onMount } from "svelte";
     import { getRead } from "../global.js";
     import { randomColor } from "randomcolor";
+    import prettyBytes from "pretty-bytes";
 
     let selectedDisk = 0;
     let partitionDetail = [];
@@ -42,8 +43,6 @@
                 size: parseInt(size)
             });
         }
-
-        return partitionDetail;
     };
 
     const handleSetPartition = async () => {
@@ -73,7 +72,10 @@
     }
 
     onMount(() => {
-        getStorageJSON().then((disks) => getColors(disks));
+        getStorageJSON().then((disks) => {
+            getColors(disks);
+            console.log(disks);
+        });
     });
 
 </script>
@@ -108,23 +110,57 @@
     <div class="flex flex-row">
         {#each disks[selectedDisk].partitions as partition, i}
             {@const color = partitionColors[i]}
-            {@const size = partition.size.slice(0, -1) / 2048}
-            {@const path = partition.partitionPath.slice(5)}
+            {@const size = partition.size.slice(0, -1) * 512}
+            {@const path = partition.partitionPath == null ? "Unallocated" : partition.partitionPath.slice(5)}
+            {@const filesystem = partition.filesystem == null ? (path == "Unallocated" ? "Unallocated" : "Unknown") : partition.filesystem}
+            {@const prettySize = prettyBytes(size)}
 
             <div style="background-color: {color}" class="p-4"></div>
 
             <div class="flex flex-col">
                 <span class="p-2">{path}</span>
-                <span class="p-2">{size}</span>
+                <span class="p-2">{prettySize}</span>
+                <span class="p-2">{filesystem}</span>
+            </div>
+        {/each}
+    </div>
+
+    <div class="p-2 flex">
+        {#each partitionDetail as partition, i}
+            {@const diskSize = disks[selectedDisk].size.slice(0, -1)}
+            {@const partitionSize = partition.size}
+            {@const percentage = partitionSize / diskSize * 100}
+            {@const color = partitionColors[i]}
+
+            <div style="width: {percentage}%; background-color: {color}" class="h-16"></div>
+        {/each}
+    </div>
+
+    <div class="flex flex-row">
+        {#each partitionDetail as partition, i}
+            {@const color = partitionColors[i]}
+            {@const size = partition.size * 512}
+            {@const path = partition.path == null ? "Unallocated" : partition.path.slice(5)}
+            {@const mountpoint = partition.mountpoint == null ? "Not assigned" : partition.mountpoint}
+            {@const format = partition.format == null ? "Don't format" : partition.format}
+            {@const prettySize = prettyBytes(size)}
+
+            <div style="background-color: {color}" class="p-4"></div>
+
+            <div class="flex flex-col">
+                <span class="p-2">{path}</span>
+                <span class="p-2">{prettySize}</span>
+                <span class="p-2">{format}</span>
+                <span class="p-2">{mountpoint}</span>
             </div>
         {/each}
     </div>
 
     {#await handlePartitionDetail(disks, selectedDisk)}
         Loading...
-    {:then partitions}
+    {:then}
         <div class="flex flex-col">
-            {#each partitions as partition, i}
+            {#each partitionDetail as partition, i}
                 {@const path = partition.path}
 
                 {#if path == null}
@@ -143,7 +179,7 @@
                         <select bind:value={partitionDetail[i].mountpoint} on:change={handleSetPartition}>
                             <option value={null}>No Mountpoint</option>
                             <option value="/">/</option>
-                            <option value="/boot">/boot</option>
+                            <option value="/boot/efi">/boot/efi</option>
                             <option value="/home">/home</option>
                         </select>
                     </div>
