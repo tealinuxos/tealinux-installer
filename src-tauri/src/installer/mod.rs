@@ -27,7 +27,7 @@ pub async fn start_install(window: Window)
 {
     // Reading JSON into Blueprint
 
-    window.emit("INSTALL", Payload {
+    let _ = window.emit("INSTALL", Payload {
         percentage: 0,
         message: "Starting installation".into()
     });
@@ -39,7 +39,7 @@ pub async fn start_install(window: Window)
 
     // Partitioning
 
-    window.emit("INSTALL", Payload {
+    let _ = window.emit("INSTALL", Payload {
         percentage: 10,
         message: "Partitioning disk".into()
     });
@@ -51,7 +51,7 @@ pub async fn start_install(window: Window)
 
     // RSYNC system
 
-    window.emit("INSTALL", Payload {
+    let _ = window.emit("INSTALL", Payload {
         percentage: 20,
         message: "Copying necessary files".into()
     });
@@ -72,7 +72,7 @@ pub async fn start_install(window: Window)
 
     // Generate FSTAB
 
-    window.emit("INSTALL", Payload {
+    let _ = window.emit("INSTALL", Payload {
         percentage: 30,
         message: "Generating Fstab".into()
     });
@@ -84,7 +84,7 @@ pub async fn start_install(window: Window)
 
     // Chroot
 
-    window.emit("INSTALL", Payload {
+    let _ = window.emit("INSTALL", Payload {
         percentage: 40,
         message: "Fixing keyring".into()
     });
@@ -96,7 +96,7 @@ pub async fn start_install(window: Window)
 
     // Mkinitcpio
 
-    window.emit("INSTALL", Payload {
+    let _ = window.emit("INSTALL", Payload {
         percentage: 50,
         message: "Running mkinitcpio".into()
     });
@@ -108,7 +108,7 @@ pub async fn start_install(window: Window)
 
     // Bootloader
 
-    window.emit("INSTALL", Payload {
+    let _ = window.emit("INSTALL", Payload {
         percentage: 60,
         message: "Installing bootloader".into()
     });
@@ -120,7 +120,7 @@ pub async fn start_install(window: Window)
 
     // Account
 
-    window.emit("INSTALL", Payload {
+    let _ = window.emit("INSTALL", Payload {
         percentage: 70,
         message: "Creating account".into()
     });
@@ -131,7 +131,7 @@ pub async fn start_install(window: Window)
 
     // Timezone and locale
 
-    window.emit("INSTALL", Payload {
+    let _ = window.emit("INSTALL", Payload {
         percentage: 80,
         message: "Configuring timezone and locale".into()
     });
@@ -144,7 +144,7 @@ pub async fn start_install(window: Window)
 
     // Finishing up
 
-    window.emit("INSTALL", Payload {
+    let _ = window.emit("INSTALL", Payload {
         percentage: 90,
         message: "Finishing up".into()
     });
@@ -157,7 +157,7 @@ pub async fn start_install(window: Window)
 
     println!("Done");
 
-    window.emit("INSTALL", Payload {
+    let _ = window.emit("INSTALL", Payload {
         percentage: 100,
         message: "Installation completed".into()
     });
