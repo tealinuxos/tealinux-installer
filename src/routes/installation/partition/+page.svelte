@@ -86,7 +86,7 @@
     Loading...
 {:then disks}
     <div class="flex flex-col">
-        <select class="w-1/3" bind:value={selectedDisk} on:change={getColors(disks)}>
+        <select class="w-1/3" bind:value={selectedDisk} on:change={() => getColors(disks)}>
             {#each disks as disk, i}
                 {@const model = disk.model}
                 {@const path = disk.diskPath}
