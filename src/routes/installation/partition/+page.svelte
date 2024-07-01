@@ -3,6 +3,7 @@
     import { invoke } from "@tauri-apps/api/tauri";
     import { onMount } from "svelte";
     import { getRead } from "../global.js";
+    import { randomColor } from "randomcolor";
 
     let selectedDisk = 0;
     let partitionDetail = [];
@@ -30,13 +31,15 @@
             let partitionPath = disks[selectedDisk].partitions[i].partitionPath;
             let startSector = disks[selectedDisk].partitions[i].start.slice(0, -1);
             let endSector = disks[selectedDisk].partitions[i].end.slice(0, -1);
+            let size = disks[selectedDisk].partitions[i].size.slice(0, -1);
 
             partitionDetail.push({
                 path: partitionPath,
                 format: null,
                 mountpoint: null,
                 start: parseInt(startSector),
-                end: parseInt(endSector)
+                end: parseInt(endSector),
+                size: parseInt(size)
             });
         }
 
@@ -50,6 +53,29 @@
         await invoke("blueprint_set_partition", { partition });
     };
 
+    let partitionColors = [];
+
+    const getColors = (disks) => {
+
+        let length = disks[selectedDisk].partitions.length;
+
+        let colors = [];
+
+        for (let i = 0; i < length; i++)
+        {
+            colors.push(randomColor({
+                luminosity: 'bright',
+                hue: 'random'
+            }));
+        }
+
+        partitionColors = colors;
+    }
+
+    onMount(() => {
+        getStorageJSON().then((disks) => getColors(disks));
+    });
+
 </script>
 
 <h1>Partitioning</h1>
@@ -58,13 +84,40 @@
     Loading...
 {:then disks}
     <div class="flex flex-col">
-        <select class="w-1/3" bind:value={selectedDisk}>
+        <select class="w-1/3" bind:value={selectedDisk} on:change={getColors(disks)}>
             {#each disks as disk, i}
                 {@const model = disk.model}
                 {@const path = disk.diskPath}
                 <option value={i}>{model + ' (' + path + ')'}</option>
             {/each}
         </select>
+    </div>
+
+    <!-- Partition Bar -->
+    <div class="p-2 flex">
+        {#each disks[selectedDisk].partitions as partition, i}
+            {@const diskSize = disks[selectedDisk].size.slice(0, -1)}
+            {@const partitionSize = partition.size.slice(0, -1)}
+            {@const percentage = partitionSize / diskSize * 100}
+            {@const color = partitionColors[i]}
+
+            <div style="width: {percentage}%; background-color: {color}" class="h-16"></div>
+        {/each}
+    </div>
+
+    <div class="flex flex-row">
+        {#each disks[selectedDisk].partitions as partition, i}
+            {@const color = partitionColors[i]}
+            {@const size = partition.size.slice(0, -1) / 2048}
+            {@const path = partition.partitionPath.slice(5)}
+
+            <div style="background-color: {color}" class="p-4"></div>
+
+            <div class="flex flex-col">
+                <span class="p-2">{path}</span>
+                <span class="p-2">{size}</span>
+            </div>
+        {/each}
     </div>
 
     {#await handlePartitionDetail(disks, selectedDisk)}
