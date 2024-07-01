@@ -17,5 +17,8 @@ pub struct Partition
 {
     pub path: Option<String>,
     pub mountpoint: Option<String>,
-    pub format: Option<String>
+    pub format: Option<String>,
+    pub start: u64,
+    pub end: u64,
+    pub size: u64
 }
