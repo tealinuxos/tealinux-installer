@@ -3,12 +3,14 @@
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
+    import { getShortLocale } from '../global.js';
+    import { getCurrency } from 'locale-currency';
 
 	let searchTerm = '';
 
 	let locales = [];
 	let showLocales = false;
-	let selectedLocales = [];
+	let selectedLocale = 'en_US.UTF-8 UTF-8';
 	let filteredLocales = writable([]);
 
 	const getLocale = async () => {
@@ -20,7 +22,7 @@
 	};
 
 	const handleSetLocale = async () => {
-        await invoke('blueprint_set_locale', { locale: selectedLocales[0] });
+        await invoke('blueprint_set_locale', { locale: selectedLocale });
 	};
 
 	function filterOptions() {
@@ -32,14 +34,40 @@
 		isOpen = true;
 	}
 
-	function handleOptionClick(locale) {
-		if (!selectedLocales.includes(locale.name)) {
-			selectedLocales = [...selectedLocales, locale.name];
-		}
-		console.log(selectedLocales);
-	}
-
 	$: searchTerm, filterOptions();
+
+    let date = new Date();
+    let dateOptions = {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    };
+    let number = 1234567.89;
+    let price = 1234.56;
+
+    let timePreview = '';
+    let numberPreview = '';
+    let currencyPreview = '';
+
+    const handlePreview = () => {
+
+        let short = getShortLocale(selectedLocale);
+
+        timePreview = date.toLocaleDateString(short, dateOptions);
+        numberPreview = number.toLocaleString(short);
+
+        let currencyCode = getCurrency(short);
+
+        let currency = new Intl.NumberFormat(short, {
+            style: 'currency',
+            currency: currencyCode
+        });
+
+        currencyPreview = currency.format(price);
+    }
+
+    $: selectedLocale, handlePreview();
 
 	onMount(() => {
 		getLocale();
@@ -79,11 +107,10 @@
 						class="flex flex-row-reverse w-full items-center justify-between py-4 px-4 border border-b-slate-400 last:border-none bg-slate-200 hover:bg-slate-100 transition-all"
 					>
 						<input
-							type="checkbox"
+							type="radio"
 							name={locale.name}
 							class="h-6 w-6"
-							checked={selectedLocales.includes(locale.name)}
-							on:click={handleOptionClick(locale)}
+                            bind:group={selectedLocale}
 							value={locale.name}
 						/>
 						<label for={locale.name}>{locale.name}</label>
@@ -94,14 +121,16 @@
 			<div class="max-w-md mx-auto mb-4">
 				<h2 class="font-poppin text-left mb-2 font-medium">Date and time</h2>
 				<div class="relative flex items-center w-[421px] h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder">
-					<input type="text" id="" class="peer h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px]">
+					<!-- <input type="text" id="" class="peer h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px]"> -->
+                    <span>{timePreview}</span>
 				</div>
 			</div>
 
 			<div class="max-w-md mx-auto mb-4">
 				<h2 class="font-poppin text-left mb-2 font-medium">Number and currency</h2>
 				<div class="relative flex items-center w-[421px] h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder">
-					<input type="text" id="" class="peer h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px]">
+					<!-- <input type="text" id="" class="peer h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px]"> -->
+                    <span>{numberPreview} - {currencyPreview}</span>
 				</div>
 			</div>
 
