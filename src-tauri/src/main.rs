@@ -15,10 +15,9 @@ use api::keyboard::*;
 use api::account::*;
 use api::partition::*;
 use system::reboot::reboot;
+use system::spawn::*;
 use users::get_current_uid;
 use installer::{ start_install, is_online, print_json };
-
-use duct::cmd;
 
 fn main()
 {
@@ -44,13 +43,15 @@ fn main()
                     get_read_from_opt,
                     get_blueprint_from_opt,
                     get_keyboard_json,
-                    read_blueprint
+                    read_blueprint,
+                    spawn_gparted,
+                    spawn_terminal
                 ])
                 .run(tauri::generate_context!())
                 .expect("error while running tauri application");
         }
         _ => {
-            println!("Run with sudo:\nsudo -E bunx tauri dev");
+            println!("Run with sudo privileges!");
         }
     }
 }
