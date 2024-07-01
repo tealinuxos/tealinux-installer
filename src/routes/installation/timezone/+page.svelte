@@ -50,6 +50,27 @@
 	function toggleOptions() {
 		showOptions = !showOptions;
 	}
+
+    let date = new Date();
+    let timePreview = '';
+
+    const handlePreview = () => {
+
+        if (selectedTimezone !== null)
+        {
+            let timeFormat = new Intl.DateTimeFormat([], {
+                timeZone: selectedTimezone,
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: false
+            });
+
+            timePreview = timeFormat.format(date);
+        }
+    }
+
+    $: selectedTimezone, handlePreview();
 </script>
 
 <Sidebar />
@@ -141,13 +162,13 @@
 				{/if}
 			</div>
 			<div class="max-w-md mx-auto mb-4">
-				<h2 class="font-poppin text-left mb-2 font-medium">Zone</h2>
+				<h2 class="font-poppin text-left mb-2 font-medium">City</h2>
 				<div
 					class="relative flex items-center h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder"
 				>
 					<input
 						type="text"
-						placeholder="select zone"
+						placeholder="Select city"
 						value={selectedCity}
 						class="h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px] font-poppin"
 					/>
@@ -175,11 +196,12 @@
 						/>
 					</svg>
 
-					<input
-						type="text"
-						placeholder="21:26:21"
-						class="h-full w-full outline-none text-sm text-gray-700 pr-2 pl-8 font-poppin"
-					/>
+					<!-- <input -->
+					<!-- 	type="text" -->
+					<!-- 	placeholder="21:26:21" -->
+					<!-- 	class="h-full w-full outline-none text-sm text-gray-700 pr-2 pl-8 font-poppin" -->
+					<!-- /> -->
+                    <span>{timePreview}</span>
 				</div>
 			</div>
 			<div class="max-w-md mx-auto fixed bottom-0 mb-12">
