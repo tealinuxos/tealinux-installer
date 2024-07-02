@@ -6,14 +6,14 @@
 </script>
 
 <sidebar
-	class="sidebar fixed top-0 left-0 h-screen bg-gray-200 shadow-lg flex flex-col p-4 space-y-4 {isOpen
-		? ''
-		: 'collapsed'}"
+	class="sidebar fixed top-0 left-0 h-screen transition-colors duration-500 flex flex-col p-4 space-y-4 {isOpen
+		? ' bg-whiteTealinux'
+		: 'collapsed bg-greenTealinux'}"
 >
-	<button on:click={toggleSidebar} class=" {isOpen ? 'self-end' : 'self-center'}">
+	<button on:click={toggleSidebar} class=" self-start transition-all duration-1000">
 		{#if isOpen}
 			<svg
-				class="h-6 w-6 text-black"
+				class="h-8 w-8 text-black p-0.5 border-2 border-black rounded-md"
 				fill="none"
 				stroke="currentColor"
 				viewBox="0 0 24 24"
@@ -28,7 +28,7 @@
 			</svg>
 		{:else}
 			<svg
-				class="h-6 w-6 text-black"
+				class="h-8 w-8 text-white"
 				fill="none"
 				stroke="currentColor"
 				viewBox="0 0 24 24"
@@ -44,7 +44,7 @@
 		{/if}
 	</button>
 	{#if isOpen}
-		<button class="flex items-center space-x-2 bg-white p-2 rounded-md shadow-md hover:bg-gray-100">
+		<button class="flex items-center space-x-2 bg-white p-2 rounded-md border-2 border-black">
 			<svg
 				class="h-6 w-6 text-black"
 				fill="none"
@@ -61,7 +61,7 @@
 			</svg>
 			<span class="font-semibold">System information</span>
 		</button>
-		<button class="flex items-center space-x-2 bg-white p-2 rounded-md shadow-md hover:bg-gray-100">
+		<button class="flex items-center space-x-2 bg-white p-2 rounded-md border-2 border-black">
 			<svg
 				class="h-6 w-6 text-black"
 				fill="none"
