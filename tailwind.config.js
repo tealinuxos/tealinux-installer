@@ -9,6 +9,7 @@ export default {
         greyBorder: "#E4E7E6",
         userCheckBox: "#757575",
         grayTealinux: "#E7EDED",
+        whiteTealinux: "#FFFEFB",
       },
       fontFamily: {
         poppin: ['poppins', 'sans-serif'],
