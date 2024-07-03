@@ -107,6 +107,14 @@
 
 <Sidebar />
 <section class="flex flex-col items-center justify-center h-[85dvh]">
+	<header class="flex items-center justify-center w-full gap-[10px]">
+        <div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
+    </header>
 	{#if showTimezone}
 		<form class="text-center p-8 rounded-md min-h-[50dvh]">
 			<div>

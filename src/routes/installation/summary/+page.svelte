@@ -34,6 +34,14 @@
 {#await getBlueprint()}
 {:then blueprint}
 <section class="flex flex-col items-center justify-center h-auto">
+    <header class="flex items-center justify-center w-full gap-[10px]">
+        <div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+    </header>
     <form class=" text-center w-[50dvw] p-8 rounded-md min-h-[50dvh]">
         <h1 class="text-center mb-6 font-bold text-[32px] font-archivo">Summary</h1>
         <div class="mb-4">
@@ -132,65 +140,66 @@
             <!-- partisi v -->
             <div class="mt-[8px]">
                 <div class="relative flex items-center w-full h-[50px] rounded-tl-lg rounded-tr-lg bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto">
-                    <div class="flex gap-x-[180px] ml-[10px]">
+                    <div class="flex flex-wrap gap-x-[180px] ml-[10px]">
                         <h2>Partition</h2>
                         <h2>File system</h2>
                         <h2>Used as</h2>
                         <h2>Format</h2>
                     </div>
                 </div>
-                <div class="relative flex items-center w-full h-[65px] bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto">
+                <div class="relative flex flex-col md:flex-row items-center w-full h-[65px] bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto">
                     <div class="pl-[10px]">
                         <h2>/dev/sda1</h2>
                         <h2 class="text-gray-500">33.55 GB</h2>
                     </div>
-                    <div class="flex pl-[100px] gap-12">
-                        <div class="bg-gray-500 w-[200px] h-[42px] rounded-xl flex justify-center items-center">
+                    <div class="flex flex-wrap pl-[10px] md:pl-[100px] gap-4 md:gap-12">
+                        <div class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap">
                             <span class="text-white">lalal</span>
-                        </div>                        
-                        <div class="bg-gray-500 w-[200px] h-[42px] rounded-xl flex justify-center items-center">
+                        </div>
+                        <div class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap">
                             <span class="text-white">lalal</span>
-                        </div>                        
-                        <div class="bg-gray-500 w-[200px] h-[42px] rounded-xl flex justify-center items-center">
+                        </div>
+                        <div class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap">
                             <span class="text-white">lalal</span>
                         </div>
                     </div>
                 </div>
-                <div class="relative flex items-center w-full h-[65px] bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto">
+                <div class="relative flex flex-col md:flex-row items-center w-full h-[65px] bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto">
                     <div class="pl-[10px]">
                         <h2>/dev/sda1</h2>
                         <h2 class="text-gray-500">33.55 GB</h2>
                     </div>
-                    <div class="flex pl-[100px] gap-12">
-                        <div class="bg-gray-500 w-[200px] h-[42px] rounded-xl flex justify-center items-center">
+                    <div class="flex flex-wrap pl-[10px] md:pl-[100px] gap-4 md:gap-12">
+                        <div class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap">
                             <span class="text-white">lalal</span>
                         </div>
-                        <div class="bg-gray-500 w-[200px] h-[42px] rounded-xl flex justify-center items-center">
+                        <div class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap">
                             <span class="text-white">lalal</span>
                         </div>
-                        <div class="bg-gray-500 w-[200px] h-[42px] rounded-xl flex justify-center items-center">
+                        <div class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap">
                             <span class="text-white">lalal</span>
-                        </div>                  
+                        </div>
                     </div>
                 </div>
-                <div class="relative flex items-center w-full h-[65px] rounded-bl-lg rounded-br-lg bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto">
+                <div class="relative flex flex-col md:flex-row items-center w-full h-[65px] rounded-bl-lg rounded-br-lg bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto">
                     <div class="pl-[10px]">
                         <h2>/dev/sda1</h2>
                         <h2 class="text-gray-500">33.55 GB</h2>
                     </div>
-                    <div class="flex pl-[100px] gap-12">
-                        <div class="bg-gray-500 w-[200px] h-[42px] rounded-xl flex justify-center items-center">
+                    <div class="flex flex-wrap pl-[10px] md:pl-[100px] gap-4 md:gap-12">
+                        <div class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap">
                             <span class="text-white">lalal</span>
                         </div>
-                        <div class="bg-gray-500 w-[200px] h-[42px] rounded-xl flex justify-center items-center">
+                        <div class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap">
                             <span class="text-white">lalal</span>
                         </div>
-                        <div class="bg-gray-500 w-[200px] h-[42px] rounded-xl flex justify-center items-center">
+                        <div class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap">
                             <span class="text-white">lalal</span>
                         </div>
                     </div>
                 </div>
-            </div>          
+            </div>
+                   
            
             </div>
             

@@ -26,6 +26,14 @@
 
 <Sidebar />
 <section class="flex flex-col items-center justify-center h-screen">
+	<header class="flex items-center justify-center w-full gap-[10px]">
+        <div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
+    </header>
 	<form class="flex flex-col h-[85dvh]">
 		<h1 class="text-center mb-6 font-archivo text-[32px] font-bold">Create User</h1>
 

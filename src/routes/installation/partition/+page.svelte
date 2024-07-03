@@ -89,6 +89,14 @@
 
 <SideBar />
 <section class=" items-center justify-center w-[80dvw] mx-auto">
+	<header class="flex items-center justify-center w-full gap-[10px]">
+        <div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
+    </header>
 	<div class="flex flex-col gap-y-10 min-h-[85dvh] mb-[15dvh]">
 		<h1 class="font-poppinsemibold font-bold text-4xl text-center mt-16">
 			Set Installation Partition

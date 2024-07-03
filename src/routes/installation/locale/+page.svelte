@@ -83,6 +83,14 @@
 
 <Sidebar />
 <section class="flex flex-col items-center justify-center h-screen">
+	<header class="flex items-center justify-center w-full gap-[10px]">
+        <div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
+    </header>
 	{#if showLocales}
 		<!-- bg-slate-300 -->
 		<form class=" text-center w-[50dvw] p-8 rounded-md h-[85dvh]">
