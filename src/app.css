@@ -13,6 +13,11 @@
 }
 
 @font-face {
+    font-family: poppinsmedium;
+    src: url("/fonts/poppins-medium.ttf");
+}
+
+@font-face {
     font-family: archivo;
     src: url("/fonts/archivo.ttf");
 }

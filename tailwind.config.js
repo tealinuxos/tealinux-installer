@@ -15,6 +15,7 @@ export default {
       fontFamily: {
         poppin: ['poppins', 'sans-serif'],
         poppinsemibold: ['poppinssemibold', 'sans-serif'],
+        poppinmedium: ['poppinmedium', 'sans-serif'],
         archivo: ['archivo', 'sans-serif'],
       }
     },
