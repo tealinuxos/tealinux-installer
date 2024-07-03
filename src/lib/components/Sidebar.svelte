@@ -7,7 +7,7 @@
 
 <sidebar
 	class="sidebar fixed top-0 left-0 h-screen transition-colors duration-500 flex flex-col p-4 space-y-4 {isOpen
-		? ' bg-whiteTealinux'
+		? ' bg-[#C8E8D6]'
 		: 'collapsed bg-greenTealinux'}"
 >
 	<button on:click={toggleSidebar} class=" self-start transition-all duration-1000">

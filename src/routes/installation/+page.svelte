@@ -98,7 +98,7 @@
 			</div>
 		</div>
 		<!-- ============================================================================================ -->
-		<div class=" bg-greenTealinux bg-opacity-25 w-full p-5 rounded-2xl mb-6 flex justify-center">
+		<div class=" bg-greenTealinux bg-opacity-25 w-full p-5 rounded-[43px] mb-6 flex justify-center">
 			<div class="bg-white place-items-center py-3 px-16 h-[40vh] min-w-full rounded-3xl">
 				<div
 					class="flex items-center justify-between bg-gray-300 h-[45px] rounded-[10px] mt-[30.05px] w-full"
@@ -144,18 +144,15 @@
 		</div>
 	</div>
 
-	<div class="flex justify-between h-[15dvh] items-center w-full px-16 font-poppin">
-		<a
-			href="/"
-			class="py-[10px] px-[20px] bg-greenTealinux text-white font-poppin text-base rounded-lg"
-			>Back</a
-		>
-		<a
-			href="/installation/keyboard"
-			class="py-[10px] px-[20px] bg-greenTealinux text-white font-poppin text-base rounded-lg"
-			>Next</a
-		>
+	<div class="fixed bottom-0 left-0 right-0 flex justify-between h-[15dvh] items-center w-full px-16 font-poppin bg-white">
+		<a href="/" class="py-[10px] px-[20px] bg-greenTealinux text-white font-poppin text-base rounded-lg">
+			Back
+		</a>
+		<a href="/installation/keyboard" class="py-[10px] px-[20px] bg-greenTealinux text-white font-poppin text-base rounded-lg">
+			Next
+		</a>
 	</div>
+	
 {/await}
 </main>
 
