@@ -50,7 +50,7 @@
 
 <main class="max-h-dvh">
 	<div class=" py-8 px-16 mx-auto overflow-auto max-h-[85dvh] scrollbar-none">
-		<div class=" bg-greenTealinux bg-opacity-25 w-full p-5 rounded-2xl mb-6">
+		<div class=" bg-greenTealinux bg-opacity-25 w-full p-5 rounded-[43px] mb-6">
 			<div class="bg-white grid-cols-3 grid place-items-center py-3 px-16 h-[40vh] rounded-3xl">
 				{#if showModelName}
 					<div class="flex flex-col items-center gap-y-1">
