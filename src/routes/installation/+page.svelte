@@ -3,56 +3,20 @@
 	import { onMount } from 'svelte';
 	import { getRead } from './global.js';
 
-	let json;
-	let showModelName = false;
-	let memoryPercent;
-	let totalSize;
-	let partitionSize;
-
-	function calculateTotalSize(data) {
-		let totalSize = 0;
-		data.forEach((partition) => {
-			const sizeStr = partition.size;
-			const size = parseInt(sizeStr.replace('s', '')); // Menghapus 's' dan mengonversi ke integer
-			totalSize += size;
-		});
-		return totalSize;
-	}
-
-	async function handleGetJSON() {
-		invoke('get_read_json').then((response) => {
-			json = JSON.parse(response);
-			console.log('ini read :');
-			console.log(json);
-			showModelName = true;
-			memoryPercent = (json.memory.used / json.memory.capacity) * 100;
-			totalSize = calculateTotalSize(json.disk);
-		}).await;
-	}
-
-	async function handleGetLocale() {
-		invoke('get_locale_json').then((locales) => {
-			locales = JSON.parse(locales);
-			console.log('ini locales :');
-			console.log(locales);
-		}).await;
-	}
-
 	function calculateToGB() {
 		let partitionSize = json.disk[0].partitions[0].size;
 		partitionSize = parseInt(partitionSize.replace('s', ''));
 	}
-
-	onMount(() => {
-		handleGetJSON();
-	});
 </script>
 
 <main class="max-h-dvh">
+{#await getRead()}
+{:then json}
+{console.log(json)}
+    {@const memoryPercent = json.memory.used / json.memory.capacity * 100}
 	<div class=" py-8 px-16 mx-auto overflow-auto max-h-[85dvh] scrollbar-none">
 		<div class=" bg-greenTealinux bg-opacity-25 w-full p-5 rounded-[43px] mb-6">
 			<div class="bg-white grid-cols-3 grid place-items-center py-3 px-16 h-[40vh] rounded-3xl">
-				{#if showModelName}
 					<div class="flex flex-col items-center gap-y-1">
 						<img src="/windows.svg" alt="" />
 						<p class="text-2xl font-medium mt-[8px]">82SV</p>
@@ -123,10 +87,15 @@
 							<div class="flex items-center justify-center h-full">
 								<h2 class="font-archivo font-bold text-[20px] text-center">GPU</h2>
 							</div>
-							<h2 class="font-poppin font-medium text-[16px]">{json.lspci.vga}</h2>
+                            <ul class="list-disc">
+                                {#each json.lspci.vga as vga}
+                                    <li>
+                                        <h2 class="font-poppin font-medium text-[16px]">{vga}</h2>
+                                    </li>
+                                {/each}
+                            </ul>
 						</div>
 					</div>
-				{/if}
 			</div>
 		</div>
 		<!-- ============================================================================================ -->
@@ -188,6 +157,7 @@
 			>Next</a
 		>
 	</div>
+{/await}
 </main>
 
 <style>
