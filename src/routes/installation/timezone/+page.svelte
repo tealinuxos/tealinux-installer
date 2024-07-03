@@ -9,31 +9,58 @@
 	let selectedTimezone = null;
 	let selectedCity = null;
 	let filteredTimezones = [];
+	let formatedTimezones = [];
 	let showOptions = false;
 	let searchTerm = '';
 
 	const getTimezone = async () => {
 		invoke('get_timezone_json').then((response) => {
 			timezones = JSON.parse(response);
-			filteredTimezones = timezones;
+			filteredTimezones = setFilteredTimezones(timezones);
+			formatedTimezones = filteredTimezones;
 			console.log(timezones);
 			showTimezone = true;
 		});
+	};
+
+	//set filtered timezones to region/city from invoke
+	const setFilteredTimezones = (timezones) => {
+		let timezoneOptions = [];
+
+		timezones.forEach((timezone) => {
+			const region = timezone.region;
+			if (timezone.city) {
+				timezone.city.forEach((city) => {
+					timezoneOptions.push(`${region}/${city}`);
+				});
+			} else {
+				timezoneOptions.push(region);
+			}
+		});
+
+		console.log(timezoneOptions);
+		return timezoneOptions;
 	};
 
 	const handleSetTimezone = async () => {
 		let region = selectedTimezone.split('/')[0];
 		let city = selectedTimezone.split('/')[1] || null;
 
-        await invoke('blueprint_set_timezone', { region: region, city: city });
+		await invoke('blueprint_set_timezone', { region: region, city: city });
 	};
 
 	function filterOptions() {
 		const term = searchTerm.toLowerCase();
-		filteredTimezones = timezones.filter((timezone) =>
-			timezone.region.toLowerCase().includes(term)
+		filteredTimezones = formatedTimezones.filter((timezone) =>
+			timezone.toLowerCase().includes(term)
 		);
 	}
+
+	const selectTimezone = (value) => {
+		selectedTimezone = value;
+		searchTerm = value.split('/')[0];
+		showOptions = false;
+	};
 
 	$: searchTerm, filterOptions();
 
@@ -51,26 +78,31 @@
 		showOptions = !showOptions;
 	}
 
-    let date = new Date();
-    let timePreview = '';
+	let date = new Date();
+	let datePreview = '';
+	let timePreview = '';
 
-    const handlePreview = () => {
+	const handlePreview = () => {
+		if (selectedTimezone !== null) {
+			let timeFormat = new Intl.DateTimeFormat([], {
+				timeZone: selectedTimezone,
+				hour: 'numeric',
+				minute: 'numeric',
+				second: 'numeric',
+				hour12: false
+			});
+			let dateFormat = new Intl.DateTimeFormat([], {
+				timeZone: selectedTimezone,
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric'
+			});
+			datePreview = dateFormat.format(date);
+			timePreview = timeFormat.format(date);
+		}
+	};
 
-        if (selectedTimezone !== null)
-        {
-            let timeFormat = new Intl.DateTimeFormat([], {
-                timeZone: selectedTimezone,
-                hour: 'numeric',
-                minute: 'numeric',
-                second: 'numeric',
-                hour12: false
-            });
-
-            timePreview = timeFormat.format(date);
-        }
-    }
-
-    $: selectedTimezone, handlePreview();
+	$: selectedTimezone, handlePreview();
 </script>
 
 <Sidebar />
@@ -119,44 +151,20 @@
 						in:fly={{ y: -10, duration: 1000 }}
 						out:fly={{ y: 10, duration: 300 }}
 					>
-						{#each filteredTimezones.sort((a, b) => a.region.localeCompare(b.region)) as timezone}
-							{@const region = timezone.region}
-							{#if timezone.city}
-								{#each timezone.city as city}
-									<div
-										class="flex flex-row-reverse w-full items-center justify-between py-4 px-4 border border-b-grayBorder last:border-none bg-white hover:bg-slate-100 transition-all"
-										on:click={() => {
-											selectedTimezone = `${region}/${city}`;
-											toggleOptions();
-										}}
-									>
-										<input
-											required
-											type="radio"
-											id={region + 'ID'}
-											value="{region}/{city}"
-											bind:group={selectedTimezone}
-										/>
-										<label for={region + 'ID'}>{region}/{city}</label>
-									</div>
-								{/each}
-							{:else}
-								<div
-									class="flex flex-row-reverse w-full items-center justify-between py-4 px-4 border border-b-slate-400 last:border-none bg-white hover:bg-slate-100 transition-all"
-									on:click={() => {
-										selectedTimezone = region;
-										toggleOptions();
-									}}
-								>
-									<input
-										type="radio"
-										id={region + 'ID'}
-										value={region}
-										bind:group={selectedTimezone}
-									/>
-									<label for={region + 'ID'}>{region}</label>
-								</div>
-							{/if}
+						{#each filteredTimezones as timezone}
+							<div
+								class="flex flex-row-reverse w-full items-center justify-between py-4 px-4 border border-b-grayBorder last:border-none bg-white hover:bg-slate-100 transition-all"
+							>
+								<input
+									required
+									type="radio"
+									name="timezone"
+									id="timezone"
+									value={timezone}
+									on:click={(e) => selectTimezone(e.target.value)}
+								/>
+								<label>{timezone}</label>
+							</div>
 						{/each}
 					</div>
 				{/if}
@@ -169,11 +177,13 @@
 					<input
 						type="text"
 						placeholder="Select city"
+						disabled
 						value={selectedCity}
 						class="h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px] font-poppin"
 					/>
 				</div>
 			</div>
+			<!-- TIME PREVIEW -->
 			<div class="max-w-md mx-auto mt-8">
 				<h2 class="font-poppin text-left mb-2 font-medium">Preview</h2>
 				<div
@@ -196,25 +206,21 @@
 						/>
 					</svg>
 
-					<!-- <input -->
-					<!-- 	type="text" -->
-					<!-- 	placeholder="21:26:21" -->
-					<!-- 	class="h-full w-full outline-none text-sm text-gray-700 pr-2 pl-8 font-poppin" -->
-					<!-- /> -->
-                    <span>{timePreview}</span>
+					<span class="ml-4">{timePreview}</span>
+					<span class="absolute right-0 mr-4">{datePreview}</span>
 				</div>
 			</div>
 			<div class="max-w-md mx-auto fixed bottom-0 mb-12">
 				<div class="grid grid-cols-2 gap-[295px]">
 					<a
 						href="/installation/keyboard"
-						class="text-white bg-greyButton hover:bg-gray-500 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 h-[44px] w-[76px]"
+						class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 h-[44px] w-[76px]"
 						>Back</a
 					>
 					<a
 						href="/installation/locale"
 						on:click={handleSetTimezone}
-						class="text-white bg-greyButton hover:bg-gray-500 focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none h-[44px] w-[76px]"
+						class="text-white bg-greenTealinux focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none h-[44px] w-[76px]"
 						>Next</a
 					>
 				</div>
