@@ -12,7 +12,6 @@
 <main class="max-h-dvh">
 {#await getRead()}
 {:then json}
-{console.log(json)}
     {@const memoryPercent = json.memory.used / json.memory.capacity * 100}
 	<div class=" py-8 px-16 mx-auto overflow-auto max-h-[85dvh] scrollbar-none">
 		<div class=" bg-greenTealinux bg-opacity-25 w-full p-5 rounded-[43px] mb-6">
