@@ -118,12 +118,12 @@
 				<div
 					class="relative flex items-center mb-1 h-[45px] {showOptions
 						? 'rounded-t-lg'
-						: 'rounded-lg'} bg-white overflow-hidden border border-greyBorder"
+						: 'rounded-lg'} overflow-hidden bg-grayTealinux border-2 border-black"
 				>
 					<input
 						type="text"
 						placeholder="Select Region"
-						class="h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px] font-poppin"
+						class="h-full w-full outline-none text-sm text-gray-700 bg-grayTealinux pr-2 pl-[12px] font-poppin"
 						on:focus={toggleOptions}
 						bind:value={searchTerm}
 					/>
@@ -172,14 +172,14 @@
 			<div class="max-w-md mx-auto mb-4">
 				<h2 class="font-poppin text-left mb-2 font-medium">City</h2>
 				<div
-					class="relative flex items-center h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder"
+					class="relative flex items-center h-[45px] rounded-lg overflow-hidden bg-grayTealinux border-2 border-black"
 				>
 					<input
 						type="text"
 						placeholder="Select city"
 						disabled
 						value={selectedCity}
-						class="h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px] font-poppin"
+						class="h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px] font-poppin bg-grayTealinux"
 					/>
 				</div>
 			</div>
@@ -187,7 +187,7 @@
 			<div class="max-w-md mx-auto mt-8">
 				<h2 class="font-poppin text-left mb-2 font-medium">Preview</h2>
 				<div
-					class="relative flex items-center w-[451px] h-[66px] rounded-lg bg-white overflow-hidden border border-greyBorder"
+					class="relative flex items-center w-[451px] h-[66px] rounded-lg overflow-hidden bg-grayTealinux border-2 border-black"
 				>
 					<svg
 						class="ml-[12px]"

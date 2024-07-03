@@ -91,12 +91,12 @@
 			<div class="relative max-w-md mx-auto mb-4">
 				<h2 class="font-poppin text-left mb-2 font-medium">Main Locale</h2>
 				<div
-					class="relative flex items-center w-full h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder"
+					class="relative flex items-center w-full h-[45px] rounded-lg overflow-hidden bg-grayTealinux border-2 border-black"
 				>
 					<input
 						type="text"
 						placeholder="Search..."
-						class="peer h-full w-full outline-none text-sm text-gray-700 pr-2 pl-8"
+						class="peer h-full w-full outline-none bg-grayTealinux text-sm text-gray-700 pr-2 pl-8"
 						bind:value={searchTerm}
 						on:click={handleFocusIn}
 						on:focus={handleFocusIn}
@@ -146,7 +146,7 @@
 			<div class="max-w-md mx-auto mb-4">
 				<h2 class="font-poppin text-left mb-2 font-medium">Date and time</h2>
 				<div
-					class="relative flex items-center w-full h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder pr-2 pl-8"
+					class="relative flex items-center w-full h-[45px] rounded-lg overflow-hidden bg-grayTealinux border-2 border-black pr-2 pl-8"
 				>
 					<!-- <input type="text" id="" class="peer h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px]"> -->
 					<span>{timePreview}</span>
@@ -156,7 +156,7 @@
 			<div class="max-w-md mx-auto mb-4">
 				<h2 class="font-poppin text-left mb-2 font-medium">Number and currency</h2>
 				<div
-					class="relative flex items-center w-full h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder pr-2 pl-8"
+					class="relative flex items-center w-full h-[45px] rounded-lg overflow-hidden bg-grayTealinux border-2 border-black pr-2 pl-8"
 				>
 					<!-- <input type="text" id="" class="peer h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px]"> -->
 					<span>{numberPreview} - {currencyPreview}</span>

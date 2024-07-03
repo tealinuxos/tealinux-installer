@@ -39,10 +39,10 @@
         <div class="mb-4">
             <div class="flex justify-between">
                 <h2 class="font-poppin mb-2 font-semibold">Keyboard layout</h2>
-                <img src="/pencil.svg" alt="" class="text-left mb-2">
+                <img src="/green-pencil.svg" alt="" class="text-left mb-2">
             </div>
-            <div class="relative flex items-center w-full h-[45px] rounded-[10px] bg-white overflow-hidden border border-greyBorder mb-2 font-poppin text-[14px] mx-auto">
-                <input type="text" id="" class="peer h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px]">
+            <div class="relative flex items-center w-full h-[45px] rounded-[10px] bg-grayTealinux border-2 border-black overflow-hidden mb-2 font-poppin text-[14px] mx-auto shadow-2xl">
+                <input type="text" id="" class="peer h-full w-full outline-none text-sm text-gray-700 bg-grayTealinux pr-2 pl-[12px]">
             </div>
         </div>
         
@@ -50,13 +50,13 @@
         <div class="mx-auto mb-4">
             <div class="flex justify-between">
                 <h2 class="font-poppin text-left mb-2 font-semibold">Timezone</h2>
-                <img src="/pencil.svg" alt="" class="mb-2">
+                <img src="/green-pencil.svg" alt="" class="mb-2">
             </div>
-            <div class="relative flex items-center w-full h-[45px] rounded-[10px] bg-white overflow-hidden border border-greyBorder mb-2 font-poppin text-[14px] mx-auto">
+            <div class="relative flex items-center w-full h-[45px]  rounded-[10px] overflow-hidden bg-grayTealinux border-2 border-black mb-2 font-poppin text-[14px] mx-auto shadow-2xl">
                 <h2 class="flex whitespace-nowrap font-poppin font-medium text-[14px] ml-[12px]">Region: </h2>
                 <span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{blueprint.timezone.region}</span>
             </div>
-            <div class="relative flex items-center w-full h-[45px] rounded-[10px] bg-white overflow-hidden border border-greyBorder mb-2 font-poppin text-[14px] mx-auto">
+            <div class="relative flex items-center w-full h-[45px]  rounded-[10px] overflow-hidden bg-grayTealinux border-2 border-black mb-2 font-poppin text-[14px] mx-auto shadow-2xl">
                 <h2 class="flex whitespace-nowrap font-poppin font-medium text-[14px] ml-[12px]">City: </h2>
                 <span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{blueprint.timezone.city}</span>
             </div>
@@ -65,9 +65,9 @@
         <div class="mx-auto mb-4">
             <div class="flex justify-between">
                 <h2 class="font-poppin text-left mb-2 font-semibold">Locale</h2>
-                <img src="/pencil.svg" alt="" class="mb-2">
+                <img src="/green-pencil.svg" alt="" class="mb-2">
             </div>
-            <div class="relative flex items-center w-full h-[45px] rounded-[10px] bg-white overflow-hidden border border-greyBorder mb-2 font-poppin text-[14px] mx-auto">
+            <div class="relative flex items-center w-full h-[45px]  rounded-[10px] overflow-hidden bg-grayTealinux border-2 border-black mb-2 font-poppin text-[14px] mx-auto shadow-2xl">
                 <h2 class="flex whitespace-nowrap font-poppin font-medium text-[14px] ml-[12px]">Main locale: </h2>
                 <span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{blueprint.locale.main}</span>
 
@@ -77,17 +77,17 @@
         <div class="mx-auto mb-4">
             <div class="flex justify-between">
                 <h2 class="font-poppin text-left mb-2 font-semibold">User</h2>
-                <img src="/pencil.svg" alt="" class="mb-2">
+                <img src="/green-pencil.svg" alt="" class="mb-2">
             </div>
-            <div class="relative flex items-center w-full h-[45px] rounded-[10px] bg-white overflow-hidden border border-greyBorder mb-2 font-poppin text-[14px] mx-auto">
+            <div class="relative flex items-center w-full h-[45px]  rounded-[10px] overflow-hidden bg-grayTealinux border-2 border-black mb-2 font-poppin text-[14px] mx-auto shadow-2xl">
                 <h2 class="flex whitespace-nowrap font-poppin font-medium text-[14px] ml-[12px]">Computer name: </h2>
                 <span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{blueprint.account.fullname}</span>
             </div>
-            <div class="relative flex items-center w-full h-[45px] rounded-[10px] bg-white overflow-hidden border border-greyBorder mb-2 font-poppin text-[14px] mx-auto">
+            <div class="relative flex items-center w-full h-[45px]  rounded-[10px] overflow-hidden bg-grayTealinux border-2 border-black mb-2 font-poppin text-[14px] mx-auto shadow-2xl">
                 <h2 class="flex whitespace-nowrap font-poppin font-medium text-[14px] ml-[12px]">Username: </h2>
                 <span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{blueprint.account.hostname}</span>
             </div>
-            <div class="relative flex items-center w-full h-[45px] rounded-[10px] bg-white overflow-hidden border border-greyBorder mb-2 font-poppin text-[14px] mx-auto">
+            <div class="relative flex items-center w-full h-[45px]  rounded-[10px] overflow-hidden bg-grayTealinux border-2 border-black mb-2 font-poppin text-[14px] mx-auto shadow-2xl">
                 <h2 class="flex whitespace-nowrap font-poppin font-medium text-[14px] ml-[12px]">Password: </h2>
                 <span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{blueprint.account.password}</span>
                 <img src="/eyeSlash.svg" alt="" class="mr-[17.18px] ml-auto">
@@ -97,7 +97,7 @@
         <div class="w-full mx-auto mb-4">
             <div class="flex relative items-center justify-between">
                 <h2 class="font-poppin font-semibold text-[15px]">Partition installation</h2>
-                <img src="/pencil.svg" alt="">
+                <img src="/green-pencil.svg" alt="">
             </div>
             
             <h2 class="font-poppin font-medium text-[16px] text-center">After</h2>

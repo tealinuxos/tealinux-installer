@@ -57,7 +57,7 @@
 		<div class="relative max-w-md mx-auto mb-4">
 			<h2 class="font-poppinsemibold text-left mb-2">Region</h2>
 			<div
-				class="relative flex items-center w-full h-[45px] {showOptions
+				class="relative flex items-center w-full bg-grayTealinux h-[45px] {showOptions
 					? ' rounded-t-lg border border-greyBorder'
 					: 'rounded-lg border-2 border-black'} overflow-hidden shadow-lg"
 			>
