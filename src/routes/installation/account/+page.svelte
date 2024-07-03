@@ -1,9 +1,10 @@
 <script>
 	import { onMount } from 'svelte';
-    import { invoke } from '@tauri-apps/api/tauri';
+	import { invoke } from '@tauri-apps/api/tauri';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 
 	let fullname, username, hostname, password, confirmPassword;
+	let isAdministrator = false;
 	let passwordsMatch = false;
 
 	const handleSetAccount = async () => {
@@ -13,7 +14,7 @@
 		}
 		passwordsMatch = true;
 
-        await invoke('blueprint_set_account', { fullname, username, hostname, password });
+		await invoke('blueprint_set_account', { fullname, username, hostname, password });
 	};
 
 	$: if (password && confirmPassword && password === confirmPassword) {
@@ -25,16 +26,21 @@
 
 <Sidebar />
 <section class="flex flex-col items-center justify-center h-screen">
-	<form class="flex flex-col">
-		<h1 class="text-center mb-6 font-archivo text-[32px] font-bold">Account</h1>
+	<form class="flex flex-col h-[85dvh]">
+		<h1 class="text-center mb-6 font-archivo text-[32px] font-bold">Create User</h1>
 
 		<div class="max-w-md mx-auto mb-4">
-			<h2 class="font-poppin text-left mb-2 font-medium">Full name</h2>
+			<div class="flex mb-2 items-center gap-x-2">
+				<h2 class="font-poppin text-left font-medium">Full name</h2>
+				{#if !fullname}
+					<p class="text-red-500 text-[12px]">* Full name is required</p>
+				{/if}
+			</div>
 			<div
-				class="relative flex items-center w-[451px] h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder"
+				class="relative flex items-center w-[451px] h-[45px] rounded-lg overflow-hidden border-2 border-black bg-grayTealinux"
 			>
 				<input
-					class="peer h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px]"
+					class="peer h-full w-full outline-none text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
 					type="text"
 					bind:value={fullname}
 					placeholder="Full name"
@@ -43,12 +49,17 @@
 		</div>
 
 		<div class="max-w-md mx-auto mb-4">
-			<h2 class="font-poppin text-left mb-2 font-medium">Username</h2>
+			<div class="flex mb-2 items-center gap-x-2">
+				<h2 class="font-poppin text-left font-medium">Username</h2>
+				{#if !username}
+					<p class="text-red-500 text-[12px]">* Username is required</p>
+				{/if}
+			</div>
 			<div
-				class="relative flex items-center w-[451px] h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder"
+				class="relative flex items-center w-[451px] h-[45px] rounded-lg overflow-hidden border-2 border-black bg-grayTealinux"
 			>
 				<input
-					class="peer h-full w-full outline-none text-[14px] text-gray-700 pr-2 pl-[12px]"
+					class="peer h-full w-full outline-none text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
 					type="text"
 					bind:value={username}
 					placeholder="Username"
@@ -57,12 +68,17 @@
 		</div>
 
 		<div class="max-w-md mx-auto mb-4">
-			<h2 class="font-poppin text-left mb-2 font-medium">Computer name</h2>
+			<div class="flex mb-2 items-center gap-x-2">
+				<h2 class="font-poppin text-left font-medium">Computer Name</h2>
+				{#if !hostname}
+					<p class="text-red-500 text-[12px]">* Computer Name is required</p>
+				{/if}
+			</div>
 			<div
-				class="relative flex items-center w-[451px] h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder"
+				class="relative flex items-center w-[451px] h-[45px] rounded-lg overflow-hidden border-2 border-black bg-grayTealinux"
 			>
 				<input
-					class="peer h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px]"
+					class="peer h-full w-full outline-none text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
 					type="text"
 					bind:value={hostname}
 					placeholder="Computer name"
@@ -71,12 +87,17 @@
 		</div>
 
 		<div class="max-w-md mx-auto mb-4">
-			<h2 class="font-poppin text-left mb-2 font-medium">Password</h2>
+			<div class="flex mb-2 items-center gap-x-2">
+				<h2 class="font-poppin text-left font-medium">Password</h2>
+				{#if !password}
+					<p class="text-red-500 text-[12px]">* Password is required</p>
+				{/if}
+			</div>
 			<div
-				class="relative flex items-center w-[451px] h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder"
+				class="relative flex items-center w-[451px] h-[45px] rounded-lg overflow-hidden border-2 border-black bg-grayTealinux"
 			>
 				<input
-					class="peer h-full w-full outline-none text-[14px] text-gray-700 pr-2 pl-[12px]"
+					class="peer h-full w-full outline-none text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
 					type="password"
 					bind:value={password}
 					placeholder="Enter your password"
@@ -111,12 +132,17 @@
 		</div>
 
 		<div class="max-w-md mx-auto mb-4">
-			<h2 class="font-poppin text-left mb-2 font-medium">Confirm password</h2>
+			<div class="flex mb-2 items-center gap-x-2">
+				<h2 class="font-poppin text-left font-medium">Confirm Password</h2>
+				{#if !password}
+					<p class="text-red-500 text-[12px]">* Confirm your password</p>
+				{/if}
+			</div>
 			<div
-				class="relative flex items-center w-[451px] h-[45px] rounded-lg bg-white overflow-hidden border border-greyBorder"
+				class="relative flex items-center w-[451px] h-[45px] rounded-lg overflow-hidden border-2 border-black bg-grayTealinux"
 			>
 				<input
-					class="peer h-full w-full outline-none text-[14px] text-gray-700 pr-2 pl-[12px]"
+					class="peer h-full w-full outline-none text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
 					type="password"
 					bind:value={confirmPassword}
 					placeholder="Confirm your password"
@@ -148,6 +174,9 @@
 					</g>
 				</svg>
 			</div>
+			{#if passwordsMatch === false && password}
+				<p class="text-red-500 text-[14px] mt-[5px]">Passwords do not match</p>
+			{/if}
 		</div>
 
 		<div class="mt-[15px] flex items-center">
@@ -155,27 +184,25 @@
 				type="checkbox"
 				class="before:content[''] peer relative h-8 w-8 cursor-pointer appearance-none rounded-full border border-gray-900/20 bg-gray-900/10 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-gray-900 checked:bg-gray-900 checked:before:bg-gray-900 hover:scale-105 hover:before:opacity-0"
 			/>
-			<h3 class="ml-[10px] text-[16px] text-userCheckBox">
-				Make this user administrator(blom selesai)
-			</h3>
+			<h3 class="ml-[10px] text-[16px] text-black">Make this user administrator(blom selesai)</h3>
 			<!-- font not included -->
 		</div>
-		<div class="max-w-md mx-auto mt-30 mt-[68px]">
-			<div class="grid grid-cols-2 gap-[295px]">
-				<a
-					href="/installation/locale"
-					class="text-white bg-greyButton hover:bg-gray-500 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 h-[44px] w-[76px]"
-					>Back</a
-				>
-				<a
-					href="/installation/partition"
-					on:click={handleSetAccount}
-					class="text-white bg-greyButton {passwordsMatch
-						? ''
-						: ' pointer-events-none'} hover:bg-gray-500 focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none h-[44px] w-[76px]"
-					>Next</a
-				>
-			</div>
-		</div>
 	</form>
+	<div class="max-w-md mx-auto mt-30 mt-[68px] h-[15dvh] fixed bottom-0 flex items-center">
+		<div class="grid grid-cols-2 gap-[295px]">
+			<a
+				href="/installation/locale"
+				class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
+				>Back</a
+			>
+			<a
+				href="/installation/partition"
+				on:click={handleSetAccount}
+				class="text-white bg-greenTealinux {passwordsMatch
+					? ''
+					: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
+				>Next</a
+			>
+		</div>
+	</div>
 </section>
