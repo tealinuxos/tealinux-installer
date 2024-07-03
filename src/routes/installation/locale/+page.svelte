@@ -85,7 +85,7 @@
 <section class="flex flex-col items-center justify-center h-screen">
 	{#if showLocales}
 		<!-- bg-slate-300 -->
-		<form class=" text-center w-[50dvw] p-8 rounded-md min-h-[50dvh]">
+		<form class=" text-center w-[50dvw] p-8 rounded-md h-[85dvh]">
 			<h1 class="text-center mb-6 font-bold text-[32px] font-archivo">Select Locales</h1>
 
 			<div class="relative max-w-md mx-auto mb-4">
@@ -162,22 +162,21 @@
 					<span>{numberPreview} - {currencyPreview}</span>
 				</div>
 			</div>
-
-			<div class="max-w-md mx-auto mt-[208px]">
-				<div class="grid grid-cols-2 gap-[295px]">
-					<a
-						href="/installation/timezone"
-						class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 h-[44px] w-[76px]"
-						>Back</a
-					>
-					<a
-						href="/installation/account"
-						on:click={handleSetLocale}
-						class="text-white bg-greenTealinux focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none h-[44px] w-[76px]"
-						>Next</a
-					>
-				</div>
-			</div>
 		</form>
+		<div class="max-w-md mx-auto mt-[208px] fixed bottom-0 h-[15dvh] flex items-center">
+			<div class="grid grid-cols-2 gap-[295px]">
+				<a
+					href="/installation/timezone"
+					class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 h-[44px] w-[76px]"
+					>Back</a
+				>
+				<a
+					href="/installation/account"
+					on:click={handleSetLocale}
+					class="text-white bg-greenTealinux focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none h-[44px] w-[76px]"
+					>Next</a
+				>
+			</div>
+		</div>
 	{/if}
 </section>
