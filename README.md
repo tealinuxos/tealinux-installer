@@ -13,6 +13,7 @@ Tauri & SvelteKit
 - rsync
 - fuse2
 - gcc-libs
+- webkit2gtk
 
 ## Running
 
