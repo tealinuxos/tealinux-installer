@@ -34,6 +34,7 @@ fn main()
                     blueprint_set_account,
                     blueprint_set_partition,
                     blueprint_set_bootloader,
+                    blueprint_set_keyboard,
                     set_read_json,
                     get_locale_json,
                     get_timezone_json,

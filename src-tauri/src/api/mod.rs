@@ -5,6 +5,7 @@ use std::io::{ Write, Read, BufReader, BufWriter, Error };
 use super::storage::filesystem::filesystem_list;
 use std::path::Path;
 use tea_arch_chroot_lib::chroot::bootloader::get_firmware_type;
+use tea_arch_chroot_lib::resource::Keyboard;
 
 pub mod locale;
 pub mod timezone;
@@ -48,7 +49,7 @@ pub async fn get_blueprint_from_opt() -> String
         Ok(json) => json,
         Err(_) => {
 
-            let blueprint = BluePrint { account: None, locale: None, timezone: None, disk: None, bootloader: None };
+            let blueprint = BluePrint { account: None, locale: None, timezone: None, disk: None, bootloader: None, keyboard: None };
             let mut file = File::create("/opt/tea-installer/installer.json").unwrap();
 
             let json = serde_json::to_string_pretty(&blueprint).unwrap();
@@ -91,7 +92,7 @@ pub async fn set_empty_blueprint()
 
     let mut file = File::create("/opt/tea-installer/installer.json").unwrap();
 
-    let blueprint = BluePrint { account: None, locale: None, timezone: None, disk: None, bootloader: None };
+    let blueprint = BluePrint { account: None, locale: None, timezone: None, disk: None, bootloader: None, keyboard: None };
 
     let blueprint_json = serde_json::to_string_pretty(&blueprint).unwrap();
 

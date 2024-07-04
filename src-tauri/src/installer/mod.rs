@@ -16,6 +16,7 @@ use std::time::Duration;
 pub use self::blueprint::BluePrint;
 pub use self::blueprint::Partition;
 pub use self::blueprint::Bootloader;
+pub use self::blueprint::Keyboard;
 
 fn wait()
 {

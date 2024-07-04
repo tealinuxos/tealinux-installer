@@ -11,7 +11,8 @@ pub struct BluePrint
     pub locale: Option<Locale>,
     pub timezone: Option<Timezone>,
     pub disk: Option<Vec<Partition>>,
-    pub bootloader: Option<Bootloader>
+    pub bootloader: Option<Bootloader>,
+    pub keyboard: Option<Keyboard>
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -32,4 +33,12 @@ pub struct Bootloader
 {
     pub firmware_type: FirmwareKind,
     pub path: Option<String>
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all="camelCase")]
+pub struct Keyboard
+{
+    pub layout: Option<String>,
+    pub variant: Option<String>
 }
