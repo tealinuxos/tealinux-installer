@@ -78,28 +78,28 @@
 
 	onMount(() => {
 		getLocale();
-        getBlueprint().then(blueprint => {
-            if (blueprint.locale === null) {
-                selectedLocale = "aa_DJ.UTF-8 UTF-8";
-                searchTerm = "aa_DJ.UTF-8 UTF-8";
-            } else {
-                selectedLocale = blueprint.locale.main;
-                searchTerm = blueprint.locale.main;
-            }
-        })
+		getBlueprint().then((blueprint) => {
+			if (blueprint.locale === null) {
+				selectedLocale = 'aa_DJ.UTF-8 UTF-8';
+				searchTerm = 'aa_DJ.UTF-8 UTF-8';
+			} else {
+				selectedLocale = blueprint.locale.main;
+				searchTerm = blueprint.locale.main;
+			}
+		});
 	});
 </script>
 
 <Sidebar />
 <section class="flex flex-col items-center justify-center h-screen">
 	<header class="flex items-center justify-center w-full gap-[10px]">
-        <div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
-    </header>
+	</header>
 	{#if showLocales}
 		<!-- bg-slate-300 -->
 		<form class=" text-center w-[50dvw] p-8 rounded-md h-[85dvh]">
@@ -190,7 +190,9 @@
 				<a
 					href="/installation/account"
 					on:click={handleSetLocale}
-					class="text-white bg-greenTealinux focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none h-[44px] w-[76px]"
+					class="text-white bg-greenTealinux {selectedLocale
+						? ''
+						: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
 					>Next</a
 				>
 			</div>
