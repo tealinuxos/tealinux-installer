@@ -12,6 +12,8 @@ use online::Online;
 use pci::Pci;
 use tea_partition_api_lib::{ Disk, Partition };
 use tea_partition_api_lib::read::get_partition;
+use tea_arch_chroot_lib::resource::FirmwareKind;
+use tea_arch_chroot_lib::chroot::bootloader::get_firmware_type;
 
 #[derive(Serialize)]
 #[serde(rename_all="camelCase")]
@@ -22,14 +24,15 @@ pub struct Read
     disk: Vec<Disk>,
     battery: Battery,
     online: Online,
-    lspci: Pci
+    lspci: Pci,
+    firmware: FirmwareKind
 }
 
 impl Read
 {
-    pub fn new(model: Model, memory: Memory, disk: Vec<Disk>, battery: Battery, online: Online, lspci: Pci) -> Self
+    pub fn new(model: Model, memory: Memory, disk: Vec<Disk>, battery: Battery, online: Online, lspci: Pci, firmware: FirmwareKind) -> Self
     {
-        Self { model, memory, disk, battery, online, lspci }
+        Self { model, memory, disk, battery, online, lspci, firmware }
     }
 }
 
@@ -52,6 +55,9 @@ pub fn get_read() -> Read
 
     // Pci
     let lspci = Pci::new();
+    
+    // Firmware
+    let firmware = get_firmware_type();
 
-    Read::new(model, memory, disk, battery, online, lspci)
+    Read::new(model, memory, disk, battery, online, lspci, firmware)
 }
