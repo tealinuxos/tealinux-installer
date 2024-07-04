@@ -6,14 +6,13 @@
 	import SideBar from '$lib/components/Sidebar.svelte';
 	import prettyBytes from 'pretty-bytes';
 
+    let show = true;
 	let selectedDisk = 0;
 	let partitionDetail = [];
 	let bootloader = {
 		firmwareType: null,
 		path: null
 	};
-
-	$: console.log(bootloader);
 
 	const getStorageJSON = async () => {
 		let json = await getRead();
@@ -156,12 +155,24 @@
 			partition = disk;
 		}
 
-		console.log(partition);
-
 		return partition;
 	};
 
-	onMount(() => {
+    const spawnGparted = async () => {
+        await invoke('spawn_gparted');
+    }
+
+    const spawnTerminal = async () => {
+        // await invoke('spawn_terminal');
+        alert("WIP");
+    }
+
+    const setReadJSON = async () => {
+        await invoke("set_read_json");
+    };
+
+    const setup = () => {
+        
 		getStorageJSON().then((disks) => {
 			getColors(disks);
 		});
@@ -175,6 +186,17 @@
 				refreshMbr();
 			}
 		});
+    }
+
+    const refresh = () => {
+        show = false;
+        selectedDisk = 0;
+        setReadJSON().then(() => show = true);
+        setup();
+    }
+
+	onMount(() => {
+        setup();
 	});
 </script>
 
@@ -193,10 +215,27 @@
 			Set Installation Partition
 		</h1>
 		<div class=" font-poppinmedium font-medium flex gap-x-8 justify-center">
-			<button class=" bg-grayTealinux text-black py-2 px-4 rounded-lg">Gparted</button>
-			<button class=" bg-grayTealinux text-black py-2 px-4 rounded-lg">Terminal</button>
+			<button
+                class=" bg-grayTealinux text-black py-2 px-4 rounded-lg"
+                on:click={spawnGparted}
+            >
+                Gparted
+            </button>
+			<button
+                class=" bg-grayTealinux text-black py-2 px-4 rounded-lg"
+                on:click={spawnTerminal}
+            >
+                Terminal
+            </button>
+			<button
+                class=" bg-grayTealinux text-black py-2 px-4 rounded-lg"
+                on:click={refresh}
+            >
+                Refresh
+            </button>
 		</div>
 
+        {#if show}
 		{#await getStorageJSON()}
 			Loading...
 		{:then disks}
@@ -221,6 +260,7 @@
 			<div class="flex gap-x-4">
 				<!-- Partition Bar -->
 				<div class="flex-[1] self-start">
+                    <h1 class="p-4 text-[18px] font-bold">Current</h1>
 					<div class="flex mb-4 h-8 w-full overflow-hidden rounded-full">
 						<div class="h-full flex rounded-full overflow-hidden w-full">
 							{#each disks[selectedDisk].partitions as partition, i}
@@ -256,6 +296,8 @@
 							</div>
 						{/each}
 					</div>
+
+                    <h1 class="p-4 text-[18px] font-bold">After</h1>
 
 					<div class="flex mb-4 h-8 w-full overflow-hidden rounded-full">
 						<div class="h-full flex rounded-full overflow-hidden w-full">
@@ -471,6 +513,8 @@
 				{/await}
 			</div>
 		{/await}
+        {/if}
+        {#if show}
 		<div class="flex flex-col items-center justify-center p-4 font-poppinmedium">
 			<div class="flex items-center justify-center space-x-2 bg-black/25 rounded-t-md">
 				{#await getFirmwareType() then firmwareType}
@@ -526,6 +570,7 @@
 				</div>
 			</div>
 		</div>
+        {/if}
 	</div>
 	<div class="flex justify-between items-center h-[15dvh] w-[80dvw] fixed bottom-0 bg-white">
 		<a
