@@ -2,15 +2,16 @@ use crate::read::get_read;
 use crate::installer::BluePrint;
 use std::fs::{ File, create_dir_all, read_to_string };
 use std::io::{ Write, Read, BufReader, BufWriter, Error };
-use tea_arch_chroot_lib::resource::{ Locales, Timezones, Keyboard };
 use super::storage::filesystem::filesystem_list;
 use std::path::Path;
+use tea_arch_chroot_lib::chroot::bootloader::get_firmware_type;
 
 pub mod locale;
 pub mod timezone;
 pub mod keyboard;
 pub mod account;
 pub mod partition;
+pub mod firmware;
 
 #[tauri::command]
 pub async fn get_read_json() -> String
@@ -47,7 +48,7 @@ pub async fn get_blueprint_from_opt() -> String
         Ok(json) => json,
         Err(_) => {
 
-            let blueprint = BluePrint { account: None, locale: None, timezone: None, disk: None };
+            let blueprint = BluePrint { account: None, locale: None, timezone: None, disk: None, bootloader: None };
             let mut file = File::create("/opt/tea-installer/installer.json").unwrap();
 
             let json = serde_json::to_string_pretty(&blueprint).unwrap();
@@ -90,7 +91,7 @@ pub async fn set_empty_blueprint()
 
     let mut file = File::create("/opt/tea-installer/installer.json").unwrap();
 
-    let blueprint = BluePrint { account: None, locale: None, timezone: None, disk: None };
+    let blueprint = BluePrint { account: None, locale: None, timezone: None, disk: None, bootloader: None };
 
     let blueprint_json = serde_json::to_string_pretty(&blueprint).unwrap();
 
