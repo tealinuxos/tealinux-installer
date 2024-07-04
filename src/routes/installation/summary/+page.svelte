@@ -283,19 +283,17 @@
 				</div>
 			</div>
 		</form>
-	</section>
-    <div class="max-w-md mx-auto mt-[208px] fixed bottom-0 h-[15dvh] flex items-center">
-        <div class="grid grid-cols-2 gap-[295px]">
+        <div class="flex justify-between items-center h-[15dvh] w-[80dvw] fixed bottom-0 bg-white">
             <a
                 href="/installation/partition"
-                class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 h-[44px] w-[76px]"
+                class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
                 >Back</a
             >
             <a
                 href="/installation/install"
-                class="text-white bg-greenTealinux pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
-                >Next</a
+                class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
+                >Install</a
             >
         </div>
-    </div>
+	</section>
 {/await}
