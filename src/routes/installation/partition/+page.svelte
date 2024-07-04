@@ -1,7 +1,7 @@
 <script>
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { onMount } from 'svelte';
-	import { getRead } from '../global.js';
+	import { getRead, getBlueprint } from '../global.js';
 	import { randomColor } from 'randomcolor';
 	import SideBar from '$lib/components/Sidebar.svelte';
 	import prettyBytes from 'pretty-bytes';
@@ -18,6 +18,8 @@
 	const getStorageJSON = async () => {
 		let json = await getRead();
 		json = json.disk.filter((disk) => disk.partitions !== null);
+
+        console.log(json)
 
 		return json;
 	};
