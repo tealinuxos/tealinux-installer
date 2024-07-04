@@ -2,22 +2,42 @@
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { onMount } from 'svelte';
 	import { getRead } from './global.js';
+	import prettyBytes from 'pretty-bytes';
+	import { randomColor } from 'randomcolor';
 
-	function calculateToGB() {
-		let partitionSize = json.disk[0].partitions[0].size;
-		partitionSize = parseInt(partitionSize.replace('s', ''));
-	}
+	const getStorageJSON = async () => {
+		let json = await getRead();
+
+		return json.disk;
+	};
+
+	const getColors = (disks, partIdx) => {
+		let length = disks[partIdx].partitions.length;
+
+		let colors = [];
+
+		for (let i = 0; i < length; i++) {
+			colors.push(
+				randomColor({
+					luminosity: 'bright',
+					hue: 'random'
+				})
+			);
+		}
+		return colors;
+	};
+
+	onMount(() => {
+		getStorageJSON().then((disks) => {
+			getColors(disks);
+		});
+	});
 </script>
 
 <main class="max-h-dvh">
 	{#await getRead() then json}
 		{@const memoryPercent = (json.memory.used / json.memory.capacity) * 100}
-		{@const storageGB = (
-			(parseInt(json.disk[0].size.replace('s', ' ')) * 512) /
-			1024 /
-			1024 /
-			1024
-		).toFixed(2)}
+		{@const storageGB = prettyBytes(parseInt(json.disk[0].size.replace('s', ' ')) * 512)}
 		<div class=" py-8 px-16 mx-auto overflow-auto max-h-[85dvh] scrollbar-none">
 			<div class=" bg-greenTealinux bg-opacity-25 w-full p-5 rounded-[43px] mb-6">
 				<div class="bg-white grid-cols-3 grid place-items-center py-3 px-16 h-[40vh] rounded-3xl">
@@ -107,46 +127,73 @@
 				class=" bg-greenTealinux bg-opacity-25 w-full p-5 rounded-[43px] mb-6 flex justify-center"
 			>
 				<div class="bg-white place-items-center py-3 px-16 h-[40vh] min-w-full rounded-3xl">
-					<div
-						class="flex items-center justify-between bg-gray-300 h-[45px] rounded-[10px] mt-[30.05px] w-full"
-					>
-						<p
-							class="font-poppin font-medium text-[#0D1814] text-[14px] mt-[12px] ml-[12px] mb-[12px]"
-						>
-							sda
-						</p>
-						<p class="font-poppin text-[14px] text-[#0D1814] mt-[12px] mr-[12px] mb-[12px]">
-							Disk Size : 240 GB
-						</p>
-					</div>
-					<div class="mt-[33px] flex flex-col items-start">
-						<div class="flex gap-x-10 items-center w-full">
-							<p class="font-poppin font-medium text-[18px]">Current:</p>
-							<div class="bg-[#36BA7A] h-[38px] flex-1 rounded-[128px]">
-								<div class="bg-[#F1C21B] h-[38px] w-[30%] rounded-[128px]"></div>
+					{#await getStorageJSON()}
+						Loading...
+					{:then disks}
+						{#each disks as disk, idx}
+							{@const sizeGB = prettyBytes(parseInt(disks[idx].size.replace('s', ' ')) * 512)}
+							{@const colors = getColors(disks, idx)}
+							<div
+								class="flex items-center justify-between bg-gray-300 h-[45px] rounded-[10px] mt-[30.05px] w-full"
+							>
+								<p
+									class="font-poppin font-medium text-[#0D1814] text-[14px] mt-[12px] ml-[12px] mb-[12px]"
+								>
+									{disk.model + ' (' + disk.diskPath + ')'}
+								</p>
+								<p class="font-poppin text-[14px] text-[#0D1814] mt-[12px] mr-[12px] mb-[12px]">
+									Disk Size : {sizeGB}
+								</p>
 							</div>
-						</div>
-						<div class="flex mt-[13px] ml-[128.31px] mr-[554.35px]">
-							<div class="flex items-start gap-x-4 mr-[25px]">
-								<div class="flex items-center">
-									<div class="bg-[#F1C21B] w-[16px] h-[16px] rounded-[3px]"></div>
-								</div>
-								<div>
-									<p class="font-poppin font-medium text-[15px]">sdb1</p>
-									<p class="font-poppin font-medium text-[16px]">13.5 GiB LUKS</p>
+							<div class="mt-[33px] flex gap-x-4 items-start">
+								<p class="font-poppin font-medium text-[18px]">Current:</p>
+
+								<div class="w-full">
+									<div class="flex mb-4 h-8 w-full overflow-hidden rounded-full">
+										<div class="h-full flex rounded-full overflow-hidden w-full">
+											{#each disk.partitions as partition, i}
+												{@const diskSize = disk.size.slice(0, -1)}
+												{@const partitionSize = partition.size.slice(0, -1)}
+												{@const percentage = (partitionSize / diskSize) * 100}
+
+												{@const color = colors[i]}
+
+												<div
+													style="width: {percentage}%; background-color: {color}"
+													class="h-full"
+												></div>
+											{/each}
+										</div>
+									</div>
+
+									<div class="flex gap-y-4 flex-wrap mb-4">
+										{#each disk.partitions as partition, i}
+											{@const color = colors[i]}
+											{@const size = partition.size.slice(0, -1) * 512}
+											{@const path =
+												partition.partitionPath == null
+													? 'Unallocated'
+													: partition.partitionPath.slice(5)}
+											{@const filesystem =
+												partition.filesystem == null
+													? path == 'Unallocated'
+														? 'Unallocated'
+														: 'Unknown'
+													: partition.filesystem}
+											{@const prettySize = prettyBytes(size)}
+											<div class="flex pr-2 gap-x-2">
+												<div style="background-color: {color}" class="w-4 h-4 rounded-sm"></div>
+												<div class="flex flex-col text-sm font-poppinmedium font-medium">
+													<span class="pl-1">{path}</span>
+													<span class="pl-1">{prettySize} {filesystem}</span>
+												</div>
+											</div>
+										{/each}
+									</div>
 								</div>
 							</div>
-							<div class="flex items-start gap-x-4">
-								<div class="flex items-center">
-									<div class="bg-[#36BA7A] w-[16px] h-[16px] rounded-[3px]"></div>
-								</div>
-								<div>
-									<p class="font-poppin font-medium text-[15px]">sdb2</p>
-									<p class="font-poppin font-medium text-[16px]">8.5 GiB LUKS</p>
-								</div>
-							</div>
-						</div>
-					</div>
+						{/each}
+					{/await}
 				</div>
 			</div>
 		</div>
