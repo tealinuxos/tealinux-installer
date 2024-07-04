@@ -2,13 +2,39 @@
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { onMount } from 'svelte';
-	import { getBlueprint } from '../global.js';
+	import { getRead, getBlueprint } from '../global.js';
+    import prettyBytes from 'pretty-bytes';
+	import { randomColor } from 'randomcolor';
 
 	let timezone;
 	let mainLocale;
 	let locales;
 	let formattedPartitions;
 	let assignedPartitions;
+
+    const getDisk = async () => {
+        let blueprint = await getBlueprint();
+        return blueprint.disk;
+    }
+
+    const getDiskSize = async () => {
+
+        let disk = await getDisk();
+        let size = 0;
+
+        for (let i of disk.keys()) {
+            size += disk[i].size;
+        }
+
+        return size;
+    }
+
+	const getStorageJSON = async () => {
+		let json = await getRead();
+		json = json.disk.filter((disk) => disk.partitions !== null);
+
+		return json;
+	};
 
 	const setSummary = async () => {
 		let json = await getBlueprint();
@@ -25,6 +51,22 @@
 		assignedPartitions = partitions.filter((partition) => partition.mountpoint !== null);
 	};
 
+	const getColors = (disk) => {
+		let length = disk.length;
+
+		let colors = [];
+
+		for (let i = 0; i < length; i++) {
+			colors.push(
+				randomColor({
+					luminosity: 'bright',
+					hue: 'random'
+				})
+			);
+		}
+		return colors;
+	};
+
 	const printJson = async () => {
 		await invoke('print_json');
 	};
@@ -33,7 +75,6 @@
 <Sidebar />
 
 {#await getBlueprint() then blueprint}
-	{console.log(blueprint)}
 	<section class="flex flex-col items-center justify-center h-auto">
 		<header class="flex items-center justify-center w-full gap-[10px]">
 			<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
@@ -145,37 +186,55 @@
 					<h2 class="font-poppin font-semibold text-[15px]">Partition installation</h2>
 					<img src="/green-pencil.svg" alt="" />
 				</div>
+                <h1 class="p-4 text-[18px] font-bold">After</h1>
 
-				<h2 class="font-poppin font-medium text-[16px] text-center">After</h2>
-				<div class="flex items-center justify-center">
-					<h2 class="font-poppin font-medium text-[17px] mr-[10px]">/dev/sda</h2>
-					<div class="w-full h-[27px] bg-[#C85036] rounded-[128px]">
-						<div class="bg-[#3293C8] h-[27px] w-[50%] rounded-[128px]"></div>
-					</div>
-				</div>
-				<div class="mt-[15px] flex flex-col items-start">
-					<div class="flex ml-[92px]">
-						<div class="flex items-start gap-x-4 mr-[69px]">
-							<div class="flex items-center">
-								<div class="bg-[#3293C8] w-[16px] h-[16px] rounded-[3px]"></div>
-							</div>
-							<div class="text-start">
-								<p class="font-poppin font-medium text-[15px]">sdb1</p>
-								<p class="font-poppin font-medium text-[16px] whitespace-nowrap">13.5 GiB LUKS</p>
-							</div>
-						</div>
-						<div class="flex items-start gap-x-4">
-							<div class="flex items-center">
-								<div class="bg-[#C85036] w-[16px] h-[16px] rounded-[3px]"></div>
-							</div>
-							<div class="text-start">
-								<p class="font-poppin font-medium text-[15px]">sdb2</p>
-								<p class="font-poppin font-medium text-[16px] whitespace-nowrap">8.5 GiB LUKS</p>
-							</div>
-						</div>
-					</div>
-				</div>
 				<!-- partisi v -->
+                {#await getDisk() then disks}
+                    {@const colors = getColors(disks)}
+                        {#await getDiskSize() then diskSize}
+                        <div class="w-full">
+                            <div class="flex mb-4 h-8 w-full overflow-hidden rounded-full">
+                                <div class="h-full flex rounded-full overflow-hidden w-full">
+                                    {#each disks as partition, i}
+                                        {@const partitionSize = partition.size}
+                                        {@const percentage = (partitionSize / diskSize) * 100}
+
+                                        {@const color = colors[i]}
+
+                                        <div
+                                            style="width: {percentage}%; background-color: {color}"
+                                            class="h-full"
+                                        ></div>
+                                    {/each}
+                                </div>
+                            </div>
+                            <div class="flex gap-y-4 flex-wrap mb-4">
+                                {#each disks as partition, i}
+                                    {@const color = colors[i]}
+                                    {@const size = partition.size * 512}
+                                    {@const path =
+                                        partition.path == null
+                                            ? 'Unallocated'
+                                            : partition.path.slice(5)}
+                                    {@const filesystem =
+                                        partition.filesystem == null
+                                            ? path == 'Unallocated'
+                                                ? 'Unallocated'
+                                                : 'Unknown'
+                                            : partition.filesystem}
+                                    {@const prettySize = prettyBytes(size)}
+                                    <div class="flex pr-2 gap-x-2">
+                                        <div style="background-color: {color}" class="w-4 h-4 rounded-sm"></div>
+                                        <div class="flex flex-col text-sm font-poppinmedium font-medium">
+                                            <span class="pl-1">{path}</span>
+                                            <span class="pl-1">{prettySize} {filesystem}</span>
+                                        </div>
+                                    </div>
+                                {/each}
+                            </div>
+                        </div>
+                        {/await}
+                {/await}
 				<div class="mt-[8px]">
 					<div
 						class="relative flex items-center w-full h-[50px] rounded-tl-lg rounded-tr-lg bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto"
@@ -187,113 +246,56 @@
 							<h2>Format</h2>
 						</div>
 					</div>
-					<div
-						class="relative flex flex-col md:flex-row items-center w-full h-[65px] bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto"
-					>
-						<div class="pl-[10px]">
-							<h2>/dev/sda1</h2>
-							<h2 class="text-gray-500">33.55 GB</h2>
-						</div>
-						<div class="flex flex-wrap pl-[10px] md:pl-[100px] gap-4 md:gap-12">
-							<div
-								class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
-							>
-								<span class="text-white">lalal</span>
-							</div>
-							<div
-								class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
-							>
-								<span class="text-white">lalal</span>
-							</div>
-							<div
-								class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
-							>
-								<span class="text-white">lalal</span>
-							</div>
-						</div>
-					</div>
-					<div
-						class="relative flex flex-col md:flex-row items-center w-full h-[65px] bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto"
-					>
-						<div class="pl-[10px]">
-							<h2>/dev/sda1</h2>
-							<h2 class="text-gray-500">33.55 GB</h2>
-						</div>
-						<div class="flex flex-wrap pl-[10px] md:pl-[100px] gap-4 md:gap-12">
-							<div
-								class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
-							>
-								<span class="text-white">lalal</span>
-							</div>
-							<div
-								class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
-							>
-								<span class="text-white">lalal</span>
-							</div>
-							<div
-								class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
-							>
-								<span class="text-white">lalal</span>
-							</div>
-						</div>
-					</div>
-					<div
-						class="relative flex flex-col md:flex-row items-center w-full h-[65px] rounded-bl-lg rounded-br-lg bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto"
-					>
-						<div class="pl-[10px]">
-							<h2>/dev/sda1</h2>
-							<h2 class="text-gray-500">33.55 GB</h2>
-						</div>
-						<div class="flex flex-wrap pl-[10px] md:pl-[100px] gap-4 md:gap-12">
-							<div
-								class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
-							>
-								<span class="text-white">lalal</span>
-							</div>
-							<div
-								class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
-							>
-								<span class="text-white">lalal</span>
-							</div>
-							<div
-								class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
-							>
-								<span class="text-white">lalal</span>
-							</div>
-						</div>
-					</div>
+                    {#await getDisk() then disk}
+                        {#each disk as partition}
+                            {@const mountpoint = partition.mountpoint === null ? 'No mountpoint' : partition.mountpoint}
+                            {@const filesystem = partition.filesystem === null ? 'Unknown' : partition.filesystem}
+                            {@const format = partition.format ? 'Yes' : 'No'}
+                            {@const size = prettyBytes(partition.size * 512)}
+
+                            <div
+                                class="relative flex flex-col md:flex-row items-center w-full h-[65px] bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto"
+                            >
+                                <div class="pl-[10px]">
+                                    <h2>/dv/sda</h2>
+                                    <h2 class="text-gray-500">{size}</h2>
+                                </div>
+                                <div class="flex flex-wrap pl-[10px] md:pl-[100px] gap-4 md:gap-12">
+                                    <div
+                                        class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
+                                    >
+                                        <span class="text-white">{filesystem}</span>
+                                    </div>
+                                    <div
+                                        class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
+                                    >
+                                        <span class="text-white">{mountpoint}</span>
+                                    </div>
+                                    <div
+                                        class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
+                                    >
+                                        <span class="text-white">{format}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {/each}
+                    {/await}
 				</div>
 			</div>
 		</form>
 	</section>
+    <div class="max-w-md mx-auto mt-[208px] fixed bottom-0 h-[15dvh] flex items-center">
+        <div class="grid grid-cols-2 gap-[295px]">
+            <a
+                href="/installation/partition"
+                class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 h-[44px] w-[76px]"
+                >Back</a
+            >
+            <a
+                href="/installation/install"
+                class="text-white bg-greenTealinux pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
+                >Next</a
+            >
+        </div>
+    </div>
 {/await}
-
-<!-- {#await setSummary()}
-    Loading...
-{:then}
-    <h2 class="font-bold">Timezone</h2>
-    <p>Set timezone to {timezone}.</p>
-
-    <h2 class="font-bold">Locale</h2>
-    <p>Set locale to ({mainLocale})</p>
-
-    <h2 class="font-bold">Partition</h2>
-    {#if formattedPartitions !== null}
-        {#each formattedPartitions as partition}
-            {@const path = partition.path}
-            {@const filesystem = partition.format}
-            <p>Format {path} as {filesystem}</p>
-        {/each}
-    {/if}
-
-    {#if assignedPartitions !== null}
-        {#each assignedPartitions as partition}
-            {@const path = partition.path}
-            {@const mountPoint = partition.mountpoint}
-            <p>Assign {path} as {mountPoint}</p>
-        {/each}
-    {/if}
-
-    <a class="border-2 border-black p-2" href="/installation/install">Start Install (Nginstal tenan)</a>
-    <button class="border-2 border-black p-2" on:click={printJson}>Print JSON</button>
-{/await}  -->
