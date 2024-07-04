@@ -135,7 +135,7 @@
 											id={name + 'ID'}
 											value={variant.code}
 											class="w-5 h-5"
-											on:click={() => selectKeyboards(name, variant.code)}
+											on:click={() => selectKeyboards(code, variant.code)}
 										/>
 										<div class="text-start text-[14px]">
 											<label for={name + 'ID'}>{variant.code}</label>
