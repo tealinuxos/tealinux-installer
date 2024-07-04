@@ -29,6 +29,10 @@ pub fn format(filesystem: &str, path: &str) -> Result<(), Error>
         {
             format!("mkfs.{} -F {}", filesystem, path)
         }
+        else if filesystem.contains("swap")
+        {
+            format!("mkswap --force --quiet {}", path)
+        }
         else
         {
             format!("mkfs.{} {}", filesystem, path)
