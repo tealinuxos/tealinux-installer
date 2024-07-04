@@ -6,10 +6,9 @@
 	import { randomColor } from 'randomcolor';
 
 	const getStorageJSON = async () => {
-
 		let json = await getRead();
 
-        json = json.disk.filter(disk => disk.partitions !== null);
+		json = json.disk.filter((disk) => disk.partitions !== null);
 
 		return json;
 	};
@@ -43,8 +42,8 @@
 		{@const storageGB = prettyBytes(parseInt(json.disk[0].size.replace('s', ' ')) * 512)}
 		<div class=" py-8 px-16 mx-auto overflow-auto max-h-[85dvh] scrollbar-none">
 			<div class=" bg-greenTealinux bg-opacity-25 w-full p-5 rounded-[43px] mb-6">
-				<div class="bg-white grid-cols-3 grid place-items-center py-8 px-16 h-fit rounded-3xl">
-					<div class="flex flex-col items-center gap-y-1">
+				<div class="bg-white flex justify-between items-center py-8 px-8 h-fit rounded-3xl">
+					<div class="flex flex-[1] flex-col items-center">
 						<img src="/windows.svg" alt="" />
 						<p class="text-2xl font-medium mt-[8px]">82SV</p>
 						<p>{json.model.systemProductName + ' - ' + json.model.systemVersion}</p>
@@ -66,61 +65,59 @@
 							</h2>
 						</div>
 					</div>
-					<div class="flex flex-col space-y-10">
-						<!-- RAM -->
-						<div class="flex flex-col items-center h-full">
-							<div class="flex items-center justify-center h-full">
-								<h2 class="font-archivo font-bold text-[20px]">Ram</h2>
+					<div class="flex flex-[2] items-center justify-evenly flex-wrap gap-y-4">
+						<div>
+							<!-- RAM -->
+							<div class="flex flex-col items-center h-full">
+								<div class="flex items-center justify-center h-full">
+									<h2 class="font-archivo font-bold text-[20px]">Ram</h2>
+								</div>
+								<div class="w-[241px] h-[16px] bg-grayTealinux rounded-[128px]">
+									<div
+										class="bg-[#F1C21B] h-[16px] rounded-[128px]"
+										style="width: {memoryPercent.toFixed()}%"
+									></div>
+								</div>
+								<h2 class="font-medium font-poppin text-[16px] mt-2">
+									{memoryPercent.toFixed(2)}% of 100%
+								</h2>
 							</div>
-							<div class="w-[241px] h-[16px] bg-grayTealinux rounded-[128px]">
-								<div
-									class="bg-[#F1C21B] h-[16px] rounded-[128px]"
-									style="width: {memoryPercent.toFixed()}%"
-								></div>
+							<!-- CPU -->
+							<div class="flex flex-col items-center h-full">
+								<div class="flex items-center justify-center h-full">
+									<h2 class="font-archivo font-bold text-[20px] text-center">CPU</h2>
+								</div>
+								<h2 class="font-poppin font-medium text-[16px]">{json.lspci.cpu}</h2>
 							</div>
-							<h2 class="font-medium font-poppin text-[16px] mt-2">
-								{memoryPercent.toFixed(2)}% of 100%
-							</h2>
 						</div>
-						<!-- CPU -->
-						<div class="flex flex-col items-center h-full">
-							<div class="flex items-center justify-center h-full">
-								<h2 class="font-archivo font-bold text-[20px] text-center">CPU</h2>
+						<div>
+							<!-- Storage -->
+							<div class="flex flex-col items-center h-full">
+								<div class="flex items-center justify-center h-full">
+									<h2 class="font-archivo font-bold text-[20px]">Storage</h2>
+								</div>
+								<div class="w-[241px] h-[16px] bg-grayTealinux rounded-[128px]">
+									<div
+										class="bg-[#F1C21B] h-[16px] rounded-[128px] flex items-center"
+										style="width: 90%"
+									></div>
+								</div>
+								<h2 class="font-medium font-poppin text-[16px] mt-2">{storageGB}</h2>
 							</div>
-							<h2 class="font-poppin font-medium text-[16px]">{json.lspci.cpu}</h2>
-						</div>
-					</div>
-					<div class="flex flex-col space-y-10">
-						<!-- Storage -->
-						<div class="flex flex-col items-center h-full">
-							<div class="flex items-center justify-center h-full">
-								<h2 class="font-archivo font-bold text-[20px]">Storage</h2>
+
+							<!-- GPU -->
+							<div class="flex flex-col items-center h-full">
+								<div class="flex items-center justify-center h-full">
+									<h2 class="font-archivo font-bold text-[20px] text-center">GPU</h2>
+								</div>
+								<ul class="list-disc">
+									{#each json.lspci.vga as vga}
+										<li>
+											<h2 class="font-poppin font-medium text-[16px]">{vga}</h2>
+										</li>
+									{/each}
+								</ul>
 							</div>
-							<div class="w-[241px] h-[16px] bg-grayTealinux rounded-[128px]">
-								<div
-									class="bg-[#F1C21B] h-[16px] rounded-[128px] flex items-center"
-									style="width: 90%"
-								></div>
-							</div>
-							<h2 class="font-medium font-poppin text-[16px] mt-2">{storageGB} GB</h2>
-							<!-- {#each json.disk as e,idx}
-								{/each} -->
-							<!-- {#each json.disk[0].partitions as partition}	
-									<h2 class="font-medium font-poppin text-[16px]">{partition.size}</h2>
-								{/each} -->
-						</div>
-						<!-- GPU -->
-						<div class="flex flex-col items-center h-full">
-							<div class="flex items-center justify-center h-full">
-								<h2 class="font-archivo font-bold text-[20px] text-center">GPU</h2>
-							</div>
-							<ul class="list-disc">
-								{#each json.lspci.vga as vga}
-									<li>
-										<h2 class="font-poppin font-medium text-[16px]">{vga}</h2>
-									</li>
-								{/each}
-							</ul>
 						</div>
 					</div>
 				</div>
