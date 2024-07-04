@@ -1,12 +1,21 @@
 <script>
+	import SysInfoSide from './SysInfoSide.svelte';
+	import { sysInfoActivated } from './store.js'; // Path ke file store.js
+
 	let isOpen = false;
+
 	function toggleSidebar() {
 		isOpen = !isOpen;
 	}
+
+	function openSysInfo() {
+		sysInfoActivated.set(true);
+	}
 </script>
 
+<SysInfoSide />
 <sidebar
-	class="sidebar fixed top-0 left-0 h-screen transition-colors duration-500 flex flex-col p-4 space-y-4 {isOpen
+	class="sidebar fixed top-0 left-0 z-30 h-screen transition-colors duration-500 flex flex-col p-4 space-y-4 {isOpen
 		? ' bg-[#C8E8D6]'
 		: 'collapsed bg-greenTealinux'}"
 >
@@ -44,7 +53,10 @@
 		{/if}
 	</button>
 	{#if isOpen}
-		<button class="flex items-center space-x-2 bg-white p-2 rounded-md border-2 border-black">
+		<button
+			class="flex items-center space-x-2 bg-white p-2 rounded-md border-2 border-black"
+			on:click={openSysInfo}
+		>
 			<svg
 				class="h-6 w-6 text-black"
 				fill="none"
