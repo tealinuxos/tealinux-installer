@@ -2,31 +2,41 @@ use crate::installer::BluePrint;
 use crate::storage::{ format, mount, umount };
 use crate::storage::btrfs::{ mount_subvolume, create_subvolume };
 use duct::cmd;
+use tea_arch_chroot_lib::resource::FirmwareKind;
 use std::io::Error;
-use std::fs::create_dir;
+use std::fs::{create_dir, create_dir_all};
 
 pub fn partitioning(blueprint: &BluePrint) -> Result<(), Error>
 {
+    let firmware_type = &blueprint.bootloader.as_ref().unwrap().firmware_type;
+    let bootloader_path = &blueprint.bootloader.as_ref().unwrap().path;
+
     for i in blueprint.disk.as_ref().unwrap().iter().to_owned().rev()
     {
         let i_path = &i.path;
-        let i_format = &i.format;
+        let i_format = i.format;
         let i_mountpoint = &i.mountpoint;
+        let i_filesystem = &i.filesystem;
 
-        if let Some(i_format) = i_format
+        if i_format && i_filesystem.is_some()
         {
-            format(i_format.as_ref(), i_path.as_ref().unwrap())?;
+            format(i_filesystem.as_ref().unwrap(), i_path.as_ref().unwrap())?;
         }
 
         if let Some(i_mountpoint) = i_mountpoint
         {
-            if i_mountpoint.contains("boot")
+            if i_mountpoint.contains("swap")
             {
-                cmd!("mkdir", "--parents", format!("/mnt{}", i_mountpoint)).run().unwrap();
+                cmd!("swapon", i_mountpoint).run()?;
+            }
+
+            else if i_mountpoint.contains("boot")
+            {
+                cmd!("mkdir", "--parents", format!("/mnt{}", i_mountpoint)).run()?;
                 mount(i_path.as_ref().unwrap(), &format!("/mnt{}", i_mountpoint), None)?;
             }
 
-            else if i_mountpoint.eq("/") && i_format.as_ref().unwrap().eq("btrfs")
+            else if i_mountpoint.eq("/") && i_filesystem.as_ref().unwrap().eq("btrfs")
             {
                 mount(i.path.as_ref().unwrap(), "/mnt", None)?;
 
@@ -46,6 +56,19 @@ pub fn partitioning(blueprint: &BluePrint) -> Result<(), Error>
             {
                 mount(i_path.as_ref().unwrap(), &format!("/mnt{}", i_mountpoint), None)?;
             }
+        }
+    }
+
+    match firmware_type
+    {
+        FirmwareKind::UEFI => {
+            create_dir_all("/mnt/boot/efi")?;
+            mount(&bootloader_path.as_ref().unwrap(), "/mnt/boot/efi", None)?;
+        }
+
+        FirmwareKind::BIOS => {
+            create_dir_all("/mnt/boot")?;
+            mount(&bootloader_path.as_ref().unwrap(), "/mnt/boot", None)?;
         }
     }
 
