@@ -55,6 +55,7 @@
 		getKeyboard();
 	});
 </script>
+
 <Sidebar />
 <div class="relative w-full">
 	<header class="absolute top-0 flex items-center justify-center w-full gap-[10px] mt-[40px]">
@@ -66,7 +67,7 @@
 		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
 	</header>
 	<section class="flex flex-col items-center justify-center h-[85dvh]">
-		<form class="text-center w-[50dvw] p-8 rounded-md min-h-[50dvh]">
+		<form class="text-center w-[50dvw] rounded-md min-h-[50dvh]">
 			<div>
 				<h1 class="text-center mb-6 font-bold text-[32px] font-archivo">Select Keyboard Layout</h1>
 			</div>
@@ -121,7 +122,9 @@
 									<img
 										src="/dropDownMain.svg"
 										alt="arrow"
-										class="{showVariants[name] ? 'rotate-180' : ''} transition-transform duration-300"
+										class="{showVariants[name]
+											? 'rotate-180'
+											: ''} transition-transform duration-300"
 									/>
 								</div>
 								{#if showVariants[name]}
@@ -148,12 +151,12 @@
 						{/each}
 					</div>
 				{/if}
-	
-				<div class="fixed bottom-[0px] max-w-md mx-auto my-30 h-[15dvh]">
-					<div class="grid grid-cols-2 gap-[295px] font-poppin">
+
+				<div class="fixed bottom-[0px] w-[50dvw] mx-auto my-30 h-[15dvh]">
+					<div class="flex justify-between w-full font-poppin">
 						<a
 							href="/installation"
-							class="text-white cursor-pointer bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
+							class="text-white cursor-pointer bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 mb-2"
 							>Back</a
 						>
 						<a
@@ -161,7 +164,7 @@
 							on:click={handleSetKeyboard}
 							class="text-white bg-greenTealinux {selectedKeyboards
 								? ''
-								: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
+								: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 focus:outline-none"
 							>Next</a
 						>
 					</div>
@@ -170,5 +173,3 @@
 		</form>
 	</section>
 </div>
-
-
