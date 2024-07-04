@@ -185,8 +185,8 @@
 									<div class="mt-[33px] flex gap-x-4 items-start">
 										<p class="font-poppin font-medium text-[18px]">Current:</p>
 
-										<div>
-											<div class="flex mb-4 h-8 w-full overflow-hidden rounded-full">
+										<div class="w-full">
+											<div class="flex flex-[1] mb-4 h-8 w-full overflow-hidden rounded-full">
 												<div class="h-full flex rounded-full overflow-hidden w-full">
 													{#each disk.partitions as partition, i}
 														{@const diskSize = disk.size.slice(0, -1)}
