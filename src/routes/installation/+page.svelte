@@ -40,7 +40,7 @@
 		{@const storageGB = prettyBytes(parseInt(json.disk[0].size.replace('s', ' ')) * 512)}
 		<div class=" py-8 px-16 mx-auto overflow-auto max-h-[85dvh] scrollbar-none">
 			<div class=" bg-greenTealinux bg-opacity-25 w-full p-5 rounded-[43px] mb-6">
-				<div class="bg-white grid-cols-3 grid place-items-center py-3 px-16 h-[40vh] rounded-3xl">
+				<div class="bg-white grid-cols-3 grid place-items-center py-8 px-16 h-fit rounded-3xl">
 					<div class="flex flex-col items-center gap-y-1">
 						<img src="/windows.svg" alt="" />
 						<p class="text-2xl font-medium mt-[8px]">82SV</p>
@@ -134,7 +134,7 @@
 							{@const sizeGB = prettyBytes(parseInt(disks[idx].size.replace('s', ' ')) * 512)}
 							{@const colors = getColors(disks, idx)}
 							<div
-								class="flex items-center justify-between bg-gray-300 h-[45px] rounded-[10px] mt-[30.05px] w-full"
+								class="flex items-center justify-between bg-gray-300 h-fit max-h-[45dvh] rounded-[10px] mt-[30.05px] w-full"
 							>
 								<p
 									class="font-poppin font-medium text-[#0D1814] text-[14px] mt-[12px] ml-[12px] mb-[12px]"
