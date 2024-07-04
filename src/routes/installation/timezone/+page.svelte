@@ -73,15 +73,15 @@
 
 	onMount(() => {
 		getTimezone();
-        getBlueprint().then(blueprint => {
-            if (blueprint.timezone === null) {
-                selectedTimezone = "Africa/Abidjan";
-                searchTerm = "Africa/Abidjan";
-            } else {
-                selectedTimezone = blueprint.timezone.region + '/' + blueprint.timezone.city;
-                searchTerm = blueprint.timezone.region + '/' + blueprint.timezone.city;
-            }
-        })
+		getBlueprint().then((blueprint) => {
+			if (blueprint.timezone === null) {
+				selectedTimezone = 'Africa/Abidjan';
+				searchTerm = 'Africa/Abidjan';
+			} else {
+				selectedTimezone = blueprint.timezone.region + '/' + blueprint.timezone.city;
+				searchTerm = blueprint.timezone.region + '/' + blueprint.timezone.city;
+			}
+		});
 	});
 
 	function toggleOptions() {
@@ -118,13 +118,13 @@
 <Sidebar />
 <section class="flex flex-col items-center justify-center h-[85dvh]">
 	<header class="flex items-center justify-center w-full gap-[10px]">
-        <div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
-    </header>
+	</header>
 	{#if showTimezone}
 		<form class="text-center p-8 rounded-md min-h-[50dvh]">
 			<div>
@@ -238,7 +238,9 @@
 					<a
 						href="/installation/locale"
 						on:click={handleSetTimezone}
-						class="text-white bg-greenTealinux focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none h-[44px] w-[76px]"
+						class="text-white bg-greenTealinux {selectedTimezone
+							? ''
+							: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
 						>Next</a
 					>
 				</div>
