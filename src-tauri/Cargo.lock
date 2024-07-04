@@ -3356,7 +3356,7 @@ dependencies = [
 [[package]]
 name = "tea-arch-chroot-lib"
 version = "0.1.0"
-source = "git+https://github.com/tealinuxos/tea-arch-chroot-lib#ceb08e3dd0a078c72bb317f0733cc01995a08750"
+source = "git+https://github.com/tealinuxos/tea-arch-chroot-lib#caf1a928082d6e9fc110621e321091da50e2da1b"
 dependencies = [
  "duct",
  "serde",
