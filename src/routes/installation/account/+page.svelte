@@ -50,7 +50,7 @@
 	<section class="flex flex-col items-center justify-center h-screen">
 		<form class="flex flex-col h-[85dvh]">
 			<h1 class="text-center mb-6 font-archivo text-[32px] font-bold">Create User</h1>
-	
+
 			<div class="max-w-md mx-auto mb-4">
 				<div class="flex mb-2 items-center gap-x-2">
 					<h2 class="font-poppin text-left font-medium">Full name</h2>
@@ -69,7 +69,7 @@
 					/>
 				</div>
 			</div>
-	
+
 			<div class="max-w-md mx-auto mb-4">
 				<div class="flex mb-2 items-center gap-x-2">
 					<h2 class="font-poppin text-left font-medium">Username</h2>
@@ -88,7 +88,7 @@
 					/>
 				</div>
 			</div>
-	
+
 			<div class="max-w-md mx-auto mb-4">
 				<div class="flex mb-2 items-center gap-x-2">
 					<h2 class="font-poppin text-left font-medium">Computer Name</h2>
@@ -107,7 +107,7 @@
 					/>
 				</div>
 			</div>
-	
+
 			<div class="max-w-md mx-auto mb-4">
 				<div class="flex mb-2 items-center gap-x-2">
 					<h2 class="font-poppin text-left font-medium">Password</h2>
@@ -152,7 +152,7 @@
 					</svg>
 				</div>
 			</div>
-	
+
 			<div class="max-w-md mx-auto mb-4">
 				<div class="flex mb-2 items-center gap-x-2">
 					<h2 class="font-poppin text-left font-medium">Confirm Password</h2>
@@ -200,7 +200,7 @@
 					<p class="text-red-500 text-[14px] mt-[5px]">Passwords do not match</p>
 				{/if}
 			</div>
-	
+
 			<div class="mt-[15px] flex items-center">
 				<input
 					type="checkbox"
@@ -210,7 +210,9 @@
 				<!-- font not included -->
 			</div>
 		</form>
-		<div class="max-w-md mx-auto mt-30 mt-[68px] h-[15dvh] fixed bottom-0 flex items-center">
+		<div
+			class="max-w-md mx-auto mt-30 mt-[68px] h-[15dvh] fixed bottom-0 bg-whiteTealinux flex items-center"
+		>
 			<div class="grid grid-cols-2 gap-[295px]">
 				<a
 					href="/installation/locale"
@@ -229,4 +231,3 @@
 		</div>
 	</section>
 </div>
-
