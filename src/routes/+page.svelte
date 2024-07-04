@@ -27,14 +27,12 @@
 	<div class="text-center">
 		<img src={Tealinux} alt="" class="mx-auto mb-4" />
 
-        {#await setReadJSON()}
-        {:then}
+        {#await setReadJSON() then _}
             <h1 class="font-archivo font-semibold text-6xl -tracking-[4.5%] mb-4">Welcome to Tealinux</h1>
             <h2 class="font-poppin mb-4 text-4xl tracking-normal">Press start to install</h2>
 
             <div class="p-2">
-                {#await isOnline()}
-                {:then online}
+                {#await isOnline() then online}
                     {#if !online}
                         <h3 class="mb-2 text-red-600 font-bold">Please connect to internet!</h3>
                         <a href="/installation/locale">Bypass Internet</a>
