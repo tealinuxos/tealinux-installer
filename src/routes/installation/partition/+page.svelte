@@ -8,12 +8,27 @@
 
 	let selectedDisk = 0;
 	let partitionDetail = [];
+    let bootloader = {
+        firmwareType: null,
+        path: null
+    };
+
+    $: console.log(bootloader);
 
 	const getStorageJSON = async () => {
-		let json = await getRead();
 
-		return json.disk;
+		let json = await getRead();
+        json = json.disk.filter(disk => disk.partitions !== null);
+
+		return json;
 	};
+
+    const getFirmwareType = async () => {
+
+        let read = await getRead();
+
+        return read.firmware;
+    }
 
 	const getFilesystemJSON = async () => {
 		let filesystems = await invoke('get_filesystem_json');
@@ -26,14 +41,16 @@
 
 		for (let i of disks[selectedDisk].partitions.keys()) {
 			let partitionPath = disks[selectedDisk].partitions[i].partitionPath;
+			let filesystemType = disks[selectedDisk].partitions[i].filesystem;
 			let startSector = disks[selectedDisk].partitions[i].start.slice(0, -1);
 			let endSector = disks[selectedDisk].partitions[i].end.slice(0, -1);
 			let size = disks[selectedDisk].partitions[i].size.slice(0, -1);
 
 			partitionDetail.push({
 				path: partitionPath,
-				format: null,
 				mountpoint: null,
+                filesystem: filesystemType,
+				format: false,
 				start: parseInt(startSector),
 				end: parseInt(endSector),
 				size: parseInt(size)
@@ -45,6 +62,13 @@
 		let partition = JSON.stringify(partitionDetail);
 
 		await invoke('blueprint_set_partition', { partition });
+        await handleSetBootloader();
+	};
+
+	const handleSetBootloader = async () => {
+		let bootloaderJSON = JSON.stringify(bootloader);
+
+		await invoke('blueprint_set_bootloader', { bootloader: bootloaderJSON });
 	};
 
 	let partitionColors = [];
@@ -67,23 +91,103 @@
 	};
 
 	let activeTab = 'Efi';
-	let bootLoaderLocation = ['Efi of ATA VBOX HARDISK (/dev/sdb1)'];
+	let bootLoaderLocation = [];
 
-	const setTab = (tab) => {
+	const setTab = async (tab) => {
 		activeTab = tab;
 		// Update bootLoaderLocation based on the active tab
+
+        let bootloaderPartition = await getBootloaderPartition(activeTab);
+
 		if (tab === 'Efi') {
-			bootLoaderLocation = ['Efi of ATA VBOX HARDISK (/dev/sdb1)'];
+
+
+            let bootloader = [];
+
+            for (let i of bootloaderPartition.keys())
+            {
+                let diskModel = bootloaderPartition[i].diskModel;
+                let path = bootloaderPartition[i].partitionPath;
+
+                bootloader.push('EFI of ' + diskModel + ' (' + path + ')');
+            }
+
+            bootLoaderLocation = bootloader;
+            
 		} else {
-			bootLoaderLocation = ['Mbr of ATA VBOX HARDISK (/dev/sdb2)'];
+
+
+            let bootloader = [];
+
+            for (let i of bootloaderPartition.keys())
+            {
+                let model = bootloaderPartition[i].model;
+                let path = bootloaderPartition[i].diskPath;
+
+                bootloader.push('MBR of ' + model + ' (' + path + ')');
+            }
+
+            bootLoaderLocation = bootloader;
 		}
 	};
+
+    const refreshEfi = () => {
+        getBootloaderPartition(activeTab).then(efi => {
+            bootloader.firmwareType = "UEFI";
+            efi === null ? bootloader.path = null : bootloader.path = efi[0].partitionPath;
+        });
+    }
+
+    const refreshMbr = () => {
+        getBootloaderPartition(activeTab).then(disk => {
+            bootloader.firmwareType = "BIOS";
+            disk === null ? bootloader.path = null : bootloader.path = disk[0].diskPath;
+        });
+    }
+
+    const getBootloaderPartition = async (activeTab) => {
+
+        let disk = await getStorageJSON();
+
+        let partition = [];
+
+        if (activeTab === 'Efi') {
+
+            for (let i = 0; i < disk.length; i++)
+            {
+                let p = disk[i].partitions.filter(partition => partition.flags !== null && partition.flags.includes("esp"));
+                p = p.map(partition => Object.assign(partition, { diskModel: disk[i].model }));
+
+                if (p.length) {
+                    partition.push(p[0]);
+                }
+            }
+
+        } else {
+           partition = disk;
+        }
+
+        console.log(partition)
+
+        return partition;
+    };
 
 	onMount(() => {
 		getStorageJSON().then((disks) => {
 			getColors(disks);
-			console.log(disks);
 		});
+
+        getFirmwareType().then(firmware => {
+
+            if (firmware === "UEFI") {
+                setTab("Efi");
+                refreshEfi();
+            }
+            else {
+                setTab("Mbr");
+                refreshMbr();
+            }
+        })
 	});
 </script>
 
@@ -182,14 +286,14 @@
 							{@const path = partition.path == null ? 'Unallocated' : partition.path.slice(5)}
 							{@const mountpoint =
 								partition.mountpoint == null ? 'Not assigned' : partition.mountpoint}
-							{@const format = partition.format == null ? "Don't format" : partition.format}
+							{@const filesystem = partition.filesystem == null ? "Unknown" : partition.filesystem}
 							{@const prettySize = prettyBytes(size)}
 
 							<div class="flex pr-2 gap-x-2">
 								<div style="background-color: {color}" class="w-4 h-4 rounded-sm"></div>
 								<div class="flex flex-col text-sm font-poppinmedium font-medium">
 									<span>{path}</span>
-									<span>{prettySize} {format}</span>
+									<span>{prettySize} {filesystem}</span>
 								</div>
 							</div>
 						{/each}
@@ -205,37 +309,18 @@
 							{@const path = partition.path}
 
 							{#if path == null}
-								<div class="flex gap-x-4 items-center border border-b-greyBorder p-2">
-									<span>Unallocated</span>
-									<select bind:value={partitionDetail[i].format} on:change={handleSetPartition}>
-										<option value={null}>Do not format</option>
-										{#await getFilesystemJSON()}
-											<option disabled={true}>Loading...</option>
-										{:then filesystems}
-											{#each filesystems as filesystem}
-												<option value={filesystem}>{filesystem}</option>
-											{/each}
-										{/await}
-									</select>
-									<select bind:value={partitionDetail[i].mountpoint} on:change={handleSetPartition}>
-										<option value={null}>No Mountpoint</option>
-										<option value="/">/</option>
-										<option value="/boot/efi">/boot/efi</option>
-										<option value="/home">/home</option>
-									</select>
-								</div>
-							{:else}
 								<div
 									class="flex justify-between items-center border border-b-greyBorder p-2 py-3 font-poppinmedium font-medium text-sm"
 								>
-									<span>{path}</span>
+									<span>Unallocated</span>
 									<div class="relative flex items-center">
 										<select
-											bind:value={partitionDetail[i].format}
+											bind:value={partitionDetail[i].filesystem}
 											on:change={handleSetPartition}
 											class=" appearance-none flex gap-x-6 items-center bg-greenTealinux text-white py-2 px-4 pr-8 rounded-lg"
 										>
-											<option value={null}>Do not format</option>
+                                            <option disabled={true} value={null}>Unallocated</option>
+
 											{#await getFilesystemJSON()}
 												<option disabled={true}>Loading...</option>
 											{:then filesystems}
@@ -298,6 +383,94 @@
 											name="format-{i}"
 											id="format-{i}"
 											class="rounded-checkbox"
+                                            bind:checked={partitionDetail[i].format}
+                                            on:change={handleSetPartition}
+										/>
+									</div>
+								</div>
+							{:else}
+								<div
+									class="flex justify-between items-center border border-b-greyBorder p-2 py-3 font-poppinmedium font-medium text-sm"
+								>
+									<span>{path}</span>
+									<div class="relative flex items-center">
+										<select
+											bind:value={partitionDetail[i].filesystem}
+											on:change={handleSetPartition}
+											class=" appearance-none flex gap-x-6 items-center bg-greenTealinux text-white py-2 px-4 pr-8 rounded-lg"
+										>
+                                            {#if partitionDetail[i].filesystem === "ntfs"}
+                                                <option disabled={true} value="ntfs">ntfs</option>
+                                            {:else if partitionDetail[i].filesystem === "linux-swap(v1)"}
+												<option disabled={true} value="linux-swap(v1)">Linux Swap</option>
+                                            {:else if partitionDetail[i].filesystem === null}
+												<option disabled={true} value={null}>Unknown</option>
+                                            {/if}
+
+											{#await getFilesystemJSON()}
+												<option disabled={true}>Loading...</option>
+											{:then filesystems}
+												{#each filesystems as filesystem}
+													<option value={filesystem}>{filesystem}</option>
+												{/each}
+											{/await}
+										</select>
+										<svg
+											width="14"
+											height="9"
+											viewBox="0 0 14 9"
+											class=" absolute right-2"
+											fill="none"
+											xmlns="http://www.w3.org/2000/svg"
+										>
+											<path
+												d="M1 1.5L7 7.5L13 1.5"
+												stroke="white"
+												stroke-width="2"
+												stroke-linecap="round"
+												stroke-linejoin="round"
+											/>
+										</svg>
+									</div>
+									<div class="relative flex items-center">
+										<select
+											bind:value={partitionDetail[i].mountpoint}
+											on:change={handleSetPartition}
+											class=" appearance-none flex gap-x-6 items-center bg-greenTealinux text-white py-2 px-4 pr-8 rounded-lg"
+										>
+											<option value={null}>No Mountpoint</option>
+											<option value="/">/</option>
+											<option value="/boot/efi">/boot/efi</option>
+											<option value="/home">/home</option>
+										</select>
+										<svg
+											width="14"
+											height="9"
+											viewBox="0 0 14 9"
+											class=" absolute right-2"
+											fill="none"
+											xmlns="http://www.w3.org/2000/svg"
+										>
+											<path
+												d="M1 1.5L7 7.5L13 1.5"
+												stroke="white"
+												stroke-width="2"
+												stroke-linecap="round"
+												stroke-linejoin="round"
+											/>
+										</svg>
+									</div>
+									<div
+										class="flex gap-x-6 items-center bg-greenTealinux text-white py-2 px-4 rounded-lg"
+									>
+										<label for="format-{i}">Format</label>
+										<input
+											type="checkbox"
+											name="format-{i}"
+											id="format-{i}"
+											class="rounded-checkbox"
+                                            bind:checked={partitionDetail[i].format}
+                                            on:change={handleSetPartition}
 										/>
 									</div>
 								</div>
@@ -309,19 +482,23 @@
 		{/await}
 		<div class="flex flex-col items-center justify-center p-4 font-poppinmedium">
 			<div class="flex items-center justify-center space-x-2 bg-greenTealinux rounded-t-md">
-				<button
-					class={`py-2 px-4 rounded-t-md ${
-						activeTab === 'Efi' ? 'bg-greenTealinux text-white' : 'bg-gray-200 text-black'
-					}`}
-					on:click={() => setTab('Efi')}
-				>
-					Efi
-				</button>
+                {#await getFirmwareType() then firmwareType}
+                    {#if firmwareType === "UEFI"}
+                        <button
+                            class={`py-2 px-4 rounded-t-md ${
+                                activeTab === 'Efi' ? 'bg-greenTealinux text-white' : 'bg-gray-200 text-black'
+                            }`}
+                            on:click={async () => {await setTab('Efi'); refreshEfi()}}
+                        >
+                            Efi
+                        </button>
+                    {/if}
+                {/await}
 				<button
 					class={`py-2 px-4 rounded-t-md ${
 						activeTab === 'Mbr' ? 'bg-greenTealinux text-white' : 'bg-gray-200 text-black'
 					}`}
-					on:click={() => setTab('Mbr')}
+					on:click={async () => {await setTab('Mbr'); refreshMbr()}}
 				>
 					Mbr
 				</button>
@@ -331,9 +508,17 @@
 			>
 				<p class="text-white font-bold">Boot loader location</p>
 				<div class="relative flex items-center justify-between w-2/3 bg-gray-200 rounded-full">
-					<select class="w-full b appearance-none p-4 py-2 rounded-full" id="diskSelect">
+					<select class="w-full b appearance-none p-4 py-2 rounded-full" id="diskSelect" bind:value={bootloader.path}>
 						{#each bootLoaderLocation as location, i}
-							<option value={i}>{location}</option>
+                                {#if activeTab === "Efi"}
+                                    {#await getBootloaderPartition(activeTab) then partition}
+                                        <option value={partition[i].partitionPath}>{location}</option>
+                                    {/await}
+                                {:else}
+                                    {#await getBootloaderPartition(activeTab) then partition}
+                                        <option value={partition[i].diskPath}>{location}</option>
+                                    {/await}
+                                {/if}
 						{/each}
 					</select>
 					<img src="/dropDownMain.svg" alt="arr" class="absolute right-4" />
