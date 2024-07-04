@@ -7,6 +7,8 @@
 	let json = [];
 	let filteredKeyboards = [];
 	let selectedKeyboards = null;
+	let keyboardName = null;
+	let keyboardVariant = null;
 	let showOptions = false;
 	let searchTerm = '';
 	let showVariants = {};
@@ -34,6 +36,8 @@
 	$: searchTerm, filterOptions();
 
 	const selectKeyboards = (name, variant) => {
+		keyboardName = name;
+		keyboardVariant = variant;
 		selectedKeyboards = variant;
 		searchTerm = name;
 		toggleOptions();
@@ -41,6 +45,10 @@
 
 	const toggleOptions = () => {
 		showOptions = !showOptions;
+	};
+
+	const handleSetKeyboard = async () => {
+		await invoke('blueprint_set_keyboard', { layout: keyboardName, variant: keyboardVariant });
 	};
 
 	onMount(() => {
@@ -150,6 +158,7 @@
 					>
 					<a
 						href="/installation/timezone"
+						on:click={handleSetKeyboard}
 						class="text-white bg-greenTealinux {selectedKeyboards
 							? ''
 							: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
