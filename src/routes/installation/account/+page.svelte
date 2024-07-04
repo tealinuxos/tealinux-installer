@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { invoke } from '@tauri-apps/api/tauri';
 	import Sidebar from '$lib/components/Sidebar.svelte';
+	import { getBlueprint } from '../global.js';
 
 	let fullname, username, hostname, password, confirmPassword;
 	let isAdministrator = false;
@@ -22,6 +23,18 @@
 	} else {
 		passwordsMatch = false;
 	}
+
+    onMount(() => {
+        getBlueprint().then(blueprint => {
+            if (blueprint.account !== null) {
+                fullname = blueprint.account.fullname;
+                username = blueprint.account.username;
+                hostname = blueprint.account.hostname;
+                password = blueprint.account.password;
+                confirmPassword = blueprint.account.password;
+            }
+        })
+    })
 </script>
 
 <Sidebar />

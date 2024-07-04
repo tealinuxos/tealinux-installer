@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { fly } from 'svelte/transition';
+	import { getBlueprint } from '../global.js';
 
 	let timezones = [];
 	let showTimezone = false;
@@ -72,6 +73,15 @@
 
 	onMount(() => {
 		getTimezone();
+        getBlueprint().then(blueprint => {
+            if (blueprint.timezone === null) {
+                selectedTimezone = "Africa/Abidjan";
+                searchTerm = "Africa/Abidjan";
+            } else {
+                selectedTimezone = blueprint.timezone.region + '/' + blueprint.timezone.city;
+                searchTerm = blueprint.timezone.region + '/' + blueprint.timezone.city;
+            }
+        })
 	});
 
 	function toggleOptions() {

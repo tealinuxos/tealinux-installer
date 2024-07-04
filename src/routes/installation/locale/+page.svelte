@@ -2,7 +2,7 @@
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { onMount } from 'svelte';
-	import { getShortLocale } from '../global.js';
+	import { getShortLocale, getBlueprint } from '../global.js';
 	import { getCurrency } from 'locale-currency';
 
 	let searchTerm = '';
@@ -78,6 +78,15 @@
 
 	onMount(() => {
 		getLocale();
+        getBlueprint().then(blueprint => {
+            if (blueprint.locale === null) {
+                selectedLocale = "aa_DJ.UTF-8 UTF-8";
+                searchTerm = "aa_DJ.UTF-8 UTF-8";
+            } else {
+                selectedLocale = blueprint.locale.main;
+                searchTerm = blueprint.locale.main;
+            }
+        })
 	});
 </script>
 
