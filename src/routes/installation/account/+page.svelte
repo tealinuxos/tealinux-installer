@@ -24,29 +24,29 @@
 		passwordsMatch = false;
 	}
 
-    onMount(() => {
-        getBlueprint().then(blueprint => {
-            if (blueprint.account !== null) {
-                fullname = blueprint.account.fullname;
-                username = blueprint.account.username;
-                hostname = blueprint.account.hostname;
-                password = blueprint.account.password;
-                confirmPassword = blueprint.account.password;
-            }
-        })
-    })
+	onMount(() => {
+		getBlueprint().then((blueprint) => {
+			if (blueprint.account !== null) {
+				fullname = blueprint.account.fullname;
+				username = blueprint.account.username;
+				hostname = blueprint.account.hostname;
+				password = blueprint.account.password;
+				confirmPassword = blueprint.account.password;
+			}
+		});
+	});
 </script>
 
 <Sidebar />
 <section class="flex flex-col items-center justify-center h-screen">
 	<header class="flex items-center justify-center w-full gap-[10px]">
-        <div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
-    </header>
+	</header>
 	<form class="flex flex-col h-[85dvh]">
 		<h1 class="text-center mb-6 font-archivo text-[32px] font-bold">Create User</h1>
 
@@ -219,7 +219,7 @@
 			<a
 				href="/installation/partition"
 				on:click={handleSetAccount}
-				class="text-white bg-greenTealinux {passwordsMatch
+				class="text-white bg-greenTealinux {passwordsMatch && fullname && username && hostname
 					? ''
 					: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
 				>Next</a
