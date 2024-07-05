@@ -435,8 +435,6 @@
 											>
 												{#if partitionDetail[i].filesystem === 'ntfs'}
 													<option disabled={true} value="ntfs">ntfs</option>
-												{:else if partitionDetail[i].filesystem === 'linux-swap(v1)'}
-													<option disabled={true} value="linux-swap(v1)">Linux Swap</option>
 												{:else if partitionDetail[i].filesystem === null}
 													<option disabled={true} value={null}>Unknown</option>
 												{/if}
@@ -476,6 +474,7 @@
 												<option value="/">/</option>
 												<option value="/boot/efi">/boot/efi</option>
 												<option value="/home">/home</option>
+												<option value="swap">swap</option>
 											</select>
 											<svg
 												width="14"
