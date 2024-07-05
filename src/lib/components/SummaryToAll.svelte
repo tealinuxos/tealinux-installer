@@ -89,6 +89,14 @@
 </script>
 
 {#await getBlueprint() then blueprint}
+    {@const keyboard = blueprint.keyboard === null ? 'To be filled' : blueprint.keyboard.layout + ' - ' + blueprint.keyboard.variant}
+    {@const timezoneRegion = blueprint.timezone === null ? 'To be filled' : blueprint.timezone.region}
+    {@const timezoneCity = blueprint.timezone === null ? 'To be filled' : blueprint.timezone.city}
+    {@const locale = blueprint.locale === null ? 'To be filled' : blueprint.locale.main}
+    {@const userFullname = blueprint.account === null ? 'To be filled' : blueprint.account.fullname}
+    {@const userUsername = blueprint.account === null ? 'To be filled' : blueprint.account.username}
+    {@const userHostname = blueprint.account === null ? 'To be filled' : blueprint.account.hostname}
+    {@const userPassword = blueprint.account === null ? 'To be filled' : blueprint.account.password}
 	<aside
 		class="fixed z-[50] bg-black/50 w-screen transition-transform duration-500 ease-in-out top-0"
 		class:translate-x-0={itActive}
@@ -116,13 +124,9 @@
 						<div
 							class="relative flex items-center w-full h-[45px] rounded-[10px] bg-grayTealinux border-2 border-black overflow-hidden mb-2 font-poppin text-[14px] mx-auto shadow-2xl"
 						>
-							{#if blueprint.keyboard}
 								<span class="ml-[12px] font-poppin text-gray-500 text-[14px]"
-									>{blueprint.keyboard.layout} - {blueprint.keyboard.variant}</span
+									>{keyboard}</span
 								>
-							{:else}
-								<span class="ml-[12px] font-poppin text-gray-500 text-[14px]"></span>
-							{/if}
 						</div>
 						<div class="mb-4 w-full">
 							<div class="flex justify-between">
@@ -137,13 +141,9 @@
 								<h2 class="flex whitespace-nowrap font-poppin font-medium text-[14px] ml-[12px]">
 									Region:
 								</h2>
-								{#if blueprint.timezone}
 									<span class="ml-[4px] font-poppin text-gray-500 text-[14px]"
-										>{blueprint.timezone.region}</span
+										>{timezoneRegion}</span
 									>
-								{:else}
-									<span class="ml-[4px] font-poppin text-gray-500 text-[14px]"></span>
-								{/if}
 							</div>
 							<div
 								class="relative flex items-center w-full h-[45px] rounded-[10px] overflow-hidden bg-grayTealinux border-2 border-black mb-2 font-poppin text-[14px] mx-auto shadow-2xl"
@@ -151,13 +151,9 @@
 								<h2 class="flex whitespace-nowrap font-poppin font-medium text-[14px] ml-[12px]">
 									City:
 								</h2>
-								{#if blueprint.timezone}
 									<span class="ml-[4px] font-poppin text-gray-500 text-[14px]"
-										>{blueprint.timezone.city}</span
+										>{timezoneCity}</span
 									>
-								{:else}
-									<span class="ml-[4px] font-poppin text-gray-500 text-[14px]"></span>
-								{/if}
 							</div>
 						</div>
 
@@ -174,13 +170,9 @@
 								<h2 class="flex whitespace-nowrap font-poppin font-medium text-[14px] ml-[12px]">
 									Main locale:
 								</h2>
-								{#if blueprint.locale}
 									<span class="ml-[4px] font-poppin text-gray-500 text-[14px]"
-										>{blueprint.locale.main}</span
+										>{locale}</span
 									>
-								{:else}
-									<span class="ml-[4px] font-poppin text-gray-500 text-[14px]`"></span>
-								{/if}
 							</div>
 						</div>
 
@@ -197,13 +189,9 @@
 								<h2 class="flex whitespace-nowrap font-poppin font-medium text-[14px] ml-[12px]">
 									Computer name:
 								</h2>
-								{#if blueprint.account}
 									<span class="ml-[4px] font-poppin text-gray-500 text-[14px]"
-										>{blueprint.account.fullname}</span
+										>{userFullname}</span
 									>
-								{:else}
-									<span class="ml-[4px] font-poppin text-gray-500 text-[14px]"></span>
-								{/if}
 							</div>
 							<div
 								class="relative flex items-center w-full h-[45px] rounded-[10px] overflow-hidden bg-grayTealinux border-2 border-black mb-2 font-poppin text-[14px] mx-auto shadow-2xl"
@@ -211,13 +199,9 @@
 								<h2 class="flex whitespace-nowrap font-poppin font-medium text-[14px] ml-[12px]">
 									Username:
 								</h2>
-								{#if blueprint.account}
 									<span class="ml-[4px] font-poppin text-gray-500 text-[14px]"
-										>{blueprint.account.hostname}</span
+										>{userHostname}</span
 									>
-								{:else}
-									<span class="ml-[4px] font-poppin text-gray-500 text-[14px]"></span>
-								{/if}
 							</div>
 							<div
 								class="relative flex items-center w-full h-[45px] rounded-[10px] overflow-hidden bg-grayTealinux border-2 border-black mb-2 font-poppin text-[14px] mx-auto shadow-2xl"
@@ -225,17 +209,14 @@
 								<h2 class="flex whitespace-nowrap font-poppin font-medium text-[14px] ml-[12px]">
 									Password:
 								</h2>
-								{#if blueprint.account}
 									<span class="ml-[4px] font-poppin text-gray-500 text-[14px]"
-										>{blueprint.account.password}</span
+										>{userPassword}</span
 									>
-								{:else}
-									<span class="ml-[4px] font-poppin text-gray-500 text-[14px]"></span>
-								{/if}
 								<img src="/eyeSlash.svg" alt="" class="mr-[17.18px] ml-auto" />
 							</div>
 						</div>
 
+                    {#await getDisk() then disks}
 						<div class="w-full mx-auto mb-4">
 							<div class="flex relative items-center justify-between">
 								<h2 class="font-poppin font-semibold text-[15px]">Partition installation</h2>
@@ -243,104 +224,109 @@
 									<img src="/green-pencil.svg" alt="" class="" />
 								</a>
 							</div>
+                        {#if disks !== null}
 							<h1 class="p-4 text-[20px] font-bold text-center">After</h1>
+                        {/if}
 						</div>
-						{#await getDisk() then disks}
-							{@const colors = getColors(disks)}
-							{#await getDiskSize() then diskSize}
-								<div class="w-full">
-									<div class="flex mb-4 h-8 w-full overflow-hidden rounded-full">
-										<div class="h-full flex rounded-full overflow-hidden w-full">
-											{#each disks as partition, i}
-												{@const partitionSize = partition.size}
-												{@const percentage = (partitionSize / diskSize) * 100}
+                        {#if disks !== null}
+                                {@const colors = getColors(disks)}
+                                {#await getDiskSize() then diskSize}
+                                    <div class="w-full">
+                                        <div class="flex mb-4 h-8 w-full overflow-hidden rounded-full">
+                                            <div class="h-full flex rounded-full overflow-hidden w-full">
+                                                {#each disks as partition, i}
+                                                    {@const partitionSize = partition.size}
+                                                    {@const percentage = (partitionSize / diskSize) * 100}
 
-												{@const color = colors[i]}
+                                                    {@const color = colors[i]}
 
-												<div
-													style="width: {percentage}%; background-color: {color}"
-													class="h-full"
-												></div>
-											{/each}
-										</div>
-									</div>
-									<div class="flex gap-y-4 flex-wrap mb-4">
-										{#each disks as partition, i}
-											{@const color = colors[i]}
-											{@const size = partition.size * 512}
-											{@const path =
-												partition.path == null ? 'Unallocated' : partition.path.slice(5)}
-											{@const filesystem =
-												partition.filesystem == null
-													? path == 'Unallocated'
-														? 'Unallocated'
-														: 'Unknown'
-													: partition.filesystem}
-											{@const prettySize = prettyBytes(size)}
-											<div class="flex pr-2 gap-x-2">
-												<div style="background-color: {color}" class="w-4 h-4 rounded-sm"></div>
-												<div class="flex flex-col text-sm font-poppinmedium font-medium">
-													<span class="pl-1">{path}</span>
-													<span class="pl-1">{prettySize} {filesystem}</span>
-												</div>
-											</div>
-										{/each}
-									</div>
-								</div>
-							{/await}
-						{/await}
+                                                    <div
+                                                        style="width: {percentage}%; background-color: {color}"
+                                                        class="h-full"
+                                                    ></div>
+                                                {/each}
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-y-4 flex-wrap mb-4">
+                                            {#each disks as partition, i}
+                                                {@const color = colors[i]}
+                                                {@const size = partition.size * 512}
+                                                {@const path =
+                                                    partition.path == null ? 'Unallocated' : partition.path.slice(5)}
+                                                {@const filesystem =
+                                                    partition.filesystem == null
+                                                        ? path == 'Unallocated'
+                                                            ? 'Unallocated'
+                                                            : 'Unknown'
+                                                        : partition.filesystem}
+                                                {@const prettySize = prettyBytes(size)}
+                                                <div class="flex pr-2 gap-x-2">
+                                                    <div style="background-color: {color}" class="w-4 h-4 rounded-sm"></div>
+                                                    <div class="flex flex-col text-sm font-poppinmedium font-medium">
+                                                        <span class="pl-1">{path}</span>
+                                                        <span class="pl-1">{prettySize} {filesystem}</span>
+                                                    </div>
+                                                </div>
+                                            {/each}
+                                        </div>
+                                    </div>
+                                {/await}
+                        {:else}
+                            To be filled
+                        {/if}
 
-						<div class="mt-[8px]">
-							<div
-								class="relative flex items-center w-full h-[50px] rounded-tl-lg rounded-tr-lg bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto"
-							>
-								<div class="grid grid-cols-4 text-center w-full">
-									<h2>Partition</h2>
-									<h2>File system</h2>
-									<h2>Used as</h2>
-									<h2>Format</h2>
-								</div>
-							</div>
-							{#await getDisk() then disk}
-								{#each disk as partition}
-									{@const mountpoint =
-										partition.mountpoint === null ? 'No mountpoint' : partition.mountpoint}
-									{@const path = partition.path === null ? 'Unallocated' : partition.path}
-									{@const filesystem =
-										path === 'Unallocated'
-											? 'Unallocated'
-											: partition.filesystem === null
-												? 'Unknown'
-												: partition.filesystem}
-									{@const format = partition.format ? 'Yes' : 'No'}
-									{@const size = prettyBytes(partition.size * 512)}
+                        {#if disks !== null}
+                            <div class="mt-[8px]">
+                                <div
+                                    class="relative flex items-center w-full h-[50px] rounded-tl-lg rounded-tr-lg bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto"
+                                >
+                                    <div class="grid grid-cols-4 text-center w-full">
+                                        <h2>Partition</h2>
+                                        <h2>File system</h2>
+                                        <h2>Used as</h2>
+                                        <h2>Format</h2>
+                                    </div>
+                                </div>
+                                {#each disks as partition}
+                                    {@const mountpoint =
+                                        partition.mountpoint === null ? 'No mountpoint' : partition.mountpoint}
+                                    {@const path = partition.path === null ? 'Unallocated' : partition.path}
+                                    {@const filesystem =
+                                        path === 'Unallocated'
+                                            ? 'Unallocated'
+                                            : partition.filesystem === null
+                                                ? 'Unknown'
+                                                : partition.filesystem}
+                                    {@const format = partition.format ? 'Yes' : 'No'}
+                                    {@const size = prettyBytes(partition.size * 512)}
 
-									<div
-										class="relative grid grid-cols-4 gap-x-1 md:flex-row items-center w-full h-[65px] bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto"
-									>
-										<div class="pl-[10px]">
-											<h2>{path}</h2>
-											<h2 class="text-black">{size}</h2>
-										</div>
-										<div
-											class="bg-grayTealinux w-full h-[42px] rounded-xl flex justify-center items-center flex-wrap"
-										>
-											<span class="text-black">{filesystem}</span>
-										</div>
-										<div
-											class="bg-grayTealinux w-full h-[42px] rounded-xl flex justify-center items-center flex-wrap"
-										>
-											<span class="text-black">{mountpoint}</span>
-										</div>
-										<div
-											class="bg-grayTealinux w-full h-[42px] rounded-xl flex justify-center items-center flex-wrap"
-										>
-											<span class="text-black">{format}</span>
-										</div>
-									</div>
-								{/each}
-							{/await}
-						</div>
+                                    <div
+                                        class="relative grid grid-cols-4 gap-x-1 md:flex-row items-center w-full h-[65px] bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto"
+                                    >
+                                        <div class="pl-[10px]">
+                                            <h2>{path}</h2>
+                                            <h2 class="text-black">{size}</h2>
+                                        </div>
+                                        <div
+                                            class="bg-grayTealinux w-full h-[42px] rounded-xl flex justify-center items-center flex-wrap"
+                                        >
+                                            <span class="text-black">{filesystem}</span>
+                                        </div>
+                                        <div
+                                            class="bg-grayTealinux w-full h-[42px] rounded-xl flex justify-center items-center flex-wrap"
+                                        >
+                                            <span class="text-black">{mountpoint}</span>
+                                        </div>
+                                        <div
+                                            class="bg-grayTealinux w-full h-[42px] rounded-xl flex justify-center items-center flex-wrap"
+                                        >
+                                            <span class="text-black">{format}</span>
+                                        </div>
+                                    </div>
+                                {/each}
+                            </div>
+                        {/if}
+                    {/await}
 					</div>
 				</div>
 				<div class="flex justify-center items-center mx-auto bg-white">
