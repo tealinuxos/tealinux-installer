@@ -33,6 +33,15 @@
 		return JSON.parse(filesystems);
 	};
 
+    const filesystems = [
+        "btrfs",
+        "ext4",
+        "fat32",
+        "fat16",
+        "exfat",
+        "linux-swap(v1)"
+    ];
+
 	const handlePartitionDetail = async (disks, selectedDisk) => {
 		partitionDetail = [];
 
@@ -177,7 +186,9 @@
 	const setup = () => {
 		getStorageJSON().then((disks) => {
 			getColors(disks);
+            handlePartitionDetail(disks, selectedDisk);
 		});
+
 
 		getFirmwareType().then((firmware) => {
 			if (firmware === 'UEFI') {
@@ -359,13 +370,9 @@
 												>
 													<option disabled={true} value={null}>Unallocated</option>
 
-													{#await getFilesystemJSON()}
-														<option disabled={true}>Loading...</option>
-													{:then filesystems}
 														{#each filesystems as filesystem}
 															<option value={filesystem}>{filesystem}</option>
 														{/each}
-													{/await}
 												</select>
 												<svg
 													width="14"
@@ -443,13 +450,9 @@
 														<option disabled={true} value={null}>Unknown</option>
 													{/if}
 
-													{#await getFilesystemJSON()}
-														<option disabled={true}>Loading...</option>
-													{:then filesystems}
 														{#each filesystems as filesystem}
 															<option value={filesystem}>{filesystem}</option>
 														{/each}
-													{/await}
 												</select>
 												<svg
 													width="14"
