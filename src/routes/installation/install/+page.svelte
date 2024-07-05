@@ -56,7 +56,7 @@
 			<span class=" font-poppinsemibold text-3xl tracking-[-5%]">{message}</span>
 			<div class="flex flex-col justify-center w-[90dvw] items-center h-10 mt-5">
 				<div
-					class="relative flex h-full items-center w-[100%] mx-auto bg-[#D9D9D9] border border-[#B1B1B1] rounded-[128px]"
+					class="relative flex h-full items-center w-[100%] mx-auto bg-[#white] border border-[#B1B1B1] rounded-[128px]"
 				>
 					<div
 						class="absolute bg-[#26A768] h-full rounded-[128px] flex items-center"
