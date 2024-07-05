@@ -80,8 +80,8 @@
 		getLocale();
 		getBlueprint().then((blueprint) => {
 			if (blueprint.locale === null) {
-				selectedLocale = 'aa_DJ.UTF-8 UTF-8';
-				searchTerm = 'aa_DJ.UTF-8 UTF-8';
+				selectedLocale = 'en_US.UTF-8 UTF-8';
+				searchTerm = 'en_US.UTF-8 UTF-8';
 			} else {
 				selectedLocale = blueprint.locale.main;
 				searchTerm = blueprint.locale.main;
