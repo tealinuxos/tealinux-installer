@@ -83,7 +83,8 @@
 	function openOptions() {
 		showOptions = true;
 	}
-	function closeOptions() {
+	function closeOptions(value) {
+		searchTerm = value;
 		showOptions = false;
 	}
 
@@ -174,7 +175,7 @@
 								<label
 									class="flex flex-row-reverse w-full items-center justify-between py-4 px-4 border border-b-grayBorder last:border-none bg-white hover:bg-slate-100 transition-all"
 									for="timezone-{timezone}"
-									on:click={closeOptions}
+									on:click={closeOptions(timezone)}
 								>
 									<input
 										required
