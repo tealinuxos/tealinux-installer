@@ -45,7 +45,7 @@
 				<div class="bg-white flex justify-between items-center py-8 px-8 h-fit rounded-3xl">
 					<div class="flex flex-[1] flex-col items-center">
 						<img src="/windows.svg" alt="" />
-						<p class="text-2xl font-medium mt-[8px]">82SV</p>
+						<p class="text-2xl font-medium mt-[8px]">{json.model.systemProductName}</p>
 						<p>{json.model.systemProductName + ' - ' + json.model.systemVersion}</p>
 						<h2 class="font-medium font-poppin text-[16px] flex items-center">
 							<img src="/battrey.svg" alt="" class="pr-[8px]" />
