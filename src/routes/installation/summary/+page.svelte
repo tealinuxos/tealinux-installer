@@ -90,7 +90,7 @@
 			<div class="mb-4">
 				<div class="flex justify-between">
 					<h2 class="font-poppin mb-2 font-semibold">Keyboard layout</h2>
-					<img src="/green-pencil.svg" alt="" class="text-left mb-2" />
+					<img on:click={() => window.location.href = '/installation/keyboard'} src="/green-pencil.svg" alt="" class="text-left mb-2" />
 				</div>
 				<div
 					class="relative flex items-center w-full h-[45px] rounded-[10px] bg-grayTealinux border-2 border-black overflow-hidden mb-2 font-poppin text-[14px] mx-auto shadow-2xl"
@@ -104,7 +104,7 @@
 			<div class="mx-auto mb-4">
 				<div class="flex justify-between">
 					<h2 class="font-poppin text-left mb-2 font-semibold">Timezone</h2>
-					<img src="/green-pencil.svg" alt="" class="mb-2" />
+					<img on:click={() => window.location.href = '/installation/timezone'} src="/green-pencil.svg" alt="" class="text-left mb-2" />
 				</div>
 				<div
 					class="relative flex items-center w-full h-[45px] rounded-[10px] overflow-hidden bg-grayTealinux border-2 border-black mb-2 font-poppin text-[14px] mx-auto shadow-2xl"
@@ -131,7 +131,7 @@
 			<div class="mx-auto mb-4">
 				<div class="flex justify-between">
 					<h2 class="font-poppin text-left mb-2 font-semibold">Locale</h2>
-					<img src="/green-pencil.svg" alt="" class="mb-2" />
+					<img on:click={() => window.location.href = '/installation/locale'} src="/green-pencil.svg" alt="" class="text-left mb-2" />
 				</div>
 				<div
 					class="relative flex items-center w-full h-[45px] rounded-[10px] overflow-hidden bg-grayTealinux border-2 border-black mb-2 font-poppin text-[14px] mx-auto shadow-2xl"
@@ -147,7 +147,7 @@
 			<div class="mx-auto mb-4">
 				<div class="flex justify-between">
 					<h2 class="font-poppin text-left mb-2 font-semibold">User</h2>
-					<img src="/green-pencil.svg" alt="" class="mb-2" />
+					<img on:click={() => window.location.href = '/installation/account'} src="/green-pencil.svg" alt="" class="text-left mb-2" />
 				</div>
 				<div
 					class="relative flex items-center w-full h-[45px] rounded-[10px] overflow-hidden bg-grayTealinux border-2 border-black mb-2 font-poppin text-[14px] mx-auto shadow-2xl"
@@ -185,7 +185,7 @@
 			<div class="w-full mx-auto mb-4">
 				<div class="flex relative items-center justify-between">
 					<h2 class="font-poppin font-semibold text-[15px]">Partition installation</h2>
-					<img src="/green-pencil.svg" alt="" />
+					<img on:click={() => window.location.href = '/installation/partition'} src="/green-pencil.svg" alt="" class="text-left mb-2" />
 				</div>
                 <h1 class="p-4 text-[18px] font-bold">After</h1>
 
@@ -250,7 +250,8 @@
                     {#await getDisk() then disk}
                         {#each disk as partition}
                             {@const mountpoint = partition.mountpoint === null ? 'No mountpoint' : partition.mountpoint}
-                            {@const filesystem = partition.filesystem === null ? 'Unknown' : partition.filesystem}
+                            {@const path = partition.path === null ? 'Unallocated' : partition.path}
+                            {@const filesystem = path === 'Unallocated' ? 'Unallocated' : partition.filesystem === null ? 'Unknown' : partition.filesystem}
                             {@const format = partition.format ? 'Yes' : 'No'}
                             {@const size = prettyBytes(partition.size * 512)}
 
@@ -258,7 +259,7 @@
                                 class="relative flex flex-col md:flex-row items-center w-full h-[65px] bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto"
                             >
                                 <div class="pl-[10px]">
-                                    <h2>/dv/sda</h2>
+                                    <h2>{path}</h2>
                                     <h2 class="text-gray-500">{size}</h2>
                                 </div>
                                 <div class="flex flex-wrap pl-[10px] md:pl-[100px] gap-4 md:gap-12">
