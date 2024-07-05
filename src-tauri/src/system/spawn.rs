@@ -9,5 +9,5 @@ pub fn spawn_gparted()
 #[tauri::command]
 pub fn spawn_terminal()
 {
-    cmd!("gnome-terminal").run().unwrap();
+    cmd!("kgx").run().unwrap();
 }
