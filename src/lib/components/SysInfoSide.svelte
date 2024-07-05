@@ -85,7 +85,9 @@
 				{@const memoryPercent = (json.memory.used / json.memory.capacity) * 100}
 				{@const storageGB = prettyBytes(parseInt(json.disk[0].size.replace('s', ' ')) * 512)}
 				<div class=" mx-auto overflow-y-auto font-poppinmedium font-medium">
-					<div class=" bg-whiteTealinux w-full rounded-[43px] mb-6 border-[3px] border-greenTealinux">
+					<div
+						class=" bg-whiteTealinux w-full rounded-[43px] mb-6 border-[3px] border-greenTealinux"
+					>
 						<div
 							class="bg-transparent flex justify-between gap-x-4 items-center py-8 px-8 h-fit rounded-3xl"
 						>
@@ -164,7 +166,9 @@
 						</div>
 					</div>
 					<!-- ============================================================================================ -->
-					<div class=" bg-whiteTealinux w-full rounded-[43px] mb-6 flex justify-center overflow-y-auto border-[3px] border-greenTealinux">
+					<div
+						class=" bg-whiteTealinux w-full rounded-[43px] mb-6 flex justify-center overflow-y-auto border-[3px] border-greenTealinux"
+					>
 						<div
 							class="bg-transparent place-items-center py-2 px-8 max-h-[35dvh] min-w-full rounded-3xl overflow-y-auto"
 						>
@@ -239,8 +243,9 @@
 					</div>
 					<div class="flex justify-center items-center mx-auto bg-white">
 						<a
+							on:click={handleButtonClick}
 							href="/installation/"
-							class="text-white bg-greenTealinux focus:ring-4 w-[300px] text-center font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-8 "
+							class="text-white bg-greenTealinux focus:ring-4 w-[300px] text-center font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-8"
 							>Back to system information page</a
 						>
 					</div>
