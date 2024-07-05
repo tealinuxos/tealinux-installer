@@ -1,8 +1,10 @@
 use crate::installer::BluePrint;
-use crate::storage::{ format, mount, umount };
+use crate::read::get_read;
+use crate::storage::{ format, mount, umount, format_unallocated };
 use crate::storage::btrfs::{ mount_subvolume, create_subvolume };
 use duct::cmd;
 use tea_arch_chroot_lib::resource::FirmwareKind;
+use tea_partition_api_lib::GetDiskInformation;
 use std::io::Error;
 use std::fs::{create_dir, create_dir_all};
 
@@ -11,14 +13,27 @@ pub fn partitioning(blueprint: &BluePrint) -> Result<(), Error>
     let firmware_type = &blueprint.bootloader.as_ref().unwrap().firmware_type;
     let bootloader_path = &blueprint.bootloader.as_ref().unwrap().path;
 
+    let max_number = blueprint.disk.as_ref().unwrap().iter().max_by_key(|partition| partition.number);
+    let max_number = max_number.unwrap().number;
+    let max_number = max_number + 1;
+
     for i in blueprint.disk.as_ref().unwrap().iter().to_owned().rev()
     {
-        let i_path = &i.path;
+        let mut i_path = i.path.clone();
         let i_format = i.format;
         let i_mountpoint = &i.mountpoint;
         let i_filesystem = &i.filesystem;
+        let i_start = i.start;
+        let i_end = i.end;
+        let i_disk_path = &i.disk_path.as_ref().unwrap();
 
-        if i_format && i_filesystem.is_some()
+        if i_format && i_path.is_none() && i_filesystem.is_some()
+        {
+            let path = format_unallocated(i_disk_path, i_start, i_end, max_number , i_filesystem.as_ref().unwrap())?;
+            i_path = path;
+        }
+
+        if i_format && i_filesystem.is_some() && i_path.is_some()
         {
             format(i_filesystem.as_ref().unwrap(), i_path.as_ref().unwrap())?;
         }
@@ -27,7 +42,7 @@ pub fn partitioning(blueprint: &BluePrint) -> Result<(), Error>
         {
             if i_mountpoint.contains("swap")
             {
-                cmd!("swapon", i_mountpoint).run()?;
+                cmd!("swapon", i_path.as_ref().unwrap()).run()?;
             }
 
             else if i_mountpoint.contains("boot")
@@ -38,18 +53,18 @@ pub fn partitioning(blueprint: &BluePrint) -> Result<(), Error>
 
             else if i_mountpoint.eq("/") && i_filesystem.as_ref().unwrap().eq("btrfs")
             {
-                mount(i.path.as_ref().unwrap(), "/mnt", None)?;
+                mount(i_path.as_ref().unwrap(), "/mnt", None)?;
 
                 create_subvolume("/mnt/@")?;
                 create_subvolume("/mnt/@home")?;
 
                 umount("/mnt")?;
 
-                mount_subvolume("@", i.path.as_ref().unwrap(), "/mnt")?;
+                mount_subvolume("@", i_path.as_ref().unwrap(), "/mnt")?;
 
                 create_dir("/mnt/home")?;
 
-                mount_subvolume("@home", i.path.as_ref().unwrap(), "/mnt/home")?;
+                mount_subvolume("@home", i_path.as_ref().unwrap(), "/mnt/home")?;
             }
 
             else

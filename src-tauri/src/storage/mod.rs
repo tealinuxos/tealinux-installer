@@ -2,6 +2,8 @@ use std::io::Error;
 use duct::cmd;
 use std::fs::File;
 use std::io::BufReader;
+use crate::read::get_read;
+
 use super::installer::BluePrint;
 
 pub mod filesystem;
@@ -136,4 +138,45 @@ pub fn umount_all() -> Result<(), Error>
     }
 
     Ok(())
+}
+
+pub fn format_unallocated(disk_path: &str, start: u64, end: u64, number: u64, filesystem: &str) -> Result<Option<String>, Error>
+{
+    let start = format!("{}s", start);
+    let end = format!("{}s", end);
+
+    cmd!("parted", disk_path, "mkpart", "primary", start, end).run()?;
+
+    let path = self::get_path_from_number(disk_path, number as usize)?;
+
+    format(filesystem, &path)?;
+
+    Ok(Some(path))
+}
+
+pub fn get_path_from_number(disk_path: &str, number: usize) -> Result<String, Error>
+{
+    let disk = get_read().disk;
+
+    let mut result = String::new();
+
+    for i in disk
+    {
+        if let Some(disk) = i.disk_path
+        {
+            if disk.eq(disk_path)
+            {
+                if let Some(partition) = i.partitions
+                {
+                    result  = partition
+                        .iter()
+                        .filter(|partition| partition.number.is_some() && partition.number.as_ref().unwrap().eq(&number.to_string()))
+                        .map(|partition| if partition.partition_path.is_some() { partition.partition_path.as_ref().unwrap() } else { "none" })
+                        .collect();
+                }
+            }
+        }
+    }
+
+    Ok(result)
 }
