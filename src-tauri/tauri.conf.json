@@ -61,11 +61,11 @@
     },
     "windows": [
       {
-        "fullscreen": false,
-        "height": 600,
+        "fullscreen": true,
+        "height": 720,
         "resizable": true,
         "title": "TeaLinux Installer",
-        "width": 800
+        "width": 1280
       }
     ]
   }
