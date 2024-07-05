@@ -3,7 +3,7 @@ mod payload;
 mod step;
 
 use std::fs::File;
-use std::io::BufReader;
+use std::io::{ Error, BufReader };
 use tea_arch_chroot_lib::prechroot::*;
 use tea_arch_chroot_lib::chroot::*;
 use super::read::online::Online;
@@ -12,6 +12,7 @@ use self::payload::Payload;
 use tauri::Window;
 use std::thread::sleep;
 use std::time::Duration;
+use duct::cmd;
 
 pub use self::blueprint::BluePrint;
 pub use self::blueprint::Partition;
@@ -153,6 +154,8 @@ pub async fn start_install(window: Window)
 
     Account::remove_user("tea").unwrap();
 
+    remove_installer().unwrap();
+
     // Umount previously mounted partition
 
     umount_all_target("/mnt").unwrap();
@@ -163,6 +166,13 @@ pub async fn start_install(window: Window)
         percentage: 100,
         message: "Installation completed".into()
     });
+}
+
+fn remove_installer() -> Result<(), Error>
+{
+    cmd!("arch-chroot", "/mnt", "pacman", "-R", "--noconfirm", "tealinux-installer-git").run()?;
+
+    Ok(())
 }
 
 #[tauri::command]
