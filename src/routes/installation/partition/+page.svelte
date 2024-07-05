@@ -42,8 +42,12 @@
 			let startSector = disks[selectedDisk].partitions[i].start.slice(0, -1);
 			let endSector = disks[selectedDisk].partitions[i].end.slice(0, -1);
 			let size = disks[selectedDisk].partitions[i].size.slice(0, -1);
+			let partitionNumber = disks[selectedDisk].partitions[i].number;
+			let partitionDiskPath = disks[selectedDisk].diskPath;
 
 			partitionDetail.push({
+                number: parseInt(partitionNumber),
+                diskPath: partitionDiskPath,
 				path: partitionPath,
 				mountpoint: null,
 				filesystem: filesystemType,
@@ -163,8 +167,7 @@
 	};
 
 	const spawnTerminal = async () => {
-		// await invoke('spawn_terminal');
-		alert('WIP');
+		await invoke('spawn_terminal');
 	};
 
 	const setReadJSON = async () => {
@@ -389,8 +392,8 @@
 												>
 													<option value={null}>No Mountpoint</option>
 													<option value="/">/</option>
-													<option value="/boot/efi">/boot/efi</option>
 													<option value="/home">/home</option>
+													<option value="swap">swap</option>
 												</select>
 												<svg
 													width="14"
@@ -473,7 +476,6 @@
 												>
 													<option value={null}>No Mountpoint</option>
 													<option value="/">/</option>
-													<option value="/boot/efi">/boot/efi</option>
 													<option value="/home">/home</option>
 													<option value="swap">swap</option>
 												</select>
