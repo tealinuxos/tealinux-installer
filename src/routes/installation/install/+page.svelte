@@ -3,17 +3,19 @@
 	import { listen } from '@tauri-apps/api/event';
 	import { exit } from '@tauri-apps/api/process';
 	import { onMount } from 'svelte';
+	import Error from '$lib/components/modals/Error.svelte';
 
 	let percentage = 100;
 	let message = '';
+    let errorMessage = null;
 
-	const unlisten = listen('INSTALL', (event) => {
+	const listenInstall = listen('INSTALL', (event) => {
 		percentage = event.payload.percentage;
 		message = event.payload.message;
+	});
 
-		if (message === 'Installation completed') {
-			alert(message);
-		}
+	const listenError = listen('ERROR', (event) => {
+		errorMessage = event.payload.message;
 	});
 
 	const startInstall = async () => {
@@ -28,6 +30,10 @@
 		await invoke('reboot');
 	};
 </script>
+
+{#if errorMessage !== null}
+    <Error errorMessage={errorMessage} />
+{/if}
 
 <section class="flex flex-col justify-between h-screen items-center text-center p-8">
 	<h1 class="font-archivo text-3xl font-bold tracking-[-4.5%]">Installing...</h1>
