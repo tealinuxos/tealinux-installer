@@ -105,7 +105,7 @@
 			<!-- bg-slate-300 -->
 			<form class=" text-center w-[50dvw] p-8 rounded-md h-[85dvh]">
 				<h1 class="text-center mb-6 font-bold text-[32px] font-archivo">Select Locales</h1>
-	
+
 				<div class="relative max-w-md mx-auto mb-4">
 					<h2 class="font-poppin text-left mb-2 font-medium">Main Locale</h2>
 					<div
@@ -138,29 +138,31 @@
 							</svg>
 						</div>
 					</div>
-	
+
 					{#if isOpen}
 						<div
 							class="absolute z-10 w-full bg-white border border-greyBorder rounded-b-xl max-h-[30vh] overflow-y-auto"
 						>
 							{#each filteredLocales as locale}
-								<div
+								<label
 									class="flex flex-row-reverse w-full items-center justify-between py-4 px-4 border border-b-slate-400 last:border-none bg-slate-200 hover:bg-slate-100 transition-all"
+									for={locale.name}
 								>
 									<input
 										type="radio"
-										name={locale.name}
+										name="locale"
+										id={locale.name}
 										class="h-6 w-6"
 										value={locale.name}
 										on:click={(e) => selectLocale(e.target.value)}
 									/>
-									<label for={locale.name}>{locale.name}</label>
-								</div>
+									<p>{locale.name}</p>
+								</label>
 							{/each}
 						</div>
 					{/if}
 				</div>
-	
+
 				<div class="max-w-md mx-auto mb-4">
 					<h2 class="font-poppin text-left mb-2 font-medium">Date and time</h2>
 					<div
@@ -170,7 +172,7 @@
 						<span>{timePreview}</span>
 					</div>
 				</div>
-	
+
 				<div class="max-w-md mx-auto mb-4">
 					<h2 class="font-poppin text-left mb-2 font-medium">Number and currency</h2>
 					<div
@@ -201,4 +203,3 @@
 		{/if}
 	</section>
 </div>
-
