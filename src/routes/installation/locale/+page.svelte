@@ -92,7 +92,9 @@
 
 <Sidebar />
 <div class="relative w-full">
-	<header class="flex items-center justify-center w-full gap-[10px] mt-[40px]">
+	<header
+		class="flex items-center justify-center w-full gap-[10px] py-10 fixed top-0 bg-whiteTealinux z-30"
+	>
 		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
@@ -100,7 +102,7 @@
 		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
 	</header>
-	<section class="flex flex-col items-center justify-center h-screen">
+	<section class="flex flex-col items-center justify-center h-screen pt-20">
 		{#if showLocales}
 			<!-- bg-slate-300 -->
 			<form class=" text-center w-[50dvw] p-8 rounded-md h-[85dvh]">
