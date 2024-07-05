@@ -60,7 +60,6 @@
 	const selectTimezone = (value) => {
 		selectedTimezone = value;
 		searchTerm = value.split('/')[0];
-		showOptions = false;
 	};
 
 	$: searchTerm, filterOptions();
@@ -84,8 +83,11 @@
 		});
 	});
 
-	function toggleOptions() {
-		showOptions = !showOptions;
+	function openOptions() {
+		showOptions = true;
+	}
+	function closeOptions() {
+		showOptions = false;
 	}
 
 	let date = new Date();
@@ -113,6 +115,7 @@
 	};
 
 	$: selectedTimezone, handlePreview();
+	$: console.log(showOptions);
 </script>
 
 <Sidebar />
@@ -131,7 +134,7 @@
 				<div>
 					<h1 class="text-center mb-6 font-bold text-[32px] font-archivo">Select Timezone</h1>
 				</div>
-	
+
 				<div class="max-w-md mx-auto relative">
 					<h2 class="font-poppin text-left mb-2">Region</h2>
 					<div
@@ -143,7 +146,7 @@
 							type="text"
 							placeholder="Select Region"
 							class="h-full w-full outline-none text-sm text-gray-700 bg-grayTealinux pr-2 pl-[12px] font-poppin"
-							on:focus={toggleOptions}
+							on:focus={openOptions}
 							bind:value={searchTerm}
 						/>
 						<div class="inset-y-0 left-0 flex items-center pr-4">
@@ -171,19 +174,22 @@
 							out:fly={{ y: 10, duration: 300 }}
 						>
 							{#each filteredTimezones as timezone}
-								<div
+								<label
 									class="flex flex-row-reverse w-full items-center justify-between py-4 px-4 border border-b-grayBorder last:border-none bg-white hover:bg-slate-100 transition-all"
+									for="timezone-{timezone}"
+									on:click={closeOptions}
 								>
 									<input
 										required
 										type="radio"
 										name="timezone"
-										id="timezone"
+										id="timezone-{timezone}"
 										value={timezone}
-										on:click={(e) => selectTimezone(e.target.value)}
+										bind:group={selectedTimezone}
+										class="w-5 h-5"
 									/>
-									<label>{timezone}</label>
-								</div>
+									<p>{timezone}</p>
+								</label>
 							{/each}
 						</div>
 					{/if}
@@ -224,7 +230,7 @@
 								stroke-linejoin="round"
 							/>
 						</svg>
-	
+
 						<span class="ml-4">{timePreview}</span>
 						<span class="absolute right-0 mr-4">{datePreview}</span>
 					</div>
@@ -250,4 +256,3 @@
 		{/if}
 	</section>
 </div>
-
