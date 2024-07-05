@@ -152,7 +152,7 @@
 					</div>
 				{/if}
 
-				<div class="fixed bottom-[0px] w-[50dvw] mx-auto my-30 h-[15dvh]">
+				<div class="fixed bottom-[0px] w-[28rem] max-w-md mx-auto my-30 h-[15dvh]">
 					<div class="flex justify-between w-full font-poppin">
 						<a
 							href="/installation"
