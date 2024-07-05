@@ -3,6 +3,7 @@
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
+	import { getBlueprint } from '../global.js';
 
 	let json = [];
 	let filteredKeyboards = [];
@@ -53,6 +54,20 @@
 
 	onMount(() => {
 		getKeyboard();
+		getBlueprint().then((blueprint) => {
+			console.log(blueprint);
+			if (blueprint.locale === null) {
+				keyboardName = 'us';
+				keyboardVariant = 'euro';
+				selectedKeyboards = 'euro';
+				searchTerm = 'English (US)';
+			} else {
+				keyboardName = blueprint.keyboard.layout;
+				selectedKeyboards = blueprint.keyboard.variant;
+				keyboardVariant = blueprint.keyboard.variant;
+				searchTerm = '';
+			}
+		});
 	});
 </script>
 
