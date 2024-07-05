@@ -35,8 +35,8 @@
 
 	$: searchTerm, filterOptions();
 
-	const selectKeyboards = (name, variant) => {
-		keyboardName = name;
+	const selectKeyboards = (code, variant, name) => {
+		keyboardName = code;
 		keyboardVariant = variant;
 		selectedKeyboards = variant;
 		searchTerm = name;
@@ -139,7 +139,7 @@
 												id="{name}-{code}"
 												value={variant.code}
 												class="w-5 h-5"
-												on:click={() => selectKeyboards(code, variant.code)}
+												on:click={() => selectKeyboards(code, variant.code, name)}
 											/>
 											<div class="text-start text-[14px]">
 												<p>{variant.code}</p>
