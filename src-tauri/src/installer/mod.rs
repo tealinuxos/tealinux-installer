@@ -37,7 +37,7 @@ pub async fn start_install(window: Window)
 
     wait();
 
-    let blueprint = step::json::read_blueprint().unwrap();
+    let blueprint = step::json::read_blueprint().expect("Failed when reading blueprint file");
 
 
     // Partitioning
@@ -49,7 +49,15 @@ pub async fn start_install(window: Window)
 
     wait();
 
-    step::partitioning::partitioning(&blueprint).unwrap();
+    match step::partitioning::partitioning(&blueprint)
+    {
+        Ok(_) => (),
+        Err(_) => {
+            let _ = window.emit("ERROR", self::payload::Error {
+                message: "Error partitioning disk".into()
+            });
+        }
+    }
 
 
     // RSYNC system
@@ -61,16 +69,40 @@ pub async fn start_install(window: Window)
 
     wait();
 
-    rsync::start_rsync().await.unwrap();
+    match rsync::start_rsync().await
+    {
+        Ok(_) => (),
+        Err(_) => {
+            let _ = window.emit("ERROR", self::payload::Error {
+                message: "Error when copying filesystem".into()
+            });
+        }
+    }
 
 
     // Copy kernel to new root
 
-    step::boot::copy_kernel().unwrap();
+    match step::boot::copy_kernel()
+    {
+        Ok(_) => (),
+        Err(_) => {
+            let _ = window.emit("ERROR", self::payload::Error {
+                message: "Failed to copy kernel".into()
+            });
+        }
+    }
 
     // Copy mkinitcpio preset to new root
 
-    step::boot::copy_mkinitcpio_preset().unwrap();
+    match step::boot::copy_mkinitcpio_preset()
+    {
+        Ok(_) => (),
+        Err(_) => {
+            let _ = window.emit("ERROR", self::payload::Error {
+                message: "Failed copying mkinitcpio config".into()
+            });
+        }
+    }
 
 
     // Generate FSTAB
@@ -82,7 +114,15 @@ pub async fn start_install(window: Window)
 
     wait();
 
-    fstab::generate_fstab().await.unwrap();
+    match fstab::generate_fstab().await
+    {
+        Ok(_) => (),
+        Err(_) => {
+            let _ = window.emit("ERROR", self::payload::Error {
+                message: "Error generating fstab".into()
+            });
+        }
+    }
 
 
     // Chroot
@@ -94,7 +134,15 @@ pub async fn start_install(window: Window)
 
     wait();
 
-    pacman::regenerate_pacman_key().unwrap();
+    match pacman::regenerate_pacman_key()
+    {
+        Ok(_) => (),
+        Err(_) => {
+            let _ = window.emit("ERROR", self::payload::Error {
+                message: "Error populating pacman-key".into()
+            });
+        }
+    }
 
 
     // Mkinitcpio
@@ -106,7 +154,15 @@ pub async fn start_install(window: Window)
 
     wait();
 
-    mkinitcpio::generate_initramfs("linux").unwrap();
+    match mkinitcpio::generate_initramfs("linux")
+    {
+        Ok(_) => (),
+        Err(_) => {
+            let _ = window.emit("ERROR", self::payload::Error {
+                message: "Error generating initramfs".into()
+            });
+        }
+    }
 
 
     // Bootloader
@@ -171,6 +227,7 @@ pub async fn start_install(window: Window)
 fn remove_installer() -> Result<(), Error>
 {
     cmd!("arch-chroot", "/mnt", "pacman", "-R", "--noconfirm", "tealinux-installer-git").run()?;
+    std::fs::remove_dir_all("/mnt/etc/xdg/autostart/tealinux-installer.desktop")?;
 
     Ok(())
 }
