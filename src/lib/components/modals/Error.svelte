@@ -1,8 +1,13 @@
 <script>
 	export let errorMessage = 'Lorem ipsum dolor sit amet consectetur adipisicing elit.';
+	import { exit } from '@tauri-apps/api/process';
+
+	const exitOk = async () => {
+		await exit(0);
+	};
 </script>
 
-<div class="absolute h-screen w-screen z-[90] grid place-items-center bg-black/50">
+<div class="absolute h-screen w-screen z-[90] grid place-items-center bg-black/50 top-0">
 	<div
 		class=" bg-whiteTealinux border-2 border-greyBorder p-8 min-w-[450px] max-w-[700px] flex flex-col items-center rounded-lg"
 	>
@@ -26,7 +31,7 @@
 		<h1 class=" text-3xl font-poppin mb-2">Error</h1>
 		<p class=" mb-4">{errorMessage}</p>
 
-		<button class=" py-2 px-4 bg-red-500 text-white font-poppinsemibold rounded-md w-fit mx-auto"
+		<button on:click={exitOk} class=" py-2 px-4 bg-red-500 text-white font-poppinsemibold rounded-md w-fit mx-auto"
 			>Close</button
 		>
 	</div>
