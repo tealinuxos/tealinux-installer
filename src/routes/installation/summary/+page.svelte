@@ -74,7 +74,7 @@
 
 <Sidebar />
 <div class="relative w-full">
-	<header class="flex items-center justify-center w-full gap-[10px] mt-[40px]">
+	<header class="flex items-center justify-center w-full gap-[10px] py-10 fixed top-0 bg-whiteTealinux z-30">
 		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
@@ -83,9 +83,9 @@
 		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
 	</header>
 	{#await getBlueprint() then blueprint}
-	<section class="flex flex-col items-center justify-center h-auto">
+	<section class="flex flex-col items-center justify-center h-auto mt-32">
 		
-		<form class=" text-center w-[50dvw] p-8 rounded-md min-h-[50dvh]">
+		<form class=" text-center w-[50dvw] p-8 rounded-md min-h-[50dvh] pb-[12dvh]">
 			<h1 class="text-center mb-6 font-bold text-[32px] font-archivo">Summary</h1>
 			<div class="mb-4">
 				<div class="flex justify-between">
@@ -240,7 +240,7 @@
 					<div
 						class="relative flex items-center w-full h-[50px] rounded-tl-lg rounded-tr-lg bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto"
 					>
-						<div class="flex flex-wrap gap-x-[180px] ml-[10px]">
+						<div class="grid grid-cols-4 text-center w-full">
 							<h2>Partition</h2>
 							<h2>File system</h2>
 							<h2>Used as</h2>
@@ -256,30 +256,28 @@
                             {@const size = prettyBytes(partition.size * 512)}
 
                             <div
-                                class="relative flex flex-col md:flex-row items-center w-full h-[65px] bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto"
+                                class="relative grid grid-cols-4 md:flex-row items-center w-full h-[65px] bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto"
                             >
-                                <div class="pl-[10px]">
+                                <div class="pl-[10px] text-left">
                                     <h2>{path}</h2>
-                                    <h2 class="text-gray-500">{size}</h2>
+                                    <h2 class="text-black">{size}</h2>
                                 </div>
-                                <div class="flex flex-wrap pl-[10px] md:pl-[100px] gap-4 md:gap-12">
                                     <div
-                                        class="bg-[#828282] w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
+                                        class="bg-[#E7EDED] w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
                                     >
-                                        <span class="text-white">{filesystem}</span>
+                                        <span class="text-black">{filesystem}</span>
                                     </div>
                                     <div
-                                        class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
+                                        class="bg-[#E7EDED] w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
                                     >
-                                        <span class="text-white">{mountpoint}</span>
+                                        <span class="text-black">{mountpoint}</span>
                                     </div>
                                     <div
-                                        class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
+                                        class="bg-[#E7EDED] w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
                                     >
-                                        <span class="text-white">{format}</span>
+                                        <span class="text-black">{format}</span>
                                     </div>
                                 </div>
-                            </div>
                         {/each}
                     {/await}
 				</div>
