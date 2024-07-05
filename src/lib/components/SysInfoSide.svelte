@@ -13,10 +13,9 @@
 	});
 
 	const getStorageJSON = async () => {
-
 		let json = await getRead();
 
-        json = json.disk.filter(disk => disk.partitions !== null);
+		json = json.disk.filter((disk) => disk.partitions !== null);
 
 		return json;
 	};
@@ -58,7 +57,7 @@
 	class:-translate-x-full={!isActivated}
 >
 	<div
-		class="h-dvh bg-[#C8E8D6] w-[60dvw] flex p-8 pr-4 transition-transform duration-700 ease-in-out"
+		class="h-dvh overflow-y-auto bg-[#C8E8D6] w-[60dvw] flex p-8 pr-4 transition-transform duration-700 ease-in-out"
 		class:translate-x-0={isActivated}
 		class:-translate-x-full={!isActivated}
 	>
@@ -85,10 +84,12 @@
 			{#await getRead() then json}
 				{@const memoryPercent = (json.memory.used / json.memory.capacity) * 100}
 				{@const storageGB = prettyBytes(parseInt(json.disk[0].size.replace('s', ' ')) * 512)}
-				<div class=" mx-auto overflow-auto scrollbar-none font-poppinmedium font-medium">
+				<div class=" mx-auto overflow-y-auto font-poppinmedium font-medium">
 					<div class=" bg-white w-full rounded-[43px] mb-6">
-						<div class="bg-white flex justify-between items-center py-8 px-8 h-fit rounded-3xl">
-							<div class="flex flex-[1] flex-col items-center">
+						<div
+							class="bg-white flex justify-between gap-x-4 items-center py-8 px-8 h-fit rounded-3xl"
+						>
+							<div class="flex flex-[1] flex-col items-center text-center">
 								<img src="/windows.svg" alt="" />
 								<p class="text-2xl font-medium mt-[8px]">82SV</p>
 								<p>{json.model.systemProductName + ' - ' + json.model.systemVersion}</p>
@@ -112,11 +113,11 @@
 							</div>
 							<div class="flex flex-[1] flex-col items-center gap-y-4">
 								<!-- RAM -->
-								<div class="flex flex-col items-center h-full">
+								<div class="flex flex-col items-center h-full w-full">
 									<div class="flex items-center justify-center h-full">
 										<h2 class="font-archivo font-bold text-[20px]">Ram</h2>
 									</div>
-									<div class="w-[241px] h-[16px] bg-grayTealinux rounded-[128px]">
+									<div class="w-[80%] h-[16px] bg-grayTealinux rounded-[128px]">
 										<div
 											class="bg-[#F1C21B] h-[16px] rounded-[128px]"
 											style="width: {memoryPercent.toFixed()}%"
@@ -127,11 +128,11 @@
 									</h2>
 								</div>
 								<!-- Storage -->
-								<div class="flex flex-col items-center h-full">
+								<div class="flex flex-col items-center h-full w-full">
 									<div class="flex items-center justify-center h-full">
 										<h2 class="font-archivo font-bold text-[20px]">Storage</h2>
 									</div>
-									<div class="w-[241px] h-[16px] bg-grayTealinux rounded-[128px]">
+									<div class="w-[80%] h-[16px] bg-grayTealinux rounded-[128px]">
 										<div
 											class="bg-[#F1C21B] h-[16px] rounded-[128px] flex items-center"
 											style="width: 90%"
