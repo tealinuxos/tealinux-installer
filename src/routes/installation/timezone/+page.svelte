@@ -73,10 +73,7 @@
 	onMount(() => {
 		getTimezone();
 		getBlueprint().then((blueprint) => {
-			if (blueprint.timezone === null) {
-				selectedTimezone = 'Africa/Abidjan';
-				searchTerm = 'Africa/Abidjan';
-			} else {
+			if (blueprint.timezone !== null) {
 				selectedTimezone = blueprint.timezone.region + '/' + blueprint.timezone.city;
 				searchTerm = blueprint.timezone.region + '/' + blueprint.timezone.city;
 			}
