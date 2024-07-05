@@ -7,7 +7,8 @@ pub fn filesystem_list() -> Vec<String>
         "fat32",
         "exfat",
         "ext3",
-        "ext4"
+        "ext4",
+        "linux-swap(v1)"
     ];
 
     let filesystem: Vec<String> = filesystem.iter().map(|s| s.to_string()).collect();
