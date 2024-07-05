@@ -129,22 +129,23 @@
 								</div>
 								{#if showVariants[name]}
 									{#each keyboard.variant as variant}
-										<div
+										<label
 											class="flex flex-row-reverse w-full items-center justify-between py-4 px-4 border border-b-grayBorder last:border-none bg-greyVariant transition-all"
+											for="{name}-{code}"
 										>
 											<input
 												required
 												type="radio"
-												id={name + 'ID'}
+												id="{name}-{code}"
 												value={variant.code}
 												class="w-5 h-5"
 												on:click={() => selectKeyboards(code, variant.code)}
 											/>
 											<div class="text-start text-[14px]">
-												<label for={name + 'ID'}>{variant.code}</label>
+												<p>{variant.code}</p>
 												<p class=" text-[#0D1814] text-opacity-50">{name} - {code}</p>
 											</div>
-										</div>
+										</label>
 									{/each}
 								{/if}
 							</div>
