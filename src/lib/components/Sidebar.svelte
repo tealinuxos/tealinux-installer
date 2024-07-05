@@ -1,6 +1,9 @@
 <script>
 	import SysInfoSide from './SysInfoSide.svelte';
 	import { sysInfoActivated } from './store.js'; // Path ke file store.js
+	import { summaryActive } from './store.js'; // Path ke file store.js
+
+	import SummaryToAll from './SummaryToAll.svelte';
 
 	let isOpen = false;
 
@@ -11,11 +14,17 @@
 	function openSysInfo() {
 		sysInfoActivated.set(true);
 	}
+
+	function openSummary() {
+		summaryActive.set(true);
+	}
 </script>
 
+	
 <SysInfoSide />
+<SummaryToAll />
 <sidebar
-	class="sidebar fixed top-0 left-0 z-30 h-screen transition-colors duration-500 flex flex-col p-4 space-y-4 {isOpen
+	class="sidebar fixed top-0 left-0 z-[40] h-screen transition-colors duration-500 flex flex-col p-4 space-y-4 {isOpen
 		? ' bg-[#C8E8D6]'
 		: 'collapsed bg-greenTealinux'}"
 >
@@ -57,37 +66,13 @@
 			class="flex items-center space-x-2 bg-white p-2 rounded-md border-2 border-black"
 			on:click={openSysInfo}
 		>
-			<svg
-				class="h-6 w-6 text-black"
-				fill="none"
-				stroke="currentColor"
-				viewBox="0 0 24 24"
-				xmlns="http://www.w3.org/2000/svg"
-			>
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M9.75 17l5.25-5.25-5.25-5.25"
-				></path>
-			</svg>
+			<img src="/sysinfoComp.svg" alt="" class="h-6 w-6 text-black">
 			<span class="font-semibold">System information</span>
 		</button>
-		<button class="flex items-center space-x-2 bg-white p-2 rounded-md border-2 border-black">
-			<svg
-				class="h-6 w-6 text-black"
-				fill="none"
-				stroke="currentColor"
-				viewBox="0 0 24 24"
-				xmlns="http://www.w3.org/2000/svg"
-			>
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M8 6h13M8 12h13m-7 6h7"
-				></path>
-			</svg>
+		<button class="flex items-center space-x-2 bg-white p-2 rounded-md border-2 border-black"
+		on:click={openSummary}
+		>
+			<img src="/summary.svg" alt="" class="h-6 w-6 text-black">
 			<span class="font-semibold">Summary</span>
 		</button>
 	{/if}

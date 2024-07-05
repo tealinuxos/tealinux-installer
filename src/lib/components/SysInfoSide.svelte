@@ -52,12 +52,12 @@
 </script>
 
 <aside
-	class="fixed z-40 bg-black/50 w-screen transition-transform duration-500 ease-in-out"
+	class="fixed z-[50] bg-black/50 w-screen transition-transform duration-500 ease-in-out top-0"
 	class:translate-x-0={isActivated}
 	class:-translate-x-full={!isActivated}
 >
 	<div
-		class="h-dvh overflow-y-auto bg-[#C8E8D6] w-[60dvw] flex p-8 pr-4 transition-transform duration-700 ease-in-out"
+		class="h-dvh overflow-y-auto bg-whiteTealinux w-[60dvw] flex p-8 pr-4 transition-transform duration-700 ease-in-out"
 		class:translate-x-0={isActivated}
 		class:-translate-x-full={!isActivated}
 	>
@@ -85,9 +85,9 @@
 				{@const memoryPercent = (json.memory.used / json.memory.capacity) * 100}
 				{@const storageGB = prettyBytes(parseInt(json.disk[0].size.replace('s', ' ')) * 512)}
 				<div class=" mx-auto overflow-y-auto font-poppinmedium font-medium">
-					<div class=" bg-white w-full rounded-[43px] mb-6">
+					<div class=" bg-whiteTealinux w-full rounded-[43px] mb-6 border-[3px] border-greenTealinux">
 						<div
-							class="bg-white flex justify-between gap-x-4 items-center py-8 px-8 h-fit rounded-3xl"
+							class="bg-transparent flex justify-between gap-x-4 items-center py-8 px-8 h-fit rounded-3xl"
 						>
 							<div class="flex flex-[1] flex-col items-center text-center">
 								<img src="/windows.svg" alt="" />
@@ -164,9 +164,9 @@
 						</div>
 					</div>
 					<!-- ============================================================================================ -->
-					<div class=" bg-white w-full rounded-[43px] mb-6 flex justify-center overflow-y-auto">
+					<div class=" bg-whiteTealinux w-full rounded-[43px] mb-6 flex justify-center overflow-y-auto border-[3px] border-greenTealinux">
 						<div
-							class="bg-white place-items-center py-2 px-8 max-h-[35dvh] min-w-full rounded-3xl overflow-y-auto"
+							class="bg-transparent place-items-center py-2 px-8 max-h-[35dvh] min-w-full rounded-3xl overflow-y-auto"
 						>
 							{#await getStorageJSON()}
 								Loading...
@@ -175,7 +175,7 @@
 									{@const sizeGB = prettyBytes(parseInt(disks[idx].size.replace('s', ' ')) * 512)}
 									{@const colors = getColors(disks, idx)}
 									<div
-										class="flex items-center justify-between bg-gray-300 h-[45px] rounded-[10px] mt-[30.05px] w-full"
+										class="flex items-center justify-between bg-whiteTealinux border-2 border-black h-[45px] rounded-[10px] mt-[30.05px] w-full"
 									>
 										<p
 											class="font-poppin font-medium text-[#0D1814] text-[14px] mt-[12px] ml-[12px] mb-[12px]"
@@ -236,6 +236,13 @@
 								{/each}
 							{/await}
 						</div>
+					</div>
+					<div class="flex justify-center items-center mx-auto bg-white">
+						<a
+							href="/installation/"
+							class="text-white bg-greenTealinux focus:ring-4 w-[300px] text-center font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-8 "
+							>Back to system information page</a
+						>
 					</div>
 				</div>
 			{/await}
