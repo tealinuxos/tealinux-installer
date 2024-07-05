@@ -13,6 +13,20 @@
 		return json;
 	};
 
+    const getTotalStorage = async () => {
+        let storage = await getStorageJSON();
+        let total = 0;
+
+        for (let i of storage.keys())
+        {
+            let size = storage[i].size.slice(0, -1);
+
+            total += parseInt(size);
+        }
+
+        return total;
+    }
+
 	const getColors = (disks, partIdx) => {
 		let length = disks[partIdx].partitions.length;
 
@@ -39,7 +53,6 @@
 <main class="max-h-dvh">
 	{#await getRead() then json}
 		{@const memoryPercent = (json.memory.used / json.memory.capacity) * 100}
-		{@const storageGB = prettyBytes(parseInt(json.disk[0].size.replace('s', ' ')) * 512)}
 		<div class=" py-8 px-16 mx-auto overflow-auto max-h-[85dvh] scrollbar-none">
 			<div class=" bg-greenTealinux bg-opacity-25 w-full p-5 rounded-[43px] mb-6">
 				<div class="bg-white flex justify-between items-center py-8 px-8 h-fit rounded-3xl">
@@ -102,7 +115,10 @@
 										style="width: 90%"
 									></div>
 								</div>
-								<h2 class="font-medium font-poppin text-[16px] mt-2">{storageGB}</h2>
+                                {#await getTotalStorage() then totalSize}
+                                    {@const storageGB = prettyBytes(totalSize * 512)}
+                                    <h2 class="font-medium font-poppin text-[16px] mt-2">{storageGB}</h2>
+                                {/await}
 							</div>
 
 							<!-- GPU -->
