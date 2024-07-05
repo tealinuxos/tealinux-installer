@@ -7,6 +7,11 @@
 	let fullname, username, hostname, password, confirmPassword;
 	let isAdministrator = false;
 	let passwordsMatch = false;
+    let passwordVisible = false;
+
+    function togglePasswordVisibility() {
+        passwordVisible = !passwordVisible;
+    }
 
 	const handleSetAccount = async () => {
 		if (password !== confirmPassword) {
@@ -203,14 +208,13 @@
 				{/if}
 			</div>
 
-			<div class="mt-[15px] flex items-center">
-				<input
-					type="checkbox"
-					class="before:content[''] peer relative h-8 w-8 cursor-pointer appearance-none rounded-full border border-gray-900/20 bg-gray-900/10 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-gray-900 checked:bg-gray-900 checked:before:bg-gray-900 hover:scale-105 hover:before:opacity-0"
-				/>
-				<h3 class="ml-[10px] text-[16px] text-black">Make this user administrator</h3>
-				<!-- font not included -->
-			</div>
+			<!-- <div class="mt-[15px] flex items-center"> -->
+			<!-- 	<input -->
+			<!-- 		type="checkbox" -->
+			<!-- 		class="before:content[''] peer relative h-8 w-8 cursor-pointer appearance-none rounded-full border border-gray-900/20 bg-gray-900/10 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-gray-900 checked:bg-gray-900 checked:before:bg-gray-900 hover:scale-105 hover:before:opacity-0" -->
+			<!-- 	/> -->
+			<!-- 	<h3 class="ml-[10px] text-[16px] text-black">Make this user administrator</h3> -->
+			<!-- </div> -->
 		</form>
 		<div
 			class="max-w-md mx-auto mt-30 mt-[68px] h-[15dvh] fixed bottom-0 bg-whiteTealinux flex items-center"
