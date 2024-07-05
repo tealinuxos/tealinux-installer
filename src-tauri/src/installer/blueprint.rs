@@ -16,8 +16,11 @@ pub struct BluePrint
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all="camelCase")]
 pub struct Partition
 {
+    pub number: u64,
+    pub disk_path: Option<String>,
     pub path: Option<String>,
     pub mountpoint: Option<String>,
     pub filesystem: Option<String>,
