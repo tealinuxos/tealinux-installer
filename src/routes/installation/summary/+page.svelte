@@ -73,17 +73,18 @@
 </script>
 
 <Sidebar />
-
-{#await getBlueprint() then blueprint}
+<div class="relative w-full">
+	<header class="flex items-center justify-center w-full gap-[10px] mt-[40px]">
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+	</header>
+	{#await getBlueprint() then blueprint}
 	<section class="flex flex-col items-center justify-center h-auto">
-		<header class="flex items-center justify-center w-full gap-[10px]">
-			<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
-			<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
-			<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
-			<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
-			<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
-			<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
-		</header>
+		
 		<form class=" text-center w-[50dvw] p-8 rounded-md min-h-[50dvh]">
 			<h1 class="text-center mb-6 font-bold text-[32px] font-archivo">Summary</h1>
 			<div class="mb-4">
@@ -262,7 +263,7 @@
                                 </div>
                                 <div class="flex flex-wrap pl-[10px] md:pl-[100px] gap-4 md:gap-12">
                                     <div
-                                        class="bg-gray-500 w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
+                                        class="bg-[#828282] w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
                                     >
                                         <span class="text-white">{filesystem}</span>
                                     </div>
@@ -283,17 +284,19 @@
 				</div>
 			</div>
 		</form>
-        <div class="flex justify-between items-center h-[15dvh] w-[80dvw] fixed bottom-0 bg-white">
+        <div class="flex justify-between items-center h-[12dvh] w-[80dvw] fixed bottom-0 bg-white">
             <a
                 href="/installation/partition"
-                class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
+                class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ml-[100px]"
                 >Back</a
             >
             <a
                 href="/installation/install"
-                class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
+                class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mr-[100px]"
                 >Install</a
             >
         </div>
 	</section>
 {/await}
+</div>
+

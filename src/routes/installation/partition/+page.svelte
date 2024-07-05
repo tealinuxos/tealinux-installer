@@ -201,8 +201,8 @@
 </script>
 
 <SideBar />
-<section class=" items-center justify-center w-[80dvw] mx-auto">
-	<header class="flex items-center justify-center w-full gap-[10px] mt-8">
+<div class="relative w-full">
+	<header class="flex items-center justify-center w-full gap-[10px] mt-[40px]">
 		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
@@ -210,382 +210,385 @@
 		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
 		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
 	</header>
-	<div class="flex flex-col gap-y-10 min-h-[85dvh] mb-[15dvh]">
-		<h1 class="font-poppinsemibold font-bold text-4xl text-center mt-8">
-			Set Installation Partition
-		</h1>
-		<div class=" font-poppinmedium font-medium flex gap-x-8 justify-center">
-			<button
-                class=" bg-grayTealinux text-black py-2 px-4 rounded-lg"
-                on:click={spawnGparted}
-            >
-                Gparted
-            </button>
-			<button
-                class=" bg-grayTealinux text-black py-2 px-4 rounded-lg"
-                on:click={spawnTerminal}
-            >
-                Terminal
-            </button>
-			<button
-                class=" bg-grayTealinux text-black py-2 px-4 rounded-lg"
-                on:click={refresh}
-            >
-                Refresh
-            </button>
-		</div>
-
-        {#if show}
-		{#await getStorageJSON()}
-			Loading...
-		{:then disks}
-			<!-- option -->
-			<div
-				class="relative flex items-center w-full g-whiteTealinux text-blue-black border-2 border-greyBorder rounded-lg shadow-md shadow-black/50"
-			>
-				<select
-					class="w-full b appearance-none p-4 py-2"
-					id="diskSelect"
-					bind:value={selectedDisk}
-					on:change={() => getColors(disks)}
-				>
-					{#each disks as disk, i}
-						{@const model = disk.model}
-						{@const path = disk.diskPath}
-						<option value={i}>{model + ' (' + path + ')'}</option>
-					{/each}
-				</select>
-				<img src="/dropDownMain.svg" alt="arr" class="absolute right-4" />
-			</div>
-			<div class="flex gap-x-4">
-				<!-- Partition Bar -->
-				<div class="flex-[1] self-start">
-                    <h1 class="p-4 text-[18px] font-bold">Current</h1>
-					<div class="flex mb-4 h-8 w-full overflow-hidden rounded-full">
-						<div class="h-full flex rounded-full overflow-hidden w-full">
-							{#each disks[selectedDisk].partitions as partition, i}
-								{@const diskSize = disks[selectedDisk].size.slice(0, -1)}
-								{@const partitionSize = partition.size.slice(0, -1)}
-								{@const percentage = (partitionSize / diskSize) * 100}
-								{@const color = partitionColors[i]}
-
-								<div style="width: {percentage}%; background-color: {color}" class="h-full"></div>
-							{/each}
-						</div>
-					</div>
-
-					<div class="flex gap-y-4 flex-wrap mb-4">
-						{#each disks[selectedDisk].partitions as partition, i}
-							{@const color = partitionColors[i]}
-							{@const size = partition.size.slice(0, -1) * 512}
-							{@const path =
-								partition.partitionPath == null ? 'Unallocated' : partition.partitionPath.slice(5)}
-							{@const filesystem =
-								partition.filesystem == null
-									? path == 'Unallocated'
-										? 'Unallocated'
-										: 'Unknown'
-									: partition.filesystem}
-							{@const prettySize = prettyBytes(size)}
-							<div class="flex pr-2 gap-x-2">
-								<div style="background-color: {color}" class="w-4 h-4 rounded-sm"></div>
-								<div class="flex flex-col text-sm font-poppinmedium font-medium">
-									<span class="pl-1">{path}</span>
-									<span class="pl-1">{prettySize} {filesystem}</span>
-								</div>
-							</div>
-						{/each}
-					</div>
-
-                    <h1 class="p-4 text-[18px] font-bold">After</h1>
-
-					<div class="flex mb-4 h-8 w-full overflow-hidden rounded-full">
-						<div class="h-full flex rounded-full overflow-hidden w-full">
-							{#each partitionDetail as partition, i}
-								{@const diskSize = disks[selectedDisk].size.slice(0, -1)}
-								{@const partitionSize = partition.size}
-								{@const percentage = (partitionSize / diskSize) * 100}
-								{@const color = partitionColors[i]}
-
-								<div style="width: {percentage}%; background-color: {color}" class="h-full"></div>
-							{/each}
-						</div>
-					</div>
-
-					<div class="flex flex-wrap gap-y-4 gap-x-1 mb-4">
-						{#each partitionDetail as partition, i}
-							{@const color = partitionColors[i]}
-							{@const size = partition.size * 512}
-							{@const path = partition.path == null ? 'Unallocated' : partition.path.slice(5)}
-							{@const mountpoint =
-								partition.mountpoint == null ? 'Not assigned' : partition.mountpoint}
-							{@const filesystem = partition.filesystem == null ? 'Unknown' : partition.filesystem}
-							{@const prettySize = prettyBytes(size)}
-
-							<div class="flex pr-2 gap-x-2">
-								<div style="background-color: {color}" class="w-4 h-4 rounded-sm"></div>
-								<div class="flex flex-col text-sm font-poppinmedium font-medium">
-									<span>{path}</span>
-									<span>{prettySize} {filesystem}</span>
-								</div>
-							</div>
-						{/each}
-					</div>
-				</div>
-				{#await handlePartitionDetail(disks, selectedDisk)}
-					Loading...
-				{:then}
-					<div
-						class="flex flex-col flex-[1] bg-white-tealinux border-2 h-fit rounded-lg border-greyBorder"
-					>
-						{#each partitionDetail as partition, i}
-							{@const path = partition.path}
-
-							{#if path == null}
-								<div
-									class="flex justify-between items-center border border-b-greyBorder p-2 py-3 font-poppinmedium font-medium text-sm"
-								>
-									<span>Unallocated</span>
-									<div class="relative flex items-center">
-										<select
-											bind:value={partitionDetail[i].filesystem}
-											on:change={handleSetPartition}
-											class=" appearance-none flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 pr-8 rounded-lg"
-										>
-											<option disabled={true} value={null}>Unallocated</option>
-
-											{#await getFilesystemJSON()}
-												<option disabled={true}>Loading...</option>
-											{:then filesystems}
-												{#each filesystems as filesystem}
-													<option value={filesystem}>{filesystem}</option>
-												{/each}
-											{/await}
-										</select>
-										<svg
-											width="14"
-											height="9"
-											viewBox="0 0 14 9"
-											class=" absolute right-2"
-											fill="none"
-											xmlns="http://www.w3.org/2000/svg"
-										>
-											<path
-												d="M1 1.5L7 7.5L13 1.5"
-												stroke="black"
-												stroke-width="2"
-												stroke-linecap="round"
-												stroke-linejoin="round"
-											/>
-										</svg>
-									</div>
-									<div class="relative flex items-center">
-										<select
-											bind:value={partitionDetail[i].mountpoint}
-											on:change={handleSetPartition}
-											class=" appearance-none flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 pr-8 rounded-lg"
-										>
-											<option value={null}>No Mountpoint</option>
-											<option value="/">/</option>
-											<option value="/boot/efi">/boot/efi</option>
-											<option value="/home">/home</option>
-										</select>
-										<svg
-											width="14"
-											height="9"
-											viewBox="0 0 14 9"
-											class=" absolute right-2"
-											fill="none"
-											xmlns="http://www.w3.org/2000/svg"
-										>
-											<path
-												d="M1 1.5L7 7.5L13 1.5"
-												stroke="black"
-												stroke-width="2"
-												stroke-linecap="round"
-												stroke-linejoin="round"
-											/>
-										</svg>
-									</div>
-									<div
-										class="flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 rounded-lg"
-									>
-										<label for="format-{i}">Format</label>
-										<input
-											type="checkbox"
-											name="format-{i}"
-											id="format-{i}"
-											class="rounded-checkbox"
-											bind:checked={partitionDetail[i].format}
-											on:change={handleSetPartition}
-										/>
-									</div>
-								</div>
-							{:else}
-								<div
-									class="flex justify-between items-center border border-b-greyBorder p-2 py-3 font-poppinmedium font-medium text-sm"
-								>
-									<span>{path}</span>
-									<div class="relative flex items-center">
-										<select
-											bind:value={partitionDetail[i].filesystem}
-											on:change={handleSetPartition}
-											class=" appearance-none flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 pr-8 rounded-lg"
-										>
-											{#if partitionDetail[i].filesystem === 'ntfs'}
-												<option disabled={true} value="ntfs">ntfs</option>
-											{:else if partitionDetail[i].filesystem === 'linux-swap(v1)'}
-												<option disabled={true} value="linux-swap(v1)">Linux Swap</option>
-											{:else if partitionDetail[i].filesystem === null}
-												<option disabled={true} value={null}>Unknown</option>
-											{/if}
-
-											{#await getFilesystemJSON()}
-												<option disabled={true}>Loading...</option>
-											{:then filesystems}
-												{#each filesystems as filesystem}
-													<option value={filesystem}>{filesystem}</option>
-												{/each}
-											{/await}
-										</select>
-										<svg
-											width="14"
-											height="9"
-											viewBox="0 0 14 9"
-											class=" absolute right-2"
-											fill="none"
-											xmlns="http://www.w3.org/2000/svg"
-										>
-											<path
-												d="M1 1.5L7 7.5L13 1.5"
-												stroke="black"
-												stroke-width="2"
-												stroke-linecap="round"
-												stroke-linejoin="round"
-											/>
-										</svg>
-									</div>
-									<div class="relative flex items-center">
-										<select
-											bind:value={partitionDetail[i].mountpoint}
-											on:change={handleSetPartition}
-											class=" appearance-none flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 pr-8 rounded-lg"
-										>
-											<option value={null}>No Mountpoint</option>
-											<option value="/">/</option>
-											<option value="/boot/efi">/boot/efi</option>
-											<option value="/home">/home</option>
-										</select>
-										<svg
-											width="14"
-											height="9"
-											viewBox="0 0 14 9"
-											class=" absolute right-2"
-											fill="none"
-											xmlns="http://www.w3.org/2000/svg"
-										>
-											<path
-												d="M1 1.5L7 7.5L13 1.5"
-												stroke="black"
-												stroke-width="2"
-												stroke-linecap="round"
-												stroke-linejoin="round"
-											/>
-										</svg>
-									</div>
-									<div
-										class="flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 rounded-lg"
-									>
-										<label for="format-{i}">Format</label>
-										<input
-											type="checkbox"
-											name="format-{i}"
-											id="format-{i}"
-											class="rounded-checkbox"
-											bind:checked={partitionDetail[i].format}
-											on:change={handleSetPartition}
-										/>
-									</div>
-								</div>
-							{/if}
-						{/each}
-					</div>
-				{/await}
-			</div>
-		{/await}
-        {/if}
-        {#if show}
-		<div class="flex flex-col items-center justify-center p-4 font-poppinmedium">
-			<div class="flex items-center justify-center space-x-2 bg-black/25 rounded-t-md">
-				{#await getFirmwareType() then firmwareType}
-					{#if firmwareType === 'UEFI'}
-						<button
-							class={`py-2 px-4 rounded-t-md ${
-								activeTab === 'Efi' ? 'bg-transparent' : 'bg-gray-200 text-black'
-							}`}
-							on:click={async () => {
-								await setTab('Efi');
-								refreshEfi();
-							}}
-						>
-							Efi
-						</button>
-					{/if}
-				{/await}
+	<section class=" items-center justify-center w-[80dvw] mx-auto">
+		<div class="flex flex-col gap-y-10 min-h-[85dvh] mb-[15dvh]">
+			<h1 class="font-poppinsemibold font-bold text-4xl text-center mt-8">
+				Set Installation Partition
+			</h1>
+			<div class=" font-poppinmedium font-medium flex gap-x-8 justify-center">
 				<button
-					class={`py-2 px-4 rounded-t-md ${
-						activeTab === 'Mbr' ? 'bg-transparent' : 'bg-gray-200 text-black'
-					}`}
-					on:click={async () => {
-						await setTab('Mbr');
-						refreshMbr();
-					}}
+					class=" bg-grayTealinux text-black py-2 px-4 rounded-lg"
+					on:click={spawnGparted}
 				>
-					Mbr
+					Gparted
+				</button>
+				<button
+					class=" bg-grayTealinux text-black py-2 px-4 rounded-lg"
+					on:click={spawnTerminal}
+				>
+					Terminal
+				</button>
+				<button
+					class=" bg-grayTealinux text-black py-2 px-4 rounded-lg"
+					on:click={refresh}
+				>
+					Refresh
 				</button>
 			</div>
-			<div
-				class="bg-black/25 text-black flex items-center justify-between gap-x-4 px-8 py-4 rounded-full w-4/5"
-			>
-				<p class="font-bold w-1/4">Boot loader location</p>
-				<div class="relative flex items-center justify-between w-full bg-gray-200 rounded-full">
+	
+			{#if show}
+			{#await getStorageJSON()}
+				Loading...
+			{:then disks}
+				<!-- option -->
+				<div
+					class="relative flex items-center w-full g-whiteTealinux text-blue-black border-2 border-greyBorder rounded-lg shadow-md shadow-black/50"
+				>
 					<select
-						class="w-full b appearance-none p-4 py-2 rounded-full"
+						class="w-full b appearance-none p-4 py-2"
 						id="diskSelect"
-						bind:value={bootloader.path}
+						bind:value={selectedDisk}
+						on:change={() => getColors(disks)}
 					>
-						{#each bootLoaderLocation as location, i}
-							{#if activeTab === 'Efi'}
-								{#await getBootloaderPartition(activeTab) then partition}
-									<option value={partition[i].partitionPath}>{location}</option>
-								{/await}
-							{:else}
-								{#await getBootloaderPartition(activeTab) then partition}
-									<option value={partition[i].diskPath}>{location}</option>
-								{/await}
-							{/if}
+						{#each disks as disk, i}
+							{@const model = disk.model}
+							{@const path = disk.diskPath}
+							<option value={i}>{model + ' (' + path + ')'}</option>
 						{/each}
 					</select>
 					<img src="/dropDownMain.svg" alt="arr" class="absolute right-4" />
 				</div>
+				<div class="flex gap-x-4">
+					<!-- Partition Bar -->
+					<div class="flex-[1] self-start">
+						<h1 class="p-4 text-[18px] font-bold">Current</h1>
+						<div class="flex mb-4 h-8 w-full overflow-hidden rounded-full">
+							<div class="h-full flex rounded-full overflow-hidden w-full">
+								{#each disks[selectedDisk].partitions as partition, i}
+									{@const diskSize = disks[selectedDisk].size.slice(0, -1)}
+									{@const partitionSize = partition.size.slice(0, -1)}
+									{@const percentage = (partitionSize / diskSize) * 100}
+									{@const color = partitionColors[i]}
+	
+									<div style="width: {percentage}%; background-color: {color}" class="h-full"></div>
+								{/each}
+							</div>
+						</div>
+	
+						<div class="flex gap-y-4 flex-wrap mb-4">
+							{#each disks[selectedDisk].partitions as partition, i}
+								{@const color = partitionColors[i]}
+								{@const size = partition.size.slice(0, -1) * 512}
+								{@const path =
+									partition.partitionPath == null ? 'Unallocated' : partition.partitionPath.slice(5)}
+								{@const filesystem =
+									partition.filesystem == null
+										? path == 'Unallocated'
+											? 'Unallocated'
+											: 'Unknown'
+										: partition.filesystem}
+								{@const prettySize = prettyBytes(size)}
+								<div class="flex pr-2 gap-x-2">
+									<div style="background-color: {color}" class="w-4 h-4 rounded-sm"></div>
+									<div class="flex flex-col text-sm font-poppinmedium font-medium">
+										<span class="pl-1">{path}</span>
+										<span class="pl-1">{prettySize} {filesystem}</span>
+									</div>
+								</div>
+							{/each}
+						</div>
+	
+						<h1 class="p-4 text-[18px] font-bold">After</h1>
+	
+						<div class="flex mb-4 h-8 w-full overflow-hidden rounded-full">
+							<div class="h-full flex rounded-full overflow-hidden w-full">
+								{#each partitionDetail as partition, i}
+									{@const diskSize = disks[selectedDisk].size.slice(0, -1)}
+									{@const partitionSize = partition.size}
+									{@const percentage = (partitionSize / diskSize) * 100}
+									{@const color = partitionColors[i]}
+	
+									<div style="width: {percentage}%; background-color: {color}" class="h-full"></div>
+								{/each}
+							</div>
+						</div>
+	
+						<div class="flex flex-wrap gap-y-4 gap-x-1 mb-4">
+							{#each partitionDetail as partition, i}
+								{@const color = partitionColors[i]}
+								{@const size = partition.size * 512}
+								{@const path = partition.path == null ? 'Unallocated' : partition.path.slice(5)}
+								{@const mountpoint =
+									partition.mountpoint == null ? 'Not assigned' : partition.mountpoint}
+								{@const filesystem = partition.filesystem == null ? 'Unknown' : partition.filesystem}
+								{@const prettySize = prettyBytes(size)}
+	
+								<div class="flex pr-2 gap-x-2">
+									<div style="background-color: {color}" class="w-4 h-4 rounded-sm"></div>
+									<div class="flex flex-col text-sm font-poppinmedium font-medium">
+										<span>{path}</span>
+										<span>{prettySize} {filesystem}</span>
+									</div>
+								</div>
+							{/each}
+						</div>
+					</div>
+					{#await handlePartitionDetail(disks, selectedDisk)}
+						Loading...
+					{:then}
+						<div
+							class="flex flex-col flex-[1] bg-white-tealinux border-2 h-fit rounded-lg border-greyBorder"
+						>
+							{#each partitionDetail as partition, i}
+								{@const path = partition.path}
+	
+								{#if path == null}
+									<div
+										class="flex justify-between items-center border border-b-greyBorder p-2 py-3 font-poppinmedium font-medium text-sm"
+									>
+										<span>Unallocated</span>
+										<div class="relative flex items-center">
+											<select
+												bind:value={partitionDetail[i].filesystem}
+												on:change={handleSetPartition}
+												class=" appearance-none flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 pr-8 rounded-lg"
+											>
+												<option disabled={true} value={null}>Unallocated</option>
+	
+												{#await getFilesystemJSON()}
+													<option disabled={true}>Loading...</option>
+												{:then filesystems}
+													{#each filesystems as filesystem}
+														<option value={filesystem}>{filesystem}</option>
+													{/each}
+												{/await}
+											</select>
+											<svg
+												width="14"
+												height="9"
+												viewBox="0 0 14 9"
+												class=" absolute right-2"
+												fill="none"
+												xmlns="http://www.w3.org/2000/svg"
+											>
+												<path
+													d="M1 1.5L7 7.5L13 1.5"
+													stroke="black"
+													stroke-width="2"
+													stroke-linecap="round"
+													stroke-linejoin="round"
+												/>
+											</svg>
+										</div>
+										<div class="relative flex items-center">
+											<select
+												bind:value={partitionDetail[i].mountpoint}
+												on:change={handleSetPartition}
+												class=" appearance-none flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 pr-8 rounded-lg"
+											>
+												<option value={null}>No Mountpoint</option>
+												<option value="/">/</option>
+												<option value="/boot/efi">/boot/efi</option>
+												<option value="/home">/home</option>
+											</select>
+											<svg
+												width="14"
+												height="9"
+												viewBox="0 0 14 9"
+												class=" absolute right-2"
+												fill="none"
+												xmlns="http://www.w3.org/2000/svg"
+											>
+												<path
+													d="M1 1.5L7 7.5L13 1.5"
+													stroke="black"
+													stroke-width="2"
+													stroke-linecap="round"
+													stroke-linejoin="round"
+												/>
+											</svg>
+										</div>
+										<div
+											class="flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 rounded-lg"
+										>
+											<label for="format-{i}">Format</label>
+											<input
+												type="checkbox"
+												name="format-{i}"
+												id="format-{i}"
+												class="rounded-checkbox"
+												bind:checked={partitionDetail[i].format}
+												on:change={handleSetPartition}
+											/>
+										</div>
+									</div>
+								{:else}
+									<div
+										class="flex justify-between items-center border border-b-greyBorder p-2 py-3 font-poppinmedium font-medium text-sm"
+									>
+										<span>{path}</span>
+										<div class="relative flex items-center">
+											<select
+												bind:value={partitionDetail[i].filesystem}
+												on:change={handleSetPartition}
+												class=" appearance-none flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 pr-8 rounded-lg"
+											>
+												{#if partitionDetail[i].filesystem === 'ntfs'}
+													<option disabled={true} value="ntfs">ntfs</option>
+												{:else if partitionDetail[i].filesystem === 'linux-swap(v1)'}
+													<option disabled={true} value="linux-swap(v1)">Linux Swap</option>
+												{:else if partitionDetail[i].filesystem === null}
+													<option disabled={true} value={null}>Unknown</option>
+												{/if}
+	
+												{#await getFilesystemJSON()}
+													<option disabled={true}>Loading...</option>
+												{:then filesystems}
+													{#each filesystems as filesystem}
+														<option value={filesystem}>{filesystem}</option>
+													{/each}
+												{/await}
+											</select>
+											<svg
+												width="14"
+												height="9"
+												viewBox="0 0 14 9"
+												class=" absolute right-2"
+												fill="none"
+												xmlns="http://www.w3.org/2000/svg"
+											>
+												<path
+													d="M1 1.5L7 7.5L13 1.5"
+													stroke="black"
+													stroke-width="2"
+													stroke-linecap="round"
+													stroke-linejoin="round"
+												/>
+											</svg>
+										</div>
+										<div class="relative flex items-center">
+											<select
+												bind:value={partitionDetail[i].mountpoint}
+												on:change={handleSetPartition}
+												class=" appearance-none flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 pr-8 rounded-lg"
+											>
+												<option value={null}>No Mountpoint</option>
+												<option value="/">/</option>
+												<option value="/boot/efi">/boot/efi</option>
+												<option value="/home">/home</option>
+											</select>
+											<svg
+												width="14"
+												height="9"
+												viewBox="0 0 14 9"
+												class=" absolute right-2"
+												fill="none"
+												xmlns="http://www.w3.org/2000/svg"
+											>
+												<path
+													d="M1 1.5L7 7.5L13 1.5"
+													stroke="black"
+													stroke-width="2"
+													stroke-linecap="round"
+													stroke-linejoin="round"
+												/>
+											</svg>
+										</div>
+										<div
+											class="flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 rounded-lg"
+										>
+											<label for="format-{i}">Format</label>
+											<input
+												type="checkbox"
+												name="format-{i}"
+												id="format-{i}"
+												class="rounded-checkbox"
+												bind:checked={partitionDetail[i].format}
+												on:change={handleSetPartition}
+											/>
+										</div>
+									</div>
+								{/if}
+							{/each}
+						</div>
+					{/await}
+				</div>
+			{/await}
+			{/if}
+			{#if show}
+			<div class="flex flex-col items-center justify-center p-4 font-poppinmedium">
+				<div class="flex items-center justify-center space-x-2 bg-black/25 rounded-t-md">
+					{#await getFirmwareType() then firmwareType}
+						{#if firmwareType === 'UEFI'}
+							<button
+								class={`py-2 px-4 rounded-t-md ${
+									activeTab === 'Efi' ? 'bg-transparent' : 'bg-gray-200 text-black'
+								}`}
+								on:click={async () => {
+									await setTab('Efi');
+									refreshEfi();
+								}}
+							>
+								Efi
+							</button>
+						{/if}
+					{/await}
+					<button
+						class={`py-2 px-4 rounded-t-md ${
+							activeTab === 'Mbr' ? 'bg-transparent' : 'bg-gray-200 text-black'
+						}`}
+						on:click={async () => {
+							await setTab('Mbr');
+							refreshMbr();
+						}}
+					>
+						Mbr
+					</button>
+				</div>
+				<div
+					class="bg-black/25 text-black flex items-center justify-between gap-x-4 px-8 py-4 rounded-full w-4/5"
+				>
+					<p class="font-bold w-1/4">Boot loader location</p>
+					<div class="relative flex items-center justify-between w-full bg-gray-200 rounded-full">
+						<select
+							class="w-full b appearance-none p-4 py-2 rounded-full"
+							id="diskSelect"
+							bind:value={bootloader.path}
+						>
+							{#each bootLoaderLocation as location, i}
+								{#if activeTab === 'Efi'}
+									{#await getBootloaderPartition(activeTab) then partition}
+										<option value={partition[i].partitionPath}>{location}</option>
+									{/await}
+								{:else}
+									{#await getBootloaderPartition(activeTab) then partition}
+										<option value={partition[i].diskPath}>{location}</option>
+									{/await}
+								{/if}
+							{/each}
+						</select>
+						<img src="/dropDownMain.svg" alt="arr" class="absolute right-4" />
+					</div>
+				</div>
 			</div>
+			{/if}
 		</div>
-        {/if}
-	</div>
-	<div class="flex justify-between items-center h-[15dvh] w-[80dvw] fixed bottom-0 bg-white">
-		<a
-			href="/installation/account"
-			class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
-			>back</a
-		>
-		<a
-			href="/installation/summary"
-			on:click={handleSetPartition}
-			class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
-			>Next</a
-		>
-	</div>
-</section>
+		<div class="flex justify-between items-center h-[15dvh] w-[80dvw] fixed bottom-0 bg-white">
+			<a
+				href="/installation/account"
+				class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
+				>back</a
+			>
+			<a
+				href="/installation/summary"
+				on:click={handleSetPartition}
+				class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
+				>Next</a
+			>
+		</div>
+	</section>
+</div>
+
 
 <style>
 	/* Apply the same styles to option elements for better compatibility */
