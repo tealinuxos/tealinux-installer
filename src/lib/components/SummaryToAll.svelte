@@ -109,7 +109,7 @@
 					<div class="mb-4 w-full">
 						<div class="flex justify-between">
 							<h2 class="font-poppin mb-2 font-semibold">Keyboard layout</h2>
-							<a href="/installation/keyboard">
+							<a href="/installation/keyboard" on:click={handleClickDButton}>
 								<img src="/green-pencil.svg" alt="" class="mb-2" />
 							</a>
 						</div>
@@ -127,7 +127,7 @@
 						<div class="mb-4 w-full">
 							<div class="flex justify-between">
 								<h2 class="font-poppin text-left mb-2 font-semibold">Timezone</h2>
-								<a href="/installation/timezone">
+								<a href="/installation/timezone" on:click={handleClickDButton}>
 									<img src="/green-pencil.svg" alt="" class="mb-2" />
 								</a>
 							</div>
@@ -164,7 +164,7 @@
 						<div class="mb-4 w-full">
 							<div class="flex justify-between">
 								<h2 class="font-poppin text-left mb-2 font-semibold">Locale</h2>
-								<a href="/installation/locale">
+								<a href="/installation/locale" on:click={handleClickDButton}>
 									<img src="/green-pencil.svg" alt="" class="mb-2" />
 								</a>
 							</div>
@@ -187,7 +187,7 @@
 						<div class="mb-4 w-full">
 							<div class="flex justify-between">
 								<h2 class="font-poppin text-left mb-2 font-semibold">User</h2>
-								<a href="/installation/account">
+								<a href="/installation/account" on:click={handleClickDButton}>
 									<img src="/green-pencil.svg" alt="" class="mb-2" />
 								</a>
 							</div>
@@ -239,7 +239,7 @@
 						<div class="w-full mx-auto mb-4">
 							<div class="flex relative items-center justify-between">
 								<h2 class="font-poppin font-semibold text-[15px]">Partition installation</h2>
-								<a href="/installation/partition">
+								<a href="/installation/partition" on:click={handleClickDButton}>
 									<img src="/green-pencil.svg" alt="" class="" />
 								</a>
 							</div>
