@@ -2,11 +2,8 @@ pub fn filesystem_list() -> Vec<String>
 {
     let filesystem = vec![
         "btrfs",
-        "fat12",
-        "fat16",
         "fat32",
         "exfat",
-        "ext3",
         "ext4",
         "linux-swap(v1)"
     ];
