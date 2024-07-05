@@ -316,24 +316,24 @@
 									{@const size = prettyBytes(partition.size * 512)}
 
 									<div
-										class="relative grid grid-cols-4 md:flex-row items-center w-full h-[65px] bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto"
+										class="relative grid grid-cols-4 gap-x-1 md:flex-row items-center w-full h-[65px] bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto"
 									>
 										<div class="pl-[10px]">
 											<h2>{path}</h2>
 											<h2 class="text-black">{size}</h2>
 										</div>
 										<div
-											class="bg-grayTealinux w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
+											class="bg-grayTealinux w-full h-[42px] rounded-xl flex justify-center items-center flex-wrap"
 										>
 											<span class="text-black">{filesystem}</span>
 										</div>
 										<div
-											class="bg-grayTealinux w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
+											class="bg-grayTealinux w-full h-[42px] rounded-xl flex justify-center items-center flex-wrap"
 										>
 											<span class="text-black">{mountpoint}</span>
 										</div>
 										<div
-											class="bg-grayTealinux w-full md:w-[200px] h-[42px] rounded-xl flex justify-center items-center flex-wrap"
+											class="bg-grayTealinux w-full h-[42px] rounded-xl flex justify-center items-center flex-wrap"
 										>
 											<span class="text-black">{format}</span>
 										</div>
