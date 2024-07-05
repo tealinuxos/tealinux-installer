@@ -21,7 +21,7 @@ pub struct Read
 {
     model: Model,
     memory: Memory,
-    disk: Vec<Disk>,
+    pub disk: Vec<Disk>,
     battery: Battery,
     online: Online,
     lspci: Pci,
