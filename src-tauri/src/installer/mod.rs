@@ -56,6 +56,7 @@ pub async fn start_install(window: Window)
             let _ = window.emit("ERROR", self::payload::Error {
                 message: "Error partitioning disk".into()
             });
+            return ();
         }
     }
 
@@ -76,6 +77,7 @@ pub async fn start_install(window: Window)
             let _ = window.emit("ERROR", self::payload::Error {
                 message: "Error when copying filesystem".into()
             });
+            return ();
         }
     }
 
@@ -89,6 +91,7 @@ pub async fn start_install(window: Window)
             let _ = window.emit("ERROR", self::payload::Error {
                 message: "Failed to copy kernel".into()
             });
+            return ();
         }
     }
 
@@ -101,6 +104,7 @@ pub async fn start_install(window: Window)
             let _ = window.emit("ERROR", self::payload::Error {
                 message: "Failed copying mkinitcpio config".into()
             });
+            return ();
         }
     }
 
@@ -121,6 +125,7 @@ pub async fn start_install(window: Window)
             let _ = window.emit("ERROR", self::payload::Error {
                 message: "Error generating fstab".into()
             });
+            return ();
         }
     }
 
@@ -141,6 +146,7 @@ pub async fn start_install(window: Window)
             let _ = window.emit("ERROR", self::payload::Error {
                 message: "Error populating pacman-key".into()
             });
+            return ();
         }
     }
 
@@ -161,6 +167,7 @@ pub async fn start_install(window: Window)
             let _ = window.emit("ERROR", self::payload::Error {
                 message: "Error generating initramfs".into()
             });
+            return ();
         }
     }
 
@@ -174,7 +181,16 @@ pub async fn start_install(window: Window)
 
     wait();
 
-    step::bootloader::install_bootloader(&blueprint).unwrap();
+    match step::bootloader::install_bootloader(&blueprint)
+    {
+        Ok(_) => (),
+        Err(_) => {
+            let _ = window.emit("ERROR", self::payload::Error {
+                message: "Failed to install bootloader".into()
+            });
+            return ();
+        }
+    }
 
 
     // Account
@@ -184,8 +200,27 @@ pub async fn start_install(window: Window)
         message: "Creating account".into()
     });
 
-    blueprint.account.as_ref().unwrap().set_host().unwrap();
-    blueprint.account.as_ref().unwrap().add_user().unwrap();
+    match blueprint.account.as_ref().unwrap().set_host()
+    {
+        Ok(_) => (),
+        Err(_) => {
+            let _ = window.emit("ERROR", self::payload::Error {
+                message: "Failed to configure user".into()
+            });
+            return ();
+        }
+    }
+
+    match blueprint.account.as_ref().unwrap().add_user()
+    {
+        Ok(_) => (),
+        Err(_) => {
+            let _ = window.emit("ERROR", self::payload::Error {
+                message: "Failed to configure user".into()
+            });
+            return ();
+        }
+    }
 
 
     // Timezone and locale
@@ -197,8 +232,27 @@ pub async fn start_install(window: Window)
 
     wait();
 
-    blueprint.locale.unwrap().set_locale().unwrap();
-    blueprint.timezone.unwrap().generate_localtime().unwrap();
+    match blueprint.locale.unwrap().set_locale()
+    {
+        Ok(_) => (),
+        Err(_) => {
+            let _ = window.emit("ERROR", self::payload::Error {
+                message: "Failed to configure locale".into()
+            });
+            return ();
+        }
+    }
+
+    match blueprint.timezone.unwrap().generate_localtime()
+    {
+        Ok(_) => (),
+        Err(_) => {
+            let _ = window.emit("ERROR", self::payload::Error {
+                message: "Failed to configure timezone".into()
+            });
+            return ();
+        }
+    }
 
 
     // Finishing up
@@ -208,13 +262,13 @@ pub async fn start_install(window: Window)
         message: "Finishing up".into()
     });
 
-    Account::remove_user("tea").unwrap();
+    let _ = Account::remove_user("tea");
 
-    remove_installer().unwrap();
+    let _ = post_install();
 
     // Umount previously mounted partition
 
-    umount_all_target("/mnt").unwrap();
+    let _ = umount_all_target("/mnt");
 
     println!("Done");
 
@@ -224,10 +278,11 @@ pub async fn start_install(window: Window)
     });
 }
 
-fn remove_installer() -> Result<(), Error>
+fn post_install() -> Result<(), Error>
 {
     cmd!("arch-chroot", "/mnt", "pacman", "-R", "--noconfirm", "tealinux-installer-git").run()?;
-    std::fs::remove_dir_all("/mnt/etc/xdg/autostart/tealinux-installer.desktop")?;
+    std::fs::remove_file("/mnt/etc/xdg/autostart/tealinux-installer.desktop")?;
+    // cmd!("arch-chroot", "/mnt", "machinectl", "shell", "gdm@", "/bin/bash", "-c", "'dbus-launch gsettings set org.gnome.login-screen logo /usr/share/icons/tealinux-logo.png'").run()?;
 
     Ok(())
 }
