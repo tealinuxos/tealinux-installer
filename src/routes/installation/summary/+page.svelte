@@ -11,6 +11,7 @@
 	let locales;
 	let formattedPartitions;
 	let assignedPartitions;
+	let passwordVisible = false;
 
 	const getDisk = async () => {
 		let blueprint = await getBlueprint();
@@ -65,6 +66,10 @@
 		}
 		return colors;
 	};
+
+	function togglePasswordVisibility() {
+    passwordVisible = !passwordVisible;
+  }
 
 	const printJson = async () => {
 		await invoke('print_json');
@@ -205,10 +210,15 @@
 						<h2 class="flex whitespace-nowrap font-poppin font-medium text-[14px] ml-[12px]">
 							Password:
 						</h2>
-						<span class="ml-[4px] font-poppin text-gray-500 text-[14px]"
-							>{userPassword}</span
-						>
-						<img src="/eyeSlash.svg" alt="" class="mr-[17.18px] ml-auto" />
+						<span class="ml-[4px] font-poppin text-gray-500 text-[14px] {passwordVisible ? '' : 'password-hidden'}">
+							{userPassword}
+						  </span>
+						  <img
+						  src="/eyeSlash.svg"
+						  alt="Toggle Visibility"
+						  class="mr-[17.18px] ml-auto cursor-pointer"
+						  on:click={togglePasswordVisibility}
+						/>
 					</div>
 				</div>
 
@@ -342,3 +352,11 @@
 		</section>
 	{/await}
 </div>
+
+<style>
+	.password-hidden {
+	  -webkit-text-security: disc;
+	  -moz-text-security: disc;
+	  text-security: disc;
+	}
+  </style>
