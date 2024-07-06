@@ -54,7 +54,7 @@ pub async fn get_blueprint_from_opt() -> String
 
             let json = serde_json::to_string_pretty(&blueprint).unwrap();
 
-            file.write_fmt(format_args!("{}", json)).unwrap();
+            let _ = file.write_fmt(format_args!("{}", json)).unwrap();
 
             File::create("/opt/tea-installer/installer.json").unwrap();
 
@@ -116,7 +116,7 @@ pub fn write_blueprint(blueprint: BluePrint) -> Result<(), Error>
     let file = File::create("/opt/tea-installer/installer.json")?;
     let mut writer = BufWriter::new(file);
 
-    writer.write_fmt(format_args!("{}", blueprint));
+    let _ = writer.write_fmt(format_args!("{}", blueprint));
 
     Ok(())
 }
