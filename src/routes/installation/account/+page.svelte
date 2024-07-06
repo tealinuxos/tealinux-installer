@@ -7,11 +7,16 @@
 	let fullname, username, hostname, password, confirmPassword;
 	let isAdministrator = false;
 	let passwordsMatch = false;
-    let passwordVisible = false;
+	let passwordVisible = false;
+	let passwordConfirmVisible = false;
 
-    function togglePasswordVisibility() {
-        passwordVisible = !passwordVisible;
-    }
+	function togglePasswordVisibility() {
+		passwordVisible = !passwordVisible;
+	}
+
+	function togglePasswordConfirmVisibility() {
+		passwordConfirmVisible = !passwordConfirmVisible;
+	}
 
 	const handleSetAccount = async () => {
 		if (password !== confirmPassword) {
@@ -125,18 +130,28 @@
 				<div
 					class="relative flex items-center w-[451px] h-[45px] rounded-lg overflow-hidden border-2 border-black bg-grayTealinux"
 				>
-					<input
-						class="peer h-full w-full outline-none text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
-						type="password"
-						bind:value={password}
-						placeholder="Enter your password"
-					/>
+					{#if passwordVisible}
+						<input
+							class="peer h-full w-full outline-none text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
+							type="text"
+							bind:value={password}
+							placeholder="Enter your password"
+						/>
+					{:else}
+						<input
+							class="peer h-full w-full outline-none text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
+							type="password"
+							bind:value={password}
+							placeholder="Enter your password"
+						/>
+					{/if}
 					<svg
 						class="mr-[16px]"
 						width="24"
 						height="24"
 						viewBox="0 0 24 24"
 						fill="none"
+						on:click={togglePasswordVisibility}
 						xmlns="http://www.w3.org/2000/svg"
 					>
 						<mask
@@ -170,18 +185,28 @@
 				<div
 					class="relative flex items-center w-[451px] h-[45px] rounded-lg overflow-hidden border-2 border-black bg-grayTealinux"
 				>
-					<input
-						class="peer h-full w-full outline-none text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
-						type="password"
-						bind:value={confirmPassword}
-						placeholder="Confirm your password"
-					/>
+					{#if passwordConfirmVisible}
+						<input
+							class="peer h-full w-full outline-none text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
+							type="text"
+							bind:value={confirmPassword}
+							placeholder="Confirm your password"
+						/>
+					{:else}
+						<input
+							class="peer h-full w-full outline-none text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
+							type="password"
+							bind:value={confirmPassword}
+							placeholder="Confirm your password"
+						/>
+					{/if}
 					<svg
 						class="mr-[16px]"
 						width="24"
 						height="24"
 						viewBox="0 0 24 24"
 						fill="none"
+						on:click={togglePasswordConfirmVisibility}
 						xmlns="http://www.w3.org/2000/svg"
 					>
 						<mask
