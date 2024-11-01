@@ -43,6 +43,14 @@
 		return colors;
 	};
 
+    const checkUnknown = (s) => {
+        if (s.length === 0) {
+            return 'Unknown';
+        } else {
+            return s;
+        }
+    }
+
 	onMount(() => {
 		getStorageJSON().then((disks) => {
 			getColors(disks, 0);
@@ -58,8 +66,8 @@
 				<div class="bg-white flex justify-between items-center py-8 px-8 h-fit rounded-3xl">
 					<div class="flex flex-[1] flex-col items-center">
 						<img src="/windows.svg" alt="" />
-						<p class="text-2xl font-medium mt-[8px]">{json.model.systemProductName}</p>
-						<p>{json.model.systemProductName + ' - ' + json.model.systemVersion}</p>
+						<p class="text-2xl font-medium mt-[8px]">{checkUnknown(json.model.systemProductName)}</p>
+						<p>{checkUnknown(json.model.systemProductName) + ' - ' + checkUnknown(json.model.systemVersion)}</p>
 						<h2 class="font-medium font-poppin text-[16px] flex items-center">
 							<img src="/battrey.svg" alt="" class="pr-[8px]" />
 							{json.battery.capacity}%
@@ -100,7 +108,7 @@
 								<div class="flex items-center justify-center h-full">
 									<h2 class="font-archivo font-bold text-[20px] text-center">CPU</h2>
 								</div>
-								<h2 class="font-poppin font-medium text-[16px]">{json.lspci.cpu}</h2>
+								<h2 class="font-poppin font-medium text-[16px]">{checkUnknown(json.lspci.cpu)}</h2>
 							</div>
 						</div>
 						<div>
@@ -116,7 +124,8 @@
 									></div>
 								</div>
                                 {#await getTotalStorage() then totalSize}
-                                    {@const storageGB = prettyBytes(totalSize * 512)}
+                                    {@const storage = totalSize * 512}
+                                    {@const storageGB = storage === 0 ? 'No disk' : prettyBytes(totalSize * 512)}
                                     <h2 class="font-medium font-poppin text-[16px] mt-2">{storageGB}</h2>
                                 {/await}
 							</div>
@@ -129,7 +138,7 @@
 								<ul class="list-disc">
 									{#each json.lspci.vga as vga}
 										<li>
-											<h2 class="font-poppin font-medium text-[16px]">{vga}</h2>
+											<h2 class="font-poppin font-medium text-[16px]">{checkUnknown(vga)}</h2>
 										</li>
 									{/each}
 								</ul>
@@ -149,7 +158,8 @@
 						Loading...
 					{:then disks}
 						{#each disks as disk, idx}
-							{@const sizeGB = prettyBytes(parseInt(disks[idx].size.replace('s', ' ')) * 512)}
+                            {@const size = parseInt(disks[idx].size.replace('s', ' '))}
+							{@const prettySize = size === 0 ? 'No disk' : prettyBytes(size * 512)}
 							{@const colors = getColors(disks, idx)}
 							<div
 								class="flex items-center justify-between bg-gray-300 h-fit rounded-[10px] mt-[30.05px] w-full"
@@ -160,7 +170,7 @@
 									{disk.model + ' (' + disk.diskPath + ')'}
 								</p>
 								<p class="font-poppin text-[14px] text-[#0D1814] mt-[12px] mr-[12px] mb-[12px]">
-									Disk Size : {sizeGB}
+									Disk Size : {prettySize}
 								</p>
 							</div>
 							<div class="mt-[33px] flex gap-x-4 items-start">
