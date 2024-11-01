@@ -13,6 +13,7 @@ use tauri::Window;
 use std::thread::sleep;
 use std::time::Duration;
 use duct::cmd;
+use std::path::Path;
 
 pub use self::blueprint::BluePrint;
 pub use self::blueprint::Partition;
@@ -38,6 +39,22 @@ pub async fn start_install(window: Window)
     wait();
 
     let blueprint = step::json::read_blueprint().expect("Failed when reading blueprint file");
+
+    if !Path::exists(Path::new("/tealinux-mount"))
+    {
+        match std::fs::create_dir("/tealinux-mount/")
+        {
+            Ok(_) => (),
+            Err(_) => {
+                let _ = window.emit("ERROR", self::payload::Error {
+                    message: "Error when creating mount directory".into()
+                });
+                return ();
+            }
+        }
+    }
+
+    wait();
 
 
     // Partitioning
@@ -262,13 +279,17 @@ pub async fn start_install(window: Window)
         message: "Finishing up".into()
     });
 
-    let _ = Account::remove_user("tea");
+    let _ = Account::remove_user("liveuser");
 
     let _ = post_install();
 
     // Umount previously mounted partition
 
-    let _ = umount_all_target("/mnt");
+    let _ = umount_all_target("/tealinux-mount");
+
+    // Remove mount directory
+
+    let _ = std::fs::remove_dir("/tealinux-mount");
 
     println!("Done");
 
@@ -280,9 +301,9 @@ pub async fn start_install(window: Window)
 
 fn post_install() -> Result<(), Error>
 {
-    cmd!("arch-chroot", "/mnt", "pacman", "-R", "--noconfirm", "tealinux-installer-git").run()?;
-    std::fs::remove_file("/mnt/etc/xdg/autostart/tealinux-installer.desktop")?;
-    // cmd!("arch-chroot", "/mnt", "machinectl", "shell", "gdm@", "/bin/bash", "-c", "'dbus-launch gsettings set org.gnome.login-screen logo /usr/share/icons/tealinux-logo.png'").run()?;
+    cmd!("arch-chroot", "/tealinux-mount", "pacman", "-R", "--noconfirm", "tealinux-installer-git").run()?;
+    std::fs::remove_file("/tealinux-mount/etc/xdg/autostart/tealinux-installer.desktop")?;
+    // cmd!("arch-chroot", "/tealinux-mount", "machinectl", "shell", "gdm@", "/bin/bash", "-c", "'dbus-launch gsettings set org.gnome.login-screen logo /usr/share/icons/tealinux-logo.png'").run()?;
 
     Ok(())
 }

@@ -47,29 +47,29 @@ pub fn partitioning(blueprint: &BluePrint) -> Result<(), Error>
 
             else if i_mountpoint.contains("boot")
             {
-                cmd!("mkdir", "--parents", format!("/mnt{}", i_mountpoint)).run()?;
-                mount(i_path.as_ref().unwrap(), &format!("/mnt{}", i_mountpoint), None)?;
+                cmd!("mkdir", "--parents", format!("/tealinux-mount{}", i_mountpoint)).run()?;
+                mount(i_path.as_ref().unwrap(), &format!("/tealinux-mount{}", i_mountpoint), None)?;
             }
 
             else if i_mountpoint.eq("/") && i_filesystem.as_ref().unwrap().eq("btrfs")
             {
-                mount(i_path.as_ref().unwrap(), "/mnt", None)?;
+                mount(i_path.as_ref().unwrap(), "/tealinux-mount", None)?;
 
-                create_subvolume("/mnt/@")?;
-                create_subvolume("/mnt/@home")?;
+                create_subvolume("/tealinux-mount/@")?;
+                create_subvolume("/tealinux-mount/@home")?;
 
-                umount("/mnt")?;
+                umount("/tealinux-mount")?;
 
-                mount_subvolume("@", i_path.as_ref().unwrap(), "/mnt")?;
+                mount_subvolume("@", i_path.as_ref().unwrap(), "/tealinux-mount")?;
 
-                create_dir("/mnt/home")?;
+                create_dir("/tealinux-mount/home")?;
 
-                mount_subvolume("@home", i_path.as_ref().unwrap(), "/mnt/home")?;
+                mount_subvolume("@home", i_path.as_ref().unwrap(), "/tealinux-mount/home")?;
             }
 
             else
             {
-                mount(i_path.as_ref().unwrap(), &format!("/mnt{}", i_mountpoint), None)?;
+                mount(i_path.as_ref().unwrap(), &format!("/tealinux-mount{}", i_mountpoint), None)?;
             }
         }
     }
@@ -77,13 +77,13 @@ pub fn partitioning(blueprint: &BluePrint) -> Result<(), Error>
     match firmware_type
     {
         FirmwareKind::UEFI => {
-            create_dir_all("/mnt/boot/efi")?;
-            mount(&bootloader_path.as_ref().unwrap(), "/mnt/boot/efi", None)?;
+            create_dir_all("/tealinux-mount/boot/efi")?;
+            mount(&bootloader_path.as_ref().unwrap(), "/tealinux-mount/boot/efi", None)?;
         }
 
         FirmwareKind::BIOS => {
-            create_dir_all("/mnt/boot")?;
-            mount(&bootloader_path.as_ref().unwrap(), "/mnt/boot", None)?;
+            create_dir_all("/tealinux-mount/boot")?;
+            mount(&bootloader_path.as_ref().unwrap(), "/tealinux-mount/boot", None)?;
         }
     }
 

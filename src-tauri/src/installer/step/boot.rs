@@ -11,7 +11,7 @@ pub fn copy_kernel() -> Result<u64, Error>
     let kernel_path = format!("/run/archiso/airootfs/usr/lib/modules/{}/vmlinuz", kernel_version);
 
     let kernel_path = Path::new(&kernel_path);
-    let boot_path = Path::new("/mnt/boot/vmlinuz-linux");
+    let boot_path = Path::new("/tealinux-mount/boot/vmlinuz-linux");
 
     let mut size = 0;
 
@@ -30,7 +30,7 @@ pub fn copy_kernel() -> Result<u64, Error>
 pub fn copy_mkinitcpio_preset() -> Result<u64, Error>
 {
     let preset_path_origin = Path::new("/etc/mkinitcpio.d/linux-deploy.preset");
-    let preset_path_destination = Path::new("/mnt/etc/mkinitcpio.d/linux.preset");
+    let preset_path_destination = Path::new("/tealinux-mount/etc/mkinitcpio.d/linux.preset");
 
     let mut size = 0;
 
