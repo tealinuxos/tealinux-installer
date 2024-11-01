@@ -13,6 +13,7 @@
 		firmwareType: null,
 		path: null
 	};
+    let bootloaderPartitionIndex = null;
 
 	const getStorageJSON = async () => {
 		let json = await getRead();
@@ -44,6 +45,7 @@
 
 	const handlePartitionDetail = async (disks, selectedDisk) => {
 		partitionDetail = [];
+        bootloaderPartitionIndex = null;
 
 		for (let i of disks[selectedDisk].partitions.keys()) {
 			let partitionPath = disks[selectedDisk].partitions[i].partitionPath;
@@ -53,12 +55,19 @@
 			let size = disks[selectedDisk].partitions[i].size.slice(0, -1);
 			let partitionNumber = disks[selectedDisk].partitions[i].number;
 			let partitionDiskPath = disks[selectedDisk].diskPath;
+            let mountpoint = (partitionPath === bootloader.path)
+                ? (bootloader.firmwareType === 'UEFI')
+                    ? '/boot/efi'
+                    : '/boot'
+                : null;
+
+            if (mountpoint) { bootloaderPartitionIndex = i };
 
 			partitionDetail.push({
                 number: parseInt(partitionNumber),
                 diskPath: partitionDiskPath,
 				path: partitionPath,
-				mountpoint: null,
+				mountpoint,
 				filesystem: filesystemType,
 				format: false,
 				start: parseInt(startSector),
@@ -138,6 +147,7 @@
 		getBootloaderPartition(activeTab).then((efi) => {
 			bootloader.firmwareType = 'UEFI';
 			efi === null ? (bootloader.path = null) : (bootloader.path = efi[0].partitionPath);
+            handleSetBootloader();
 		});
 	};
 
@@ -145,6 +155,7 @@
 		getBootloaderPartition(activeTab).then((disk) => {
 			bootloader.firmwareType = 'BIOS';
 			disk === null ? (bootloader.path = null) : (bootloader.path = disk[0].diskPath);
+            handleSetBootloader();
 		});
 	};
 
@@ -184,11 +195,6 @@
 	};
 
 	const setup = () => {
-		getStorageJSON().then((disks) => {
-			getColors(disks);
-            handlePartitionDetail(disks, selectedDisk);
-		});
-
 
 		getFirmwareType().then((firmware) => {
 			if (firmware === 'UEFI') {
@@ -198,7 +204,13 @@
 				setTab('Mbr');
 				refreshMbr();
 			}
+            getStorageJSON().then((disks) => {
+                getColors(disks);
+                handlePartitionDetail(disks, selectedDisk);
+                handleSetPartition();
+            });
 		});
+
 	};
 
 	const refresh = () => {
@@ -207,6 +219,19 @@
 		setReadJSON().then(() => (show = true));
 		setup();
 	};
+
+    let partitionChecked = false;
+
+    $: partitionDetail, checkPartition();
+
+    const checkPartition = () => {
+        let root = partitionDetail.filter(obj => obj.mountpoint === '/');
+        partitionChecked = (root.length > 0)
+            ? bootloader.firmwareType && bootloader.path
+                ? true
+                : false
+            : false;
+    };
 
 	onMount(() => {
 		setup();
@@ -477,10 +502,19 @@
 													on:change={handleSetPartition}
 													class=" appearance-none flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 pr-8 rounded-lg"
 												>
-													<option value={null}>No Mountpoint</option>
-													<option value="/">/</option>
-													<option value="/home">/home</option>
-													<option value="swap">swap</option>
+                                                    {#if partitionDetail[i].mountpoint === "/boot/efi"}
+                                                        <option
+                                                            disabled={true}
+                                                            value="/boot/efi"
+                                                        >
+                                                            /boot/efi
+                                                        </option>
+                                                    {:else}
+                                                        <option value={null}>No Mountpoint</option>
+                                                        <option value="/">/</option>
+                                                        <option value="/home">/home</option>
+                                                        <option value="swap">swap</option>
+                                                    {/if}
 												</select>
 												<svg
 													width="14"
@@ -532,6 +566,8 @@
 									on:click={async () => {
 										await setTab('Efi');
 										refreshEfi();
+                                        partitionDetail[bootloaderPartitionIndex].mountpoint = "/boot/efi";
+                                        handleSetPartition();
 									}}
 								>
 									Efi
@@ -545,6 +581,8 @@
 							on:click={async () => {
 								await setTab('Mbr');
 								refreshMbr();
+                                partitionDetail[bootloaderPartitionIndex].mountpoint = null;
+                                handleSetPartition();
 							}}
 						>
 							Mbr
@@ -559,6 +597,7 @@
 								class="w-full b appearance-none p-4 py-2 rounded-full"
 								id="diskSelect"
 								bind:value={bootloader.path}
+                                on:change={handleSetBootloader}
 							>
 								{#each bootLoaderLocation as location, i}
 									{#if activeTab === 'Efi'}
@@ -587,7 +626,10 @@
 			<a
 				href="/installation/summary"
 				on:click={handleSetPartition}
-				class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
+				class="text-white bg-greenTealinux focus:ring-4 font-medium
+                    rounded-lg text-sm px-5 py-2.5 me-2 mb-2
+                    {partitionChecked ? '' : 'brightness-75 pointer-events-none'}
+                "
 				>Next</a
 			>
 		</div>
