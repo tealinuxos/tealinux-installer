@@ -8,8 +8,8 @@
     let ready = false;
 
     async function getStorageJSON() {
-        invoke('get_storage_json').then((response) => {
-            let json = JSON.parse(response);
+        invoke('get_read_json').then((response) => {
+            let json = JSON.parse(response).disk;
             disks = json
             ready = true;
             console.log(disks);
