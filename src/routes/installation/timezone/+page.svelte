@@ -90,7 +90,7 @@
 
 	let date = new Date();
 	let datePreview = '';
-	let timePreview = '';
+	let timePreview = 'Select Timezone';
 
 	const handlePreview = () => {
 		if (selectedTimezone !== null) {
