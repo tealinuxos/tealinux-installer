@@ -23,7 +23,7 @@ online = "4.0.2"
 sysinfo = "0.30.12"
 users = "0.11.0"
 battery = "0.7.8"
-tea-partition-api-lib = { git = "https://github.com/tealinuxos/tea-partition-api-lib", tag = "v.0.3.0" }
+tea-partition-api-lib = { git = "https://github.com/tealinuxos/tea-partition-api-lib", tag = "v.0.3.3" }
 tea-arch-chroot-lib = { git = "https://github.com/tealinuxos/tea-arch-chroot-lib" }
 uname = "0.1.1"
 
