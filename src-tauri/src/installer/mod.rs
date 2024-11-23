@@ -281,7 +281,13 @@ pub async fn start_install(window: Window)
 
     let _ = Account::remove_user("liveuser");
 
-    let _ = post_install();
+    let account = match blueprint.account
+    {
+        Some(account) => account,
+        None => Account::new("", "", "", "")
+    };
+
+    let _ = post_install(account);
 
     // Umount previously mounted partition
 
@@ -299,11 +305,14 @@ pub async fn start_install(window: Window)
     });
 }
 
-fn post_install() -> Result<(), Error>
+fn post_install(account: Account) -> Result<(), Error>
 {
     cmd!("arch-chroot", "/tealinux-mount", "pacman", "-R", "--noconfirm", "tealinux-installer-git").run()?;
     std::fs::remove_file("/tealinux-mount/etc/xdg/autostart/tealinux-installer.desktop")?;
     // cmd!("arch-chroot", "/tealinux-mount", "machinectl", "shell", "gdm@", "/bin/bash", "-c", "'dbus-launch gsettings set org.gnome.login-screen logo /usr/share/icons/tealinux-logo.png'").run()?;
+    //
+
+    cmd!("arch-chroot", "/tealinux-mount", "chsh", "--shell", "/usr/bin/fish", account.username).run()?;
 
     Ok(())
 }
