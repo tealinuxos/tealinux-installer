@@ -15,6 +15,11 @@ Tauri & SvelteKit
 - gcc-libs
 - webkit2gtk
 
+To install the required dependencies on a Linux system using `pacman`, run the following command:
+```bash
+sudo pacman -S lshw dmidecode rsync fuse2 gcc-libs webkit2gtk
+```
+
 ## Running
 
 Install all dependencies:
