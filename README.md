@@ -45,3 +45,6 @@ bunx tauri build
 # if encountering error running image.sh
 NO_STRIP=true bunx tauri build
 ```
+
+## Contributing
+To contribute, here's list of [`TODO`](https://github.com/tealinuxos/tealinux-installer/blob/master/TODO.md). Thank you for considering it!
