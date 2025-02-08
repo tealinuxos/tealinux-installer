@@ -66,11 +66,6 @@ pub fn partitioning(blueprint: &BluePrint) -> Result<(), Error>
 
                 mount_subvolume("@home", i_path.as_ref().unwrap(), "/tealinux-mount/home")?;
             }
-
-            else
-            {
-                mount(i_path.as_ref().unwrap(), &format!("/tealinux-mount{}", i_mountpoint), None)?;
-            }
         }
     }
 
