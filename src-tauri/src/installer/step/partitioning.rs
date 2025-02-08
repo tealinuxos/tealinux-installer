@@ -81,10 +81,7 @@ pub fn partitioning(blueprint: &BluePrint) -> Result<(), Error>
             mount(&bootloader_path.as_ref().unwrap(), "/tealinux-mount/boot/efi", None)?;
         }
 
-        FirmwareKind::BIOS => {
-            create_dir_all("/tealinux-mount/boot")?;
-            mount(&bootloader_path.as_ref().unwrap(), "/tealinux-mount/boot", None)?;
-        }
+        FirmwareKind::BIOS => ()
     }
 
     Ok(())
