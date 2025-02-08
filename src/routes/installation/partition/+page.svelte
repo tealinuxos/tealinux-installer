@@ -267,10 +267,13 @@
 				</button>
 			</div>
 
+            {#if !show}
+				<div class="flex flex-col items-center justify-center p-4 font-poppinmedium">
+                    Loading partition...
+                </div>
+            {/if}
 			{#if show}
-				{#await getStorageJSON()}
-					Loading...
-				{:then disks}
+				{#await getStorageJSON() then disks}
 					<!-- option -->
 					<div
 						class="relative flex items-center w-full g-whiteTealinux text-blue-black border-2 border-greyBorder rounded-lg shadow-md shadow-black/50"
@@ -373,9 +376,7 @@
 								{/each}
 							</div>
 						</div>
-						{#await handlePartitionDetail(disks, selectedDisk)}
-							Loading...
-						{:then}
+						{#await handlePartitionDetail(disks, selectedDisk) then}
 							<div
 								class="flex flex-col flex-[1] bg-white-tealinux border-2 h-fit rounded-lg border-greyBorder"
 							>
@@ -553,8 +554,6 @@
 						{/await}
 					</div>
 				{/await}
-			{/if}
-			{#if show}
 				<div class="flex flex-col items-center justify-center p-4 font-poppinmedium">
 					<div class="flex items-center justify-center space-x-2 bg-black/25 rounded-t-md">
 						{#await getFirmwareType() then firmwareType}
