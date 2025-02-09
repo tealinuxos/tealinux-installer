@@ -45,26 +45,34 @@ pub fn partitioning(blueprint: &BluePrint) -> Result<(), Error>
                 cmd!("swapon", i_path.as_ref().unwrap()).run()?;
             }
 
-            else if i_mountpoint.contains("boot")
+            if i_mountpoint.contains("boot")
             {
                 cmd!("mkdir", "--parents", format!("/tealinux-mount{}", i_mountpoint)).run()?;
                 mount(i_path.as_ref().unwrap(), &format!("/tealinux-mount{}", i_mountpoint), None)?;
             }
 
-            else if i_mountpoint.eq("/") && i_filesystem.as_ref().unwrap().eq("btrfs")
+            if i_mountpoint.eq("/")
             {
-                mount(i_path.as_ref().unwrap(), "/tealinux-mount", None)?;
+                if i_filesystem.as_ref().unwrap().eq("btrfs")
+                {
+                    mount(i_path.as_ref().unwrap(), "/tealinux-mount", None)?;
 
-                create_subvolume("/tealinux-mount/@")?;
-                create_subvolume("/tealinux-mount/@home")?;
+                    create_subvolume("/tealinux-mount/@")?;
+                    create_subvolume("/tealinux-mount/@home")?;
 
-                umount("/tealinux-mount")?;
+                    umount("/tealinux-mount")?;
 
-                mount_subvolume("@", i_path.as_ref().unwrap(), "/tealinux-mount")?;
+                    mount_subvolume("@", i_path.as_ref().unwrap(), "/tealinux-mount")?;
 
-                create_dir("/tealinux-mount/home")?;
+                    create_dir("/tealinux-mount/home")?;
 
-                mount_subvolume("@home", i_path.as_ref().unwrap(), "/tealinux-mount/home")?;
+                    mount_subvolume("@home", i_path.as_ref().unwrap(), "/tealinux-mount/home")?;
+                }
+                
+                else
+                {
+                    mount(i_path.as_ref().unwrap(), "/tealinux-mount", None)?;
+                }
             }
         }
     }
