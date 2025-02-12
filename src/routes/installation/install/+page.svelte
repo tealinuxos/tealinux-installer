@@ -1,7 +1,7 @@
 <script>
-	import { invoke } from '@tauri-apps/api/tauri';
+	import { invoke } from '@tauri-apps/api/core';
 	import { listen } from '@tauri-apps/api/event';
-	import { exit } from '@tauri-apps/api/process';
+	import { exit } from '@tauri-apps/plugin-process';
 	import { onMount } from 'svelte';
 	import Error from '$lib/components/modals/Error.svelte';
 

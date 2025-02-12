@@ -1,5 +1,5 @@
 <script>
-	import { invoke } from '@tauri-apps/api/tauri';
+	import { invoke } from '@tauri-apps/api/core';
 	import { onMount, onDestroy } from 'svelte';
 	import { getRead } from '../../routes/installation/global.js';
 	import { sysInfoActivated } from './store.js'; // Path ke file store.js

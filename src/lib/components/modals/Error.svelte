@@ -1,6 +1,6 @@
 <script>
 	export let errorMessage = 'Lorem ipsum dolor sit amet consectetur adipisicing elit.';
-	import { exit } from '@tauri-apps/api/process';
+	import { exit } from '@tauri-apps/plugin-process';
 
 	const exitOk = async () => {
 		await exit(0);
