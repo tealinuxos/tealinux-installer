@@ -637,6 +637,7 @@
 
 <style>
 	/* Apply the same styles to option elements for better compatibility */
+	@reference "../../../app.css";
 	select option {
 		background-color: black !important;
 		color: white !important;

@@ -61,14 +61,17 @@
     </div>
 
     <table class="w-full">
-        <tr>
-            <th class="p-5">Partition</th>
-            <th class="p-5">Name</th>
-            <th class="p-5">File System</th>
-            <th class="p-5">Mount Point</th>
-            <th class="p-5">Size</th>
-            <th class="p-5">Flags</th>
-        </tr>
+        <thead>
+            <tr>
+                <th class="p-5">Partition</th>
+                <th class="p-5">Name</th>
+                <th class="p-5">File System</th>
+                <th class="p-5">Mount Point</th>
+                <th class="p-5">Size</th>
+                <th class="p-5">Flags</th>
+            </tr>
+        </thead>
+        <tbody>
 
         {#each disks[selectedDisk].partitions as partition}
             
@@ -129,7 +132,7 @@
 
             </tr>
         {/each}
-
+        </tbody>
     </table>
 
 {/if}
