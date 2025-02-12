@@ -1,5 +1,4 @@
 <script>
-	import { invoke } from '@tauri-apps/api/tauri';
 	import { onMount } from 'svelte';
 	import { getRead } from './global.js';
 	import prettyBytes from 'pretty-bytes';
