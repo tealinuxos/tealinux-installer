@@ -105,7 +105,7 @@
     {@const userHostname = blueprint.account === null ? 'To be filled' : blueprint.account.hostname}
     {@const userPassword = blueprint.account === null ? 'To be filled' : blueprint.account.password}
 	<aside
-		class="fixed z-[50] bg-black/50 w-screen transition-transform duration-500 ease-in-out top-0"
+		class="fixed z-50 bg-black/50 w-screen transition-transform duration-500 ease-in-out top-0"
 		class:translate-x-0={itActive}
 		class:-translate-x-full={!itActive}
 	>
@@ -273,7 +273,7 @@
                                                         : partition.filesystem}
                                                 {@const prettySize = prettyBytes(size)}
                                                 <div class="flex pr-2 gap-x-2">
-                                                    <div style="background-color: {color}" class="w-4 h-4 rounded-sm"></div>
+                                                    <div style="background-color: {color}" class="w-4 h-4 rounded-xs"></div>
                                                     <div class="flex flex-col text-sm font-poppinmedium font-medium">
                                                         <span class="pl-1">{path}</span>
                                                         <span class="pl-1">{prettySize} {filesystem}</span>

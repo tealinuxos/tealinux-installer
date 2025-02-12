@@ -96,7 +96,7 @@
 					<input
 						type="text"
 						placeholder="select keyboard.."
-						class="peer h-full w-full outline-none text-sm text-black text-opacity-50 bg-transparent pr-2 pl-[12px] font-poppin"
+						class="peer h-full w-full outline-hidden text-sm text-black text-opacity-50 bg-transparent pr-2 pl-[12px] font-poppin"
 						bind:value={searchTerm}
 						on:click={toggleOptions}
 					/>
@@ -180,7 +180,7 @@
 							on:click={handleSetKeyboard}
 							class="text-white bg-greenTealinux {selectedKeyboards
 								? ''
-								: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 focus:outline-none"
+								: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 focus:outline-hidden"
 							>Next</a
 						>
 					</div>

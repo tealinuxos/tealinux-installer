@@ -63,7 +63,7 @@
 		<div class=" py-8 px-16 mx-auto overflow-auto max-h-[85dvh] scrollbar-none">
 			<div class=" bg-greenTealinux bg-opacity-25 w-full p-5 rounded-[43px] mb-6">
 				<div class="bg-white flex justify-between items-center py-8 px-8 h-fit rounded-3xl">
-					<div class="flex flex-[1] flex-col items-center">
+					<div class="flex flex-1 flex-col items-center">
 						<img src="/windows.svg" alt="" />
 						<p class="text-2xl font-medium mt-[8px]">{checkUnknown(json.model.systemProductName)}</p>
 						<p>{checkUnknown(json.model.systemProductName) + ' - ' + checkUnknown(json.model.systemVersion)}</p>
@@ -85,7 +85,7 @@
 							</h2>
 						</div>
 					</div>
-					<div class="flex flex-[2] items-center justify-evenly flex-wrap gap-y-4">
+					<div class="flex flex-2 items-center justify-evenly flex-wrap gap-y-4">
 						<div>
 							<!-- RAM -->
 							<div class="flex flex-col items-center h-full">
@@ -209,7 +209,7 @@
 													: partition.filesystem}
 											{@const prettySize = prettyBytes(size)}
 											<div class="flex pr-2 gap-x-2">
-												<div style="background-color: {color}" class="w-4 h-4 rounded-sm"></div>
+												<div style="background-color: {color}" class="w-4 h-4 rounded-xs"></div>
 												<div class="flex flex-col text-sm font-poppinmedium font-medium">
 													<span class="pl-1">{path}</span>
 													<span class="pl-1">{prettySize} {filesystem}</span>
@@ -245,6 +245,7 @@
 </main>
 
 <style>
+	@reference "tailwindcss/theme";
 	/* .scrollbar-none::-webkit-scrollbar {
 		display: none;
 	} */

@@ -294,7 +294,7 @@
 					</div>
 					<div class="flex gap-x-4">
 						<!-- Partition Bar -->
-						<div class="flex-[1] self-start">
+						<div class="flex-1 self-start">
 							<h1 class="p-4 text-[18px] font-bold">Current</h1>
 							<div class="flex mb-4 h-8 w-full overflow-hidden rounded-full">
 								<div class="h-full flex rounded-full overflow-hidden w-full">
@@ -328,7 +328,7 @@
 											: partition.filesystem}
 									{@const prettySize = prettyBytes(size)}
 									<div class="flex pr-2 gap-x-2">
-										<div style="background-color: {color}" class="w-4 h-4 rounded-sm"></div>
+										<div style="background-color: {color}" class="w-4 h-4 rounded-xs"></div>
 										<div class="flex flex-col text-sm font-poppinmedium font-medium">
 											<span class="pl-1">{path}</span>
 											<span class="pl-1">{prettySize} {filesystem}</span>
@@ -367,7 +367,7 @@
 									{@const prettySize = prettyBytes(size)}
 
 									<div class="flex pr-2 gap-x-2">
-										<div style="background-color: {color}" class="w-4 h-4 rounded-sm"></div>
+										<div style="background-color: {color}" class="w-4 h-4 rounded-xs"></div>
 										<div class="flex flex-col text-sm font-poppinmedium font-medium">
 											<span>{path}</span>
 											<span>{prettySize} {filesystem}</span>
@@ -378,7 +378,7 @@
 						</div>
 						{#await handlePartitionDetail(disks, selectedDisk) then}
 							<div
-								class="flex flex-col flex-[1] bg-white-tealinux border-2 h-fit rounded-lg border-greyBorder"
+								class="flex flex-col flex-1 bg-white-tealinux border-2 h-fit rounded-lg border-greyBorder"
 							>
 								{#each partitionDetail as partition, i}
 									{@const path = partition.path}

@@ -269,7 +269,7 @@
                                                     : partition.filesystem}
                                             {@const prettySize = prettyBytes(size)}
                                             <div class="flex pr-2 gap-x-2">
-                                                <div style="background-color: {color}" class="w-4 h-4 rounded-sm"></div>
+                                                <div style="background-color: {color}" class="w-4 h-4 rounded-xs"></div>
                                                 <div class="flex flex-col text-sm font-poppinmedium font-medium">
                                                     <span class="pl-1">{path}</span>
                                                     <span class="pl-1">{prettySize} {filesystem}</span>

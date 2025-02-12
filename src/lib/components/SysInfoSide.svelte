@@ -52,7 +52,7 @@
 </script>
 
 <aside
-	class="fixed z-[50] bg-black/50 w-screen transition-transform duration-500 ease-in-out top-0"
+	class="fixed z-50 bg-black/50 w-screen transition-transform duration-500 ease-in-out top-0"
 	class:translate-x-0={isActivated}
 	class:-translate-x-full={!isActivated}
 >
@@ -91,7 +91,7 @@
 						<div
 							class="bg-transparent flex justify-between gap-x-4 items-center py-8 px-8 h-fit rounded-3xl"
 						>
-							<div class="flex flex-[1] flex-col items-center text-center">
+							<div class="flex flex-1 flex-col items-center text-center">
 								<img src="/windows.svg" alt="" />
 								<p class="text-2xl font-medium mt-[8px]">82SV</p>
 								<p>{json.model.systemProductName + ' - ' + json.model.systemVersion}</p>
@@ -113,7 +113,7 @@
 									</h2>
 								</div>
 							</div>
-							<div class="flex flex-[1] flex-col items-center gap-y-4">
+							<div class="flex flex-1 flex-col items-center gap-y-4">
 								<!-- RAM -->
 								<div class="flex flex-col items-center h-full w-full">
 									<div class="flex items-center justify-center h-full">
@@ -194,7 +194,7 @@
 										<p class="font-poppin font-medium text-[18px]">Current:</p>
 
 										<div class="w-full">
-											<div class="flex flex-[1] mb-4 h-8 w-full overflow-hidden rounded-full">
+											<div class="flex flex-1 mb-4 h-8 w-full overflow-hidden rounded-full">
 												<div class="h-full flex rounded-full overflow-hidden w-full">
 													{#each disk.partitions as partition, i}
 														{@const diskSize = disk.size.slice(0, -1)}
@@ -227,7 +227,7 @@
 															: partition.filesystem}
 													{@const prettySize = prettyBytes(size)}
 													<div class="flex pr-2 gap-x-2">
-														<div style="background-color: {color}" class="w-4 h-4 rounded-sm"></div>
+														<div style="background-color: {color}" class="w-4 h-4 rounded-xs"></div>
 														<div class="flex flex-col text-sm font-poppinmedium font-medium">
 															<span class="pl-1">{path}</span>
 															<span class="pl-1">{prettySize} {filesystem}</span>

@@ -24,7 +24,7 @@
 <SysInfoSide />
 <SummaryToAll />
 <sidebar
-	class="sidebar fixed top-0 left-0 z-[40] h-screen transition-colors duration-500 flex flex-col p-4 space-y-4 {isOpen
+	class="sidebar fixed top-0 left-0 z-40 h-screen transition-colors duration-500 flex flex-col p-4 space-y-4 {isOpen
 		? ' bg-[#C8E8D6]'
 		: 'collapsed bg-greenTealinux'}"
 >
