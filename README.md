@@ -14,6 +14,7 @@ Tauri & SvelteKit
 - fuse2
 - gcc-libs
 - webkit2gtk
+- webkit2gtk-4.1
 
 To install the required dependencies on a Linux system using `pacman`, run the following command:
 ```bash
