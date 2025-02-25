@@ -16,11 +16,12 @@
 		await invoke('set_empty_blueprint');
 	};
 
-	const onMount(() => {
+	onMount(() => {
 		isOnline();
 		setBlueprintJSON();
 	});
 </script>
+
 
 <div class="flex items-center justify-center min-h-screen">
 	<div class="text-center">
