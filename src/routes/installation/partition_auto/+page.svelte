@@ -136,16 +136,15 @@
 					{#if isDisabled == true}
 						<a
 							href="#x"
-							class="disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed text-black disabled bg-greenTealinux focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-hidden"
+							class="text-white bg-greenTealinux focus:ring-4 font-medium
+                    rounded-lg text-sm px-5 py-2.5 me-2 mb-2 brightness-75 pointer-events-none"
 							>Next</a
 						>
 					{:else}
 						<a
 							href="/installation/summary"
 							on:click={handleSetPartitionAuto}
-							class="text-black bg-greenTealinux {selectedTimezone
-								? ''
-								: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-hidden"
+							class="disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed text-black disabled bg-greenTealinux focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-hidden"
 							>Next</a
 						>
 					{/if}
