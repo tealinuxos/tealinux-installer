@@ -1,0 +1,216 @@
+<script>
+	import { invoke } from '@tauri-apps/api/core';
+	import { onMount } from 'svelte';
+	import Sidebar from '$lib/components/Sidebar.svelte';
+	import { fly } from 'svelte/transition';
+	import { getBlueprint } from '../global.js';
+
+	let timezones = [];
+	let showTimezone = false;
+	let selectedTimezone = null;
+	let selectedCity = null;
+	let filteredTimezones = [];
+	let formatedTimezones = [];
+	let showOptions = false;
+	let searchTerm = '';
+
+	const getTimezone = async () => {
+		invoke('get_timezone_json').then((response) => {
+			timezones = JSON.parse(response);
+			filteredTimezones = setFilteredTimezones(timezones);
+			formatedTimezones = filteredTimezones;
+			console.log(timezones);
+			showTimezone = true;
+		});
+	};
+
+	//set filtered timezones to region/city from invoke
+	const setFilteredTimezones = (timezones) => {
+		let timezoneOptions = [];
+
+		timezones.forEach((timezone) => {
+			const region = timezone.region;
+			if (timezone.city) {
+				timezone.city.forEach((city) => {
+					timezoneOptions.push(`${region}/${city}`);
+				});
+			} else {
+				timezoneOptions.push(region);
+			}
+		});
+
+		console.log(timezoneOptions);
+		return timezoneOptions;
+	};
+
+	const handleSetTimezone = async () => {
+		let region = selectedTimezone.split('/')[0];
+		let city = selectedTimezone.split('/')[1] || null;
+
+		await invoke('blueprint_set_timezone', { region: region, city: city });
+	};
+
+	function filterOptions() {
+		const term = searchTerm.toLowerCase();
+		filteredTimezones = formatedTimezones.filter((timezone) =>
+			timezone.toLowerCase().includes(term)
+		);
+	}
+
+	const selectTimezone = (value) => {
+		selectedTimezone = value;
+		searchTerm = value.split('/')[0];
+	};
+
+	$: searchTerm, filterOptions();
+
+	$: if (selectedTimezone) {
+		const parts = selectedTimezone.split('/');
+		selectedCity = parts.length > 1 ? parts[1] : null;
+		showOptions = false; // Hide options when an option is selected
+	}
+
+	onMount(() => {
+		getTimezone();
+		getBlueprint().then((blueprint) => {
+			if (blueprint.timezone !== null) {
+				selectedTimezone = blueprint.timezone.region + '/' + blueprint.timezone.city;
+				searchTerm = blueprint.timezone.region + '/' + blueprint.timezone.city;
+			}
+		});
+	});
+
+	function openOptions() {
+		showOptions = true;
+	}
+	function closeOptions(value) {
+		searchTerm = value;
+		showOptions = false;
+	}
+
+	let date = new Date();
+	let datePreview = '';
+	let timePreview = 'Select Timezone';
+
+	const handlePreview = () => {
+		if (selectedTimezone !== null) {
+			let timeFormat = new Intl.DateTimeFormat([], {
+				timeZone: selectedTimezone,
+				hour: 'numeric',
+				minute: 'numeric',
+				second: 'numeric',
+				hour12: false
+			});
+			let dateFormat = new Intl.DateTimeFormat([], {
+				timeZone: selectedTimezone,
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric'
+			});
+			datePreview = dateFormat.format(date);
+			timePreview = timeFormat.format(date);
+		}
+	};
+
+	$: selectedTimezone, handlePreview();
+	$: console.log(showOptions);
+</script>
+
+<Sidebar />
+<div class="relative w-full">
+	<header class="flex items-center justify-center w-full gap-[10px] mt-[40px]">
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
+		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
+	</header>
+	<section class="flex flex-col items-center justify-center h-[85dvh]">
+		{#if showTimezone}
+			<form class="text-center p-8 rounded-md min-h-[50dvh]">
+				<div>
+					<h1 class="text-center mb-6 font-bold text-[32px] font-archivo">Select Disk</h1>
+				</div>
+
+				<div class="max-w-md mx-auto relative">
+					<h2 class="font-poppin text-left mb-2">Select what the disk</h2>
+					<div
+						class="relative flex items-center mb-1 h-[45px] {showOptions
+							? 'rounded-t-lg'
+							: 'rounded-lg'} overflow-hidden bg-grayTealinux border-2 border-black"
+					>
+						<input
+							type="text"
+							placeholder="Select Region"
+							class="h-full w-full outline-hidden text-sm text-gray-700 bg-grayTealinux pr-2 pl-[12px] font-poppin"
+							on:focus={openOptions}
+							bind:value={searchTerm}
+						/>
+						<div class="inset-y-0 left-0 flex items-center pr-4">
+							<svg
+								width="14"
+								height="9"
+								viewBox="0 0 14 9"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									d="M1 1.5L7 7.5L13 1.5"
+									stroke="black"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								/>
+							</svg>
+						</div>
+					</div>
+					{#if showOptions}
+						<div
+							class="absolute z-10 w-full bg-white border border-greyBorder rounded-b-xl max-h-[30vh] overflow-y-auto"
+							in:fly={{ y: -10, duration: 1000 }}
+							out:fly={{ y: 10, duration: 300 }}
+						>
+							{#each filteredTimezones as timezone}
+								<label
+									class="flex flex-row-reverse w-full items-center justify-between py-4 px-4 border border-b-grayBorder last:border-none bg-white hover:bg-slate-100 transition-all"
+									for="timezone-{timezone}"
+									on:click={closeOptions(timezone)}
+								>
+									<input
+										required
+										type="radio"
+										name="timezone"
+										id="timezone-{timezone}"
+										value={timezone}
+										bind:group={selectedTimezone}
+										class="w-5 h-5"
+									/>
+									<p>{timezone}</p>
+								</label>
+							{/each}
+						</div>
+					{/if}
+				</div>
+
+				<div class="max-w-md mx-auto fixed bottom-0 mb-12">
+					<div class="grid grid-cols-2 gap-[295px]">
+						<a
+							href="/installation/keyboard"
+							class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 h-[44px] w-[76px]"
+							>Back</a
+						>
+						<a
+							href="/installation/locale"
+							on:click={handleSetTimezone}
+							class="text-white bg-greenTealinux {selectedTimezone
+								? ''
+								: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-hidden"
+							>Next</a
+						>
+					</div>
+				</div>
+			</form>
+		{/if}
+	</section>
+</div>
