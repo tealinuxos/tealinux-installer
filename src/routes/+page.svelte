@@ -16,7 +16,7 @@
 		await invoke('set_empty_blueprint');
 	};
 
-	onMount(() => {
+	const onMount(() => {
 		isOnline();
 		setBlueprintJSON();
 	});
