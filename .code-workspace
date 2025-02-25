@@ -1,0 +1,10 @@
+{
+    "folders": [
+        {
+            "path": "rust-test"
+        },
+        {
+            "path": "src-tauri"
+        },
+    ]
+}
