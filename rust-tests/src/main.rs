@@ -1,4 +1,8 @@
+mod error;
+mod partition;
+
 use duct::cmd;
+use partition::Blkutils;
 use serde::{Deserialize, Serialize};
 use serde_json;
 use std::{collections::HashMap, hash::Hash};
@@ -82,6 +86,10 @@ fn get_disk_lists() -> Vec<Disklists> {
 
 fn main() {
     // println!("Hello, world!");
-    let disk_parsed = self::get_disk_lists();
-    println!("{:#?}", disk_parsed);
+    // let disk_parsed = self::get_disk_lists();
+    // println!("{:#?}", disk_parsed);
+
+    let blkdata = partition::Blkstuff::blockdevice("/dev/sda".to_string());
+    let devblock = blkdata.getblkbytes();
+    println!("{:#?}", devblock);
 }
