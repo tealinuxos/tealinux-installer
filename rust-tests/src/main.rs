@@ -1,8 +1,11 @@
 mod error;
 mod partition;
 
+#[macro_use]
+mod macros_ab;
+
 use duct::cmd;
-use partition::Blkutils;
+use partition::{Blkstuff, Blkutils};
 use serde::{Deserialize, Serialize};
 use serde_json;
 use std::{collections::HashMap, hash::Hash};
@@ -84,12 +87,26 @@ fn get_disk_lists() -> Vec<Disklists> {
     // }
 }
 
+fn test_macro(blkdata: &Blkstuff) {
+    let disksize = 1;
+
+    let sector = macros_ab::gb2sector(disksize, blkdata.partitiontable.partitiontable.sectorsize);
+    println!("{}", sector);
+
+    // println!("{:#?}", blkdata)
+}
+
 fn main() {
     // println!("Hello, world!");
     // let disk_parsed = self::get_disk_lists();
     // println!("{:#?}", disk_parsed);
 
     let blkdata = partition::Blkstuff::blockdevice("/dev/sda".to_string());
-    let devblock = blkdata.getblkbytes();
-    println!("{:#?}", devblock);
+    // let devblock = blkdata.getresult();
+    // println!("{:#?}", devblock);
+    // blkdata._export_data();
+    // self::test_macro(&blkdata);
+    let disk_result = blkdata.getresult();
+
+    println!("{:#?}", &disk_result);
 }
