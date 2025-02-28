@@ -9,6 +9,7 @@ mod system;
 mod utils;
 
 use api::account::*;
+use api::auto_partition::*;
 use api::firmware::*;
 use api::keyboard::*;
 use api::locale::*;

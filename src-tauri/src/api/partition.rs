@@ -117,7 +117,5 @@ pub async fn get_disk_lists_key_val() -> String {
     }
 }
 
-#[tauri::command]
-pub async fn autogen_partition_select_disk() -> () {
-    let mut blueprint = super::get_blueprint().unwrap();
-}
+
+
