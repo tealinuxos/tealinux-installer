@@ -3,6 +3,7 @@ use core::fmt;
 #[derive(Debug)]
 pub enum TealinuxAutoPartitionErr {
     InsufficientStorage(String),
+    InternalErr(String),
 }
 
 impl fmt::Display for TealinuxAutoPartitionErr {
@@ -10,6 +11,9 @@ impl fmt::Display for TealinuxAutoPartitionErr {
         match self {
             TealinuxAutoPartitionErr::InsufficientStorage(x) => {
                 write!(f, "error, insufficient storage, {} bytes", x)
+            }
+            TealinuxAutoPartitionErr::InternalErr(x) => {
+                write!(f, "error, internal error, {}", x)
             }
         }
     }
