@@ -21,34 +21,12 @@
 	const get_disks_data = async () => {
 		invoke('get_disk_lists_key_val').then((response) => {
 			diskLists = JSON.parse(response);
-			filteredTimezones = setFilteredTimezones(timezones);
-			formatedTimezones = filteredTimezones;
-			console.log(timezones);
-			showTimezone = true;
 		});
-	};
-
-	//set filtered timezones to region/city from invoke
-	const setFilteredTimezones = (timezones) => {
-		let timezoneOptions = [];
-
-		timezones.forEach((timezone) => {
-			const region = timezone.region;
-			if (timezone.city) {
-				timezone.city.forEach((city) => {
-					timezoneOptions.push(`${region}/${city}`);
-				});
-			} else {
-				timezoneOptions.push(region);
-			}
-		});
-
-		console.log(timezoneOptions);
-		return timezoneOptions;
 	};
 
 	const handleSetPartitionAuto = async () => {
-		// await invoke('autogen_partition_select_disk', { selected_disk: currentDisk });
+		console.log('invoking autogen_partition_select_disk' + currentDisk);
+		await invoke('autogen_partition_select_disk', { blkname: currentDisk });
 	};
 
 	const setStateSelected = async (str) => {
