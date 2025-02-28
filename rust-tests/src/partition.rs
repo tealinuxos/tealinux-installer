@@ -2,7 +2,7 @@ use crate::error;
 use duct::cmd;
 use std::{clone, str::FromStr};
 
-use crate::macros_ab::gb2sector;
+use crate::macros_ab::{gb2sector, mb2sector};
 use serde::{Deserialize, Serialize};
 // this file is used to calculate how much partition should be
 
@@ -157,39 +157,100 @@ impl Blkutils for Blkstuff {
         let _current_size_val = match current_size {
             Some(size) => size,
             None => {
-                return Err(Box::new(
-                    error::TealinuxAutoPartitionErr::InsufficientStorage(
-                        "something error with getblkbytes()".to_string(),
-                    ),
-                ))
+                return Err(Box::new(error::TealinuxAutoPartitionErr::InternalErr(
+                    "something error with getblkbytes()".to_string(),
+                )));
             }
         };
 
+        // larger than 200 gb
         if current_size.unwrap() > (200 * 1024 * 1024 * 1024) {
-            let last_sector: u64 = gb2sector(70, self.partitiontable.partitiontable.sectorsize);
-            disks_export.push(BlkCalcResult {
-                number: 0,
-                disk_path: self.selected.clone(),
-                path: None,
-                mountpoint: None,
-                filesystem: None,
-                format: false,
-                start: 2048,
-                end: last_sector,
-                size: gb2sector(70, self.partitiontable.partitiontable.sectorsize) - (2048 - 1),
-            });
+            // setup 512 MB for GPT stuff
+            // let mut last_sector: u64 = gb2sector(70, self.partitiontable.partitiontable.sectorsize);
 
             disks_export.push(BlkCalcResult {
                 number: 0,
                 disk_path: self.selected.clone(),
-                path: None,
-                mountpoint: None,
-                filesystem: None,
-                format: false,
+                path: Some(format!("{}1", self.selected.clone())),
+                mountpoint: Some("/boot/efi".to_string()),
+                filesystem: Some("fat32".to_string()),
+                format: true,
+                start: 2048, // aligment
+                end: 2048 + mb2sector(512, self.partitiontable.partitiontable.sectorsize),
+                size: mb2sector(512, self.partitiontable.partitiontable.sectorsize),
+            });
+
+            // align + size (prev)
+            let mut last_sector: u64 =
+                2048 + mb2sector(512, self.partitiontable.partitiontable.sectorsize);
+
+            // this is root partition
+            disks_export.push(BlkCalcResult {
+                number: 1,
+                disk_path: self.selected.clone(),
+                path: Some(format!("{}2", self.selected.clone())),
+                mountpoint: Some("/".to_string()),
+                filesystem: Some("ext4".to_string()),
+                format: true,
+                start: last_sector,
+                end: last_sector + gb2sector(70, self.partitiontable.partitiontable.sectorsize),
+                size: gb2sector(70, self.partitiontable.partitiontable.sectorsize),
+            });
+
+            last_sector =
+                last_sector + gb2sector(70, self.partitiontable.partitiontable.sectorsize);
+
+            // this is home
+            disks_export.push(BlkCalcResult {
+                number: 2,
+                disk_path: self.selected.clone(),
+                path: Some(format!("{}3", self.selected.clone())),
+                mountpoint: Some("/home".to_string()),
+                filesystem: Some("ext4".to_string()),
+                format: true,
                 start: last_sector,
                 end: current_size_sector.unwrap(),
                 size: current_size_sector.unwrap() - last_sector,
             });
+
+            // disk larger than 20 GB
+        } else if current_size.unwrap() > (20 * 1024 * 1024 * 1024) {
+            disks_export.push(BlkCalcResult {
+                number: 0,
+                disk_path: self.selected.clone(),
+                path: Some(format!("{}1", self.selected.clone())),
+                mountpoint: Some("/boot/efi".to_string()),
+                filesystem: Some("fat32".to_string()),
+                format: true,
+                start: 2048, // aligment
+                end: 2048 + mb2sector(512, self.partitiontable.partitiontable.sectorsize),
+                size: mb2sector(512, self.partitiontable.partitiontable.sectorsize),
+            });
+
+            // align + size (prev)
+            let last_sector: u64 =
+                2048 + mb2sector(512, self.partitiontable.partitiontable.sectorsize);
+
+            // this is root partition
+            disks_export.push(BlkCalcResult {
+                number: 1,
+                disk_path: self.selected.clone(),
+                path: Some(format!("{}2", self.selected.clone())),
+                mountpoint: Some("/".to_string()),
+                filesystem: Some("ext4".to_string()),
+                format: true,
+                start: last_sector,
+                end: current_size_sector.unwrap(),
+                size: current_size_sector.unwrap() - last_sector,
+            });
+
+            // disk larger than 200 GB
+        } else {
+            return Err(Box::new(
+                error::TealinuxAutoPartitionErr::InsufficientStorage(
+                    "Selected storage is lower than 20 GB, Aborted!!".to_string(),
+                ),
+            ));
         }
 
         Ok(disks_export)
