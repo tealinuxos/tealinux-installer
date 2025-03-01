@@ -28,6 +28,7 @@ fn main() {
     match get_current_uid() {
         0 => {
             tauri::Builder::default()
+                .plugin(tauri_plugin_process::init())
                 .setup(|app| {
                     #[cfg(debug_assertions)] // only include this code on debug builds
                     {

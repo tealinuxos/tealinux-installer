@@ -27,6 +27,7 @@ battery = "0.7.8"
 tea-arch-chroot-lib = { git = "https://github.com/tealinuxos/tea-arch-chroot-lib" }
 uname = "0.1.1"
 tea-partition-api-lib = { version = "0.2.8", path = "../../tea-partition-api-lib" }
+tauri-plugin-process = "2"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
