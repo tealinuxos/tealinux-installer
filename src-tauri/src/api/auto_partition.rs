@@ -18,7 +18,11 @@ pub struct Partitions {
     #[serde(rename = "type")]
     _type: String,
     #[serde(default)]
-    bootable: bool,
+    bootable: Option<bool>,
+
+    // this is GPT only
+    uuid: Option<String>,
+    name: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -28,7 +32,11 @@ pub struct BlkiIitialData {
     pub device: String,
     pub unit: String,
     pub sectorsize: u64,
-    pub partitions: Vec<Partitions>,
+    pub partitions: Option<Vec<Partitions>>,
+
+    // this is GPT field
+    pub firstlba: Option<u64>,
+    pub lastlba: Option<u64>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -92,7 +100,9 @@ impl Blkutils for Blkstuff {
                     device: "".to_string(),
                     unit: "".to_string(),
                     sectorsize: 0,
-                    partitions: Vec::new(),
+                    partitions: Some(Vec::new()),
+                    firstlba: Some(0),
+                    lastlba: Some(0),
                 },
             }
         });
@@ -171,6 +181,7 @@ impl Blkutils for Blkstuff {
         if current_size.unwrap() > (200 * 1024 * 1024 * 1024) {
             // setup 512 MB for GPT stuff
             // let mut last_sector: u64 = gb2sector(70, self.partitiontable.partitiontable.sectorsize);
+            println!("{:#?}", self.partitiontable);
 
             disks_export.push(Partition {
                 number: 0,
@@ -196,7 +207,7 @@ impl Blkutils for Blkstuff {
                 mountpoint: Some("/".to_string()),
                 filesystem: Some("ext4".to_string()),
                 format: true,
-                start: last_sector,
+                start: last_sector + 1,
                 end: last_sector + gb2sector(70, self.partitiontable.partitiontable.sectorsize),
                 size: gb2sector(70, self.partitiontable.partitiontable.sectorsize),
             });
@@ -212,9 +223,9 @@ impl Blkutils for Blkstuff {
                 mountpoint: Some("/home".to_string()),
                 filesystem: Some("ext4".to_string()),
                 format: true,
-                start: last_sector,
-                end: current_size_sector.unwrap(),
-                size: current_size_sector.unwrap() - last_sector,
+                start: last_sector + 1,
+                end: current_size_sector.unwrap() - 2048,
+                size: current_size_sector.unwrap() - last_sector - 2048,
             });
 
             // disk larger than 20 GB
@@ -243,9 +254,9 @@ impl Blkutils for Blkstuff {
                 mountpoint: Some("/".to_string()),
                 filesystem: Some("ext4".to_string()),
                 format: true,
-                start: last_sector,
-                end: current_size_sector.unwrap(),
-                size: current_size_sector.unwrap() - last_sector,
+                start: last_sector + 1,
+                end: current_size_sector.unwrap() - 2048,
+                size: current_size_sector.unwrap() - last_sector - 2048,
             });
 
             // disk larger than 200 GB
@@ -294,13 +305,14 @@ impl Blkutils for Blkstuff {
 pub async fn autogen_partition_select_disk(blkname: String) -> () {
     println!("DEBUG: autoinstall recv {} ", blkname);
 
-    let blkdata = Blkstuff::blockdevice(blkname);
+    let blkdata = Blkstuff::blockdevice(blkname.clone());
     let disk_result = blkdata.getresult();
 
     let mut blueprint = super::get_blueprint().unwrap();
     println!("{:#?}", &disk_result);
 
     blueprint.disk = Some(disk_result.unwrap());
+    blueprint._reserved.selected_format_disk = Some(blkname.clone());
 
     super::write_blueprint(blueprint).unwrap();
 }
