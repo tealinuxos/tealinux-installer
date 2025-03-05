@@ -1,4 +1,5 @@
 use super::storage::filesystem::filesystem_list;
+use crate::installer::blueprint::Reserved;
 use crate::installer::BluePrint;
 use crate::read::get_read;
 use std::fs::{create_dir_all, read_to_string, File};
@@ -44,6 +45,10 @@ pub async fn get_blueprint_from_opt() -> String {
     match read_to_string(path) {
         Ok(json) => json,
         Err(_) => {
+            let _reserved_field = Reserved {
+                selected_format_disk: None
+            };
+        
             let blueprint = BluePrint {
                 account: None,
                 locale: None,
@@ -51,6 +56,7 @@ pub async fn get_blueprint_from_opt() -> String {
                 disk: None,
                 bootloader: None,
                 keyboard: None,
+                _reserved: _reserved_field
             };
             let mut file = File::create("/opt/tea-installer/installer.json").unwrap();
 
@@ -90,6 +96,10 @@ pub async fn set_empty_blueprint() {
 
     let mut file = File::create("/opt/tea-installer/installer.json").unwrap();
 
+    let _reserved_field = Reserved {
+        selected_format_disk: None
+    };
+
     let blueprint = BluePrint {
         account: None,
         locale: None,
@@ -97,6 +107,7 @@ pub async fn set_empty_blueprint() {
         disk: None,
         bootloader: None,
         keyboard: None,
+        _reserved: _reserved_field
     };
 
     let blueprint_json = serde_json::to_string_pretty(&blueprint).unwrap();
