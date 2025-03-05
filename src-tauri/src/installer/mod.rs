@@ -2,6 +2,8 @@ pub mod blueprint;
 mod payload;
 mod step;
 
+use step::mkpart;
+
 use self::payload::Payload;
 use super::read::online::Online;
 use super::storage::umount_all_target;
@@ -41,6 +43,12 @@ pub async fn start_install(window: Window) {
     wait();
 
     let blueprint = step::json::read_blueprint().expect("Failed when reading blueprint file");
+
+    // doing partition stuff, make one IF AUTOGEN IS SET
+    mkpart::Partgen::do_dangerous_task_on(
+        &blueprint._reserved.selected_format_disk,
+        blueprint.disk.clone().unwrap(),
+    );
 
     if !Path::exists(Path::new("/tealinux-mount")) {
         match std::fs::create_dir("/tealinux-mount/") {
