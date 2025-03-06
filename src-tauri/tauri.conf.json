@@ -50,11 +50,15 @@
   "app": {
     "windows": [
       {
-        "fullscreen": true,
-        "height": 720,
-        "resizable": true,
+        "fullscreen": false,
+        "resizable": false,
         "title": "TeaLinux Installer",
-        "width": 1280,
+        "width": 1080,
+        "height": 720,
+        "minWidth": 1080,
+        "minHeight": 720,
+        "maxWidth": 1080,
+        "maxHeight": 720,
         "useHttpsScheme": true
       }
     ],
