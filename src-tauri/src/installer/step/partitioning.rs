@@ -10,7 +10,7 @@ use std::fs::{create_dir, create_dir_all};
 
 pub fn partitioning(blueprint: &BluePrint) -> Result<(), Error>
 {
-    let _ = cmd!("umount", "--recursive", "/tealinux-mount");
+    cmd!("umount", "--recursive", "/tealinux-mount").run()?;
 
     let firmware_type = &blueprint.bootloader.as_ref().unwrap().firmware_type;
     let bootloader_path = &blueprint.bootloader.as_ref().unwrap().path;
