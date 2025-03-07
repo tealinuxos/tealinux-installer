@@ -112,6 +112,19 @@ pub async fn start_install(window: Window)
         }
     }
 
+    // Copy microcode
+
+    match step::microcode::copy_microcode().await
+    {
+        Ok(_) => (),
+        Err(_) => {
+            let _ = window.emit("ERROR", self::payload::Error {
+                message: "Failed to copy microcode".into()
+            });
+            return
+        }
+    }
+
     // Copy mkinitcpio preset to new root
 
     match step::boot::copy_mkinitcpio_preset()
