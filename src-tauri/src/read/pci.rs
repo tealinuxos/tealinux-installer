@@ -2,6 +2,7 @@ use serde::{ Serialize, Deserialize };
 use serde_json::Value;
 use crate::utils::command::command_with_output;
 use duct::cmd;
+use procfs::{ CpuInfo, Current };
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all="camelCase")]
@@ -15,7 +16,12 @@ impl Pci
 {
     pub fn new() -> Self
     {
-        let cpu = command_with_output("dmidecode -s processor-version".to_string());
+        let cpu: String = if let Some(cpu) = Self::get_cpuinfo() {
+            cpu
+        }
+        else {
+            "Unknown".to_owned()
+        };
 
         let vga = {
 
@@ -40,5 +46,23 @@ impl Pci
         };
 
         Self { cpu, vga }
+    }
+
+    fn get_cpuinfo() -> Option<String>
+    {
+        let current = CpuInfo::current();
+
+        match current
+        {
+            Ok(cpu) => {
+                let model_name = cpu.model_name(0);
+                let model_name = model_name.map(|s| s.to_string());
+
+                model_name
+            },
+            Err(_) => {
+                Some("Unknown".to_owned())
+            }
+        }
     }
 }

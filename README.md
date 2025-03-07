@@ -9,7 +9,6 @@ Tauri & SvelteKit
 
 ## Linux Dependency
 - lshw
-- dmidecode
 - rsync
 - fuse2
 - gcc-libs
