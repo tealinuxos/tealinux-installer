@@ -7,7 +7,7 @@ pub async fn blueprint_set_partition(partition: String)
 
     let mut blueprint = super::get_blueprint().unwrap();
 
-    blueprint.disk = Some(partition);
+    // blueprint.disk = Some(partition);
 
     super::write_blueprint(blueprint).unwrap();
 }
