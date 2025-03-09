@@ -8,19 +8,57 @@ use tea_partition_api_lib::GetDiskInformation;
 use std::io::Error;
 use std::fs::{create_dir, create_dir_all};
 
-pub fn partitioning(blueprint: &BluePrint) -> Result<(), Error>
+fn force_umount()
 {
     // Ignore error if the mountpoint is not mounted
     let _ = cmd!("umount", "--recursive", "/tealinux-mount").run();
+}
+
+pub fn partitioning(blueprint: &BluePrint) -> Result<(), Error>
+{
+    let mut result = Ok(());
+
+    if let Some(storage) = blueprint.storage.as_ref()
+    {
+        if storage.new_partition_table
+        {
+            result = partitioning_new_partition_table(blueprint);
+        }
+        else if storage.layout_changed
+        {
+            result = partitioning_layout_changed(blueprint);
+        }
+        else
+        {
+            result = partitioning_layout_preserved(blueprint);
+        }
+    }
+
+    result
+}
+
+fn partitioning_new_partition_table(blueprint: &BluePrint) -> Result<(), Error>
+{
+    todo!();
+}
+
+fn partitioning_layout_changed(blueprint: &BluePrint) -> Result<(), Error>
+{
+    todo!();
+}
+
+fn partitioning_layout_preserved(blueprint: &BluePrint) -> Result<(), Error>
+{
+    force_umount();
 
     let firmware_type = &blueprint.bootloader.as_ref().unwrap().firmware_type;
     let bootloader_path = &blueprint.bootloader.as_ref().unwrap().path;
 
-    let max_number = blueprint.disk.as_ref().unwrap().iter().max_by_key(|partition| partition.number);
+    let max_number = blueprint.storage.as_ref().unwrap().partitions.as_ref().unwrap().iter().max_by_key(|partition| partition.number);
     let max_number = max_number.unwrap().number;
     let max_number = max_number + 1;
 
-    for i in blueprint.disk.as_ref().unwrap().iter().to_owned().rev()
+    for i in blueprint.storage.as_ref().unwrap().partitions.as_ref().unwrap().iter().to_owned().rev()
     {
         let mut i_path = i.path.clone();
         let i_format = i.format;
@@ -95,7 +133,7 @@ pub fn partitioning(blueprint: &BluePrint) -> Result<(), Error>
 
 pub fn get_boot_mountpoint(blueprint: &BluePrint) -> Option<String>
 {
-    let disk = &blueprint.disk;
+    let disk = &blueprint.storage.as_ref().unwrap().partitions;
     let mut boot_mountpoint = None;
 
     if let Some(disk) = disk
@@ -115,7 +153,7 @@ pub fn get_boot_mountpoint(blueprint: &BluePrint) -> Option<String>
 
 pub fn get_boot_path(blueprint: &BluePrint) -> Option<String>
 {
-    let disk = &blueprint.disk;
+    let disk = &blueprint.storage.as_ref().unwrap().partitions;
     let mut boot_path = None;
 
     if let Some(disk) = disk
