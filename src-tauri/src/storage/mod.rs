@@ -103,7 +103,7 @@ pub fn umount_all() -> Result<(), Error>
 
         let mut has_root = false;
 
-        for i in json.disk.as_ref().unwrap().iter()
+        for i in json.storage.as_ref().unwrap().partitions.as_ref().unwrap().iter()
         {
             if let Some(partition) = &i.mountpoint
             {
@@ -117,7 +117,7 @@ pub fn umount_all() -> Result<(), Error>
         has_root
     };
 
-    for partition in json.disk.as_ref().unwrap().iter()
+    for partition in json.storage.as_ref().unwrap().partitions.as_ref().unwrap().iter()
     {
         let mountpoint = &partition.mountpoint;
 

@@ -10,7 +10,7 @@ pub struct BluePrint
     pub account: Option<Account>,
     pub locale: Option<Locale>,
     pub timezone: Option<Timezone>,
-    pub disk: Option<Vec<Partition>>,
+    pub storage: Option<Storage>,
     pub bootloader: Option<Bootloader>,
     pub keyboard: Option<Keyboard>
 }
@@ -44,4 +44,15 @@ pub struct Keyboard
 {
     pub layout: Option<String>,
     pub variant: Option<String>
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all="camelCase")]
+pub struct Storage
+{
+    pub disk_path: Option<String>,
+    pub partition_table: Option<String>,
+    pub new_partition_table: bool,
+    pub layout_changed: bool,
+    pub partitions: Option<Vec<Partition>>
 }

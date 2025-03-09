@@ -14,6 +14,7 @@ use api::timezone::*;
 use api::keyboard::*;
 use api::account::*;
 use api::partition::*;
+use api::storage::*;
 use api::firmware::*;
 use system::reboot::reboot;
 use system::spawn::*;
@@ -35,6 +36,7 @@ fn main()
                     blueprint_set_partition,
                     blueprint_set_bootloader,
                     blueprint_set_keyboard,
+                    blueprint_set_storage,
                     set_read_json,
                     get_locale_json,
                     get_timezone_json,
