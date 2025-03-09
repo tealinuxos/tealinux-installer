@@ -15,7 +15,7 @@
 
 	const getDisk = async () => {
 		let blueprint = await getBlueprint();
-		return blueprint.disk;
+		return blueprint.storage.partitions;
 	};
 
 	const getDiskSize = async () => {

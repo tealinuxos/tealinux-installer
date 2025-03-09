@@ -77,12 +77,23 @@
 		}
 	};
 
-	const handleSetPartition = async () => {
-		let partition = JSON.stringify(partitionDetail);
+    const handleSetStorage = async () => {
+        let disks = await getRead();
+        disks = disks.disk;
 
-		await invoke('blueprint_set_partition', { partition });
-		await handleSetBootloader();
-	};
+        let storage = {
+            diskPath: disks[selectedDisk].diskPath,
+            partitionTable: disks[selectedDisk].label,
+            newPartitionTable: false,
+            layoutChanged: false,
+            partitions: null
+        };
+
+        await invoke('blueprint_set_storage', {
+            storage: JSON.stringify(storage),
+            partition: JSON.stringify(partitionDetail)
+        });
+    };
 
 	const handleSetBootloader = async () => {
 		let bootloaderJSON = JSON.stringify(bootloader);
@@ -207,7 +218,7 @@
             getStorageJSON().then((disks) => {
                 getColors(disks);
                 handlePartitionDetail(disks, selectedDisk);
-                handleSetPartition();
+                handleSetStorage();
             });
 		});
 
@@ -391,7 +402,7 @@
 											<div class="relative flex items-center">
 												<select
 													bind:value={partitionDetail[i].filesystem}
-													on:change={handleSetPartition}
+													on:change={handleSetStorage}
 													class=" appearance-none flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 pr-8 rounded-lg"
 												>
 													<option disabled={true} value={null}>Unallocated</option>
@@ -420,7 +431,7 @@
 											<div class="relative flex items-center">
 												<select
 													bind:value={partitionDetail[i].mountpoint}
-													on:change={handleSetPartition}
+													on:change={handleSetStorage}
 													class=" appearance-none flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 pr-8 rounded-lg"
 												>
 													<option value={null}>No Mountpoint</option>
@@ -455,7 +466,7 @@
 													id="format-{i}"
 													class="rounded-checkbox"
 													bind:checked={partitionDetail[i].format}
-													on:change={handleSetPartition}
+													on:change={handleSetStorage}
 												/>
 											</div>
 										</div>
@@ -467,7 +478,7 @@
 											<div class="relative flex items-center">
 												<select
 													bind:value={partitionDetail[i].filesystem}
-													on:change={handleSetPartition}
+													on:change={handleSetStorage}
 													class=" appearance-none flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 pr-8 rounded-lg"
 												>
 													{#if partitionDetail[i].filesystem === 'ntfs'}
@@ -500,7 +511,7 @@
 											<div class="relative flex items-center">
 												<select
 													bind:value={partitionDetail[i].mountpoint}
-													on:change={handleSetPartition}
+													on:change={handleSetStorage}
 													class=" appearance-none flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 pr-8 rounded-lg"
 												>
                                                     {#if partitionDetail[i].mountpoint === "/boot/efi"}
@@ -544,7 +555,7 @@
 													id="format-{i}"
 													class="rounded-checkbox"
 													bind:checked={partitionDetail[i].format}
-													on:change={handleSetPartition}
+													on:change={handleSetStorage}
 												/>
 											</div>
 										</div>
@@ -566,7 +577,7 @@
 										await setTab('Efi');
 										refreshEfi();
                                         partitionDetail[bootloaderPartitionIndex].mountpoint = "/boot/efi";
-                                        handleSetPartition();
+                                        handleSetStorage();
 									}}
 								>
 									Efi
@@ -581,7 +592,7 @@
 								await setTab('Mbr');
 								refreshMbr();
                                 partitionDetail[bootloaderPartitionIndex].mountpoint = null;
-                                handleSetPartition();
+                                handleSetStorage();
 							}}
 						>
 							Mbr
@@ -624,7 +635,7 @@
 			>
 			<a
 				href="/installation/summary"
-				on:click={handleSetPartition}
+				on:click={handleSetStorage}
 				class="text-white bg-greenTealinux focus:ring-4 font-medium
                     rounded-lg text-sm px-5 py-2.5 me-2 mb-2
                     {partitionChecked ? '' : 'brightness-75 pointer-events-none'}
