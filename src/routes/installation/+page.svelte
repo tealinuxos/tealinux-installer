@@ -58,9 +58,9 @@
 	// });
 </script>
 
-<main class="min-h-dvh min-w-dvw grid place-items-center bg-[#010101] font-jakarta">
+<main class="min-h-dvh min-w-dvw grid place-items-center bg-tealinux font-jakarta">
 	{#await getRead() then json}
-		<div class="max-h-[720px] h-[720px] w-[1080px] max-w-[1080px] bg-tealinux">
+		<div class="flex flex-col justify-between max-h-[720px] min-w-full min-h-full max-w-[1080px]">
 			<TwoSide>
 				<div slot="left">
 					<div class="w-[288px] space-y-[15px]">
