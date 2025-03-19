@@ -13,6 +13,7 @@ pub mod keyboard;
 pub mod account;
 pub mod firmware;
 pub mod storage;
+pub mod partition;
 
 #[tauri::command]
 pub async fn get_read_json() -> String
