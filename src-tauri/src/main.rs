@@ -2,31 +2,41 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod api;
-mod read;
-mod utils;
-mod storage;
 mod installer;
+mod read;
+mod storage;
 mod system;
+mod utils;
 
-use api::*;
-use api::locale::*;
-use api::timezone::*;
-use api::keyboard::*;
 use api::account::*;
+use api::auto_partition::*;
+use api::firmware::*;
+use api::keyboard::*;
+use api::locale::*;
 use api::partition::*;
 use api::storage::*;
 use api::firmware::*;
 use system::reboot::reboot;
 use system::spawn::*;
 use users::get_current_uid;
-use installer::{ start_install, is_online, print_json };
 
-fn main()
-{
-    match get_current_uid()
-    {
+// remove on release
+use tauri::Manager;
+
+fn main() {
+    match get_current_uid() {
         0 => {
             tauri::Builder::default()
+                .plugin(tauri_plugin_process::init())
+                .setup(|app| {
+                    #[cfg(debug_assertions)] // only include this code on debug builds
+                    {
+                        let window = app.get_webview_window("main").unwrap();
+                        window.open_devtools();
+                        // window.close_devtools();
+                    }
+                    Ok(())
+                })
                 .invoke_handler(tauri::generate_handler![
                     get_read_json,
                     set_empty_blueprint,
@@ -50,7 +60,10 @@ fn main()
                     get_keyboard_json,
                     read_blueprint,
                     spawn_gparted,
-                    spawn_terminal
+                    spawn_terminal,
+                    set_auto_config_partition,
+                    get_disk_lists_key_val,
+                    autogen_partition_select_disk
                 ])
                 .run(tauri::generate_context!())
                 .expect("error while running tauri application");
