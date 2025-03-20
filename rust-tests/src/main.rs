@@ -1,11 +1,15 @@
+mod error;
+mod partition;
+
+#[macro_use]
+mod macros_ab;
+
 use duct::cmd;
+use partition::{Blkstuff, Blkutils};
 use serde::{Deserialize, Serialize};
 use serde_json;
-use std::collections::HashMap;
+use std::{collections::HashMap, hash::Hash};
 
-use crate::installer::Partition;
-
-// this is lsblk stuff
 #[derive(Serialize, Deserialize, Debug)]
 struct LsblkBlockdevicesChildren {
     pub name: String,
@@ -39,40 +43,13 @@ struct Lsblk {
     blockdevices: Vec<LsblkBlockdevices>,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Debug)]
 struct Disklists {
-    pub blkname: String,
-    pub blksize: String,
+    blkname: String,
+    blksize: String,
 }
 
-// end lsblk stuff
-
-#[tauri::command]
-pub async fn blueprint_set_partition(partition: String) {
-    let partition: Vec<Partition> = serde_json::from_str(&partition).unwrap();
-
-    let mut blueprint = super::get_blueprint().unwrap();
-
-    // blueprint.disk = Some(partition);
-
-    super::write_blueprint(blueprint).unwrap();
-}
-
-// pub async fn get_disk_size() -> u32 {
-//     cmd!("sfdisk -J /dev/sda").run().unwrap();
-// }
-
-#[tauri::command]
-pub async fn set_auto_config_partition() -> () {
-    let mut blueprint: Result<crate::installer::BluePrint, std::io::Error> = super::get_blueprint();
-
-    if let Ok(blueprint_val) = blueprint {
-        // blueprint_val.disk = self::get_disk_size().await;
-        super::write_blueprint(blueprint_val);
-    }
-}
-
-async fn _get_disk_lists() -> Vec<Disklists> {
+fn get_disk_lists() -> Vec<Disklists> {
     let disk = cmd!("lsblk", "-J").read();
 
     let ignlist = vec!["zram0".to_string()];
@@ -103,19 +80,33 @@ async fn _get_disk_lists() -> Vec<Disklists> {
     }
 
     ret
+
+    // if let Ok(blueprint_val) = blueprint {
+    //     // blueprint_val.disk = self::get_disk_size().await;
+    //     super::write_blueprint(blueprint_val);
+    // }
 }
 
-#[tauri::command]
-pub async fn get_disk_lists_key_val() -> String {
-    let ret = self::_get_disk_lists().await;
-    let ret = serde_json::to_string(&ret);
+fn test_macro(blkdata: &Blkstuff) {
+    let disksize = 1;
 
-    if let Ok(ret_val) = ret {
-        ret_val
-    } else {
-        "[]".to_string()
-    }
+    let sector = macros_ab::gb2sector(disksize, blkdata.partitiontable.partitiontable.sectorsize);
+    println!("{}", sector);
+
+    // println!("{:#?}", blkdata)
 }
 
+fn main() {
+    // println!("Hello, world!");
+    // let disk_parsed = self::get_disk_lists();
+    // println!("{:#?}", disk_parsed);
 
+    let blkdata = partition::Blkstuff::blockdevice("/dev/sda".to_string());
+    // let devblock = blkdata.getresult();
+    // println!("{:#?}", devblock);
+    // blkdata._export_data();
+    // self::test_macro(&blkdata);
+    let disk_result = blkdata.getresult();
 
+    println!("{:#?}", &disk_result);
+}

@@ -14,6 +14,7 @@ use api::timezone::*;
 use api::keyboard::*;
 use api::account::*;
 use api::partition::*;
+use api::auto_partition::*;
 use api::storage::*;
 use api::firmware::*;
 use system::reboot::reboot;
@@ -50,7 +51,11 @@ fn main()
                     get_keyboard_json,
                     read_blueprint,
                     spawn_gparted,
-                    spawn_terminal
+                    spawn_terminal,
+                    set_auto_config_partition,
+                    get_disk_lists_key_val,
+                    autogen_partition_select_disk
+
                 ])
                 .run(tauri::generate_context!())
                 .expect("error while running tauri application");
