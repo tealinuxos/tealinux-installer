@@ -13,7 +13,6 @@ use std::io::{BufReader, Error};
 use std::path::Path;
 use std::thread::sleep;
 use std::time::Duration;
-use tauri::Emitter;
 use tauri::Window;
 use tea_arch_chroot_lib::chroot::*;
 use tea_arch_chroot_lib::prechroot::*;
@@ -21,6 +20,7 @@ use tea_arch_chroot_lib::prechroot::*;
 pub use self::blueprint::BluePrint;
 pub use self::blueprint::Bootloader;
 pub use self::blueprint::Keyboard;
+pub use self::blueprint::Partition;
 pub use self::blueprint::Storage;
 
 fn wait() {
@@ -45,10 +45,15 @@ pub async fn start_install(window: Window) {
     let blueprint = step::json::read_blueprint().expect("Failed when reading blueprint file");
 
     // doing partition stuff, make one IF AUTOGEN IS SET
-    mkpart::Partgen::do_dangerous_task_on(
-        &blueprint._reserved.selected_format_disk,
-        blueprint.disk.clone().unwrap(),
-    );
+    if let Some(storage_val) = blueprint.storage.as_ref() {
+        if let Some(partition_val) = &storage_val.partitions {
+            mkpart::Partgen::do_dangerous_task_on(
+                &blueprint._reserved.selected_format_disk,
+                // blueprint.disk.clone().unwrap(),
+                &partition_val,
+            );
+        }
+    }
 
     if !Path::exists(Path::new("/tealinux-mount")) {
         match std::fs::create_dir("/tealinux-mount/") {
@@ -119,27 +124,31 @@ pub async fn start_install(window: Window) {
 
     // Copy kernel to new root
 
-    match step::boot::copy_kernel()
-    {
+    match step::boot::copy_kernel() {
         Ok(_) => (),
         Err(_) => {
-            let _ = window.emit("ERROR", self::payload::Error {
-                message: "Failed to copy kernel".into()
-            });
+            let _ = window.emit(
+                "ERROR",
+                self::payload::Error {
+                    message: "Failed to copy kernel".into(),
+                },
+            );
             return ();
         }
     }
 
     // Copy microcode
 
-    match step::microcode::copy_microcode().await
-    {
+    match step::microcode::copy_microcode().await {
         Ok(_) => (),
         Err(_) => {
-            let _ = window.emit("ERROR", self::payload::Error {
-                message: "Failed to copy microcode".into()
-            });
-            return
+            let _ = window.emit(
+                "ERROR",
+                self::payload::Error {
+                    message: "Failed to copy microcode".into(),
+                },
+            );
+            return;
         }
     }
 

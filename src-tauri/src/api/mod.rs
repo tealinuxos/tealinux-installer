@@ -12,10 +12,10 @@ pub mod account;
 pub mod auto_partition;
 pub mod firmware;
 pub mod keyboard;
-pub mod account;
-pub mod firmware;
-pub mod storage;
+pub mod locale;
 pub mod partition;
+pub mod storage;
+pub mod timezone;
 
 #[tauri::command]
 pub async fn get_read_json() -> String {
@@ -47,9 +47,9 @@ pub async fn get_blueprint_from_opt() -> String {
         Ok(json) => json,
         Err(_) => {
             let _reserved_field = Reserved {
-                selected_format_disk: None
+                selected_format_disk: None,
             };
-        
+
             let blueprint = BluePrint {
                 account: None,
                 locale: None,
@@ -57,7 +57,7 @@ pub async fn get_blueprint_from_opt() -> String {
                 storage: None,
                 bootloader: None,
                 keyboard: None,
-                _reserved: _reserved_field
+                _reserved: _reserved_field,
             };
             let mut file = File::create("/opt/tea-installer/installer.json").unwrap();
 
@@ -98,7 +98,7 @@ pub async fn set_empty_blueprint() {
     let mut file = File::create("/opt/tea-installer/installer.json").unwrap();
 
     let _reserved_field = Reserved {
-        selected_format_disk: None
+        selected_format_disk: None,
     };
 
     let blueprint = BluePrint {
@@ -108,7 +108,7 @@ pub async fn set_empty_blueprint() {
         storage: None,
         bootloader: None,
         keyboard: None,
-        _reserved: _reserved_field
+        _reserved: _reserved_field,
     };
 
     let blueprint_json = serde_json::to_string_pretty(&blueprint).unwrap();

@@ -309,9 +309,14 @@ pub async fn autogen_partition_select_disk(blkname: String) -> () {
     let disk_result = blkdata.getresult();
 
     let mut blueprint = super::get_blueprint().unwrap();
-    println!("{:#?}", &disk_result);
+    // println!("{:#?}", &disk_result);
 
-    blueprint.disk = Some(disk_result.unwrap());
+    // blueprint.storage.clone().unwrap().partitions = Some(disk_result.unwrap());
+
+    if let Some(ref mut storange) = blueprint.storage {
+        storange.partitions = Some(disk_result.unwrap());
+    }
+    // blueprint.storage.unwrap().partitions = Some(disk_result.unwrap());
     blueprint._reserved.selected_format_disk = Some(blkname.clone());
 
     super::write_blueprint(blueprint).unwrap();

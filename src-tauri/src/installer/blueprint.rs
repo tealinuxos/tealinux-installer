@@ -20,7 +20,7 @@ pub struct BluePrint {
     pub _reserved: Reserved,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Partition {
     pub number: u64,

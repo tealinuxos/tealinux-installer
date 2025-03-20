@@ -1,5 +1,5 @@
 <script>
-	import { invoke } from '@tauri-apps/api/core';
+	import { invoke } from '@tauri-apps/api/tauri';
 	import { onMount } from 'svelte';
 	import { getRead } from '../global.js';
 	import { randomColor } from 'randomcolor';

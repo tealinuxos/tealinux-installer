@@ -66,7 +66,7 @@ impl Partgen {
         .run();
     }
 
-    pub fn do_dangerous_task_on(blk_orig: &Option<String>, partition_style: Vec<Partition>) {
+    pub fn do_dangerous_task_on(blk_orig: &Option<String>, partition_style: &Vec<Partition>) {
         if let Some(blk) = blk_orig {
             Self::set_blkdev_partition_table(blk.clone(), "gpt".to_string());
 
@@ -75,22 +75,27 @@ impl Partgen {
             for partition in partition_style {
                 // runn
                 let blk_name = format!("{}{}", blk, start_blk_idx);
-                Self::mkpart(
-                    blk.clone(),
-                    partition.start,
-                    partition.end,
-                    partition.filesystem.unwrap(),
-                    blk_name,
-                );
 
-                if start_blk_idx == 1 {
-                    // set flags
-                    Self::setflags(blk.clone(), start_blk_idx);
+                if let Some(partition_fs_val) = partition.filesystem.as_ref() {
+                    Self::mkpart(
+                        blk.clone(),
+                        partition.start,
+                        partition.end,
+                        // BUG: BTRFS show
+                        // partition.filesystem.unwrap(),
+                        partition_fs_val.to_string(),
+                        blk_name,
+                    );
+                    if start_blk_idx == 1 {
+                        // set flags
+                        Self::setflags(blk.clone(), start_blk_idx);
+                    }
+                } else {
+                    println!("[warning] partition_fs_val probably empty");
                 }
 
                 start_blk_idx = start_blk_idx + 1;
             }
         }
-        
     }
 }
