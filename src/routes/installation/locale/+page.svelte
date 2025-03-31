@@ -1,17 +1,19 @@
 <script>
+	import { run } from 'svelte/legacy';
+
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { onMount } from 'svelte';
 	import { getShortLocale, getBlueprint } from '../global.js';
 	import { getCurrency } from 'locale-currency';
 
-	let searchTerm = '';
+	let searchTerm = $state('');
 
 	let locales = [];
-	let showLocales = false;
-	let selectedLocale = null;
-	let isOpen = false;
-	let filteredLocales = [];
+	let showLocales = $state(false);
+	let selectedLocale = $state(null);
+	let isOpen = $state(false);
+	let filteredLocales = $state([]);
 
 	const getLocale = async () => {
 		invoke('get_locale_json').then((response) => {
@@ -40,7 +42,9 @@
 		isOpen = true;
 	}
 
-	$: searchTerm, filterOptions();
+	run(() => {
+		searchTerm, filterOptions();
+	});
 
 	let date = new Date();
 	let dateOptions = {
@@ -52,9 +56,9 @@
 	let number = 1234567.89;
 	let price = 1234.56;
 
-	let timePreview = '';
-	let numberPreview = '';
-	let currencyPreview = '';
+	let timePreview = $state('');
+	let numberPreview = $state('');
+	let currencyPreview = $state('');
 
 	const handlePreview = () => {
 		if (selectedLocale != null) {
@@ -74,7 +78,9 @@
 		}
 	};
 
-	$: selectedLocale, handlePreview();
+	run(() => {
+		selectedLocale, handlePreview();
+	});
 
 	onMount(() => {
 		getLocale();
@@ -118,8 +124,8 @@
 							placeholder="Search..."
 							class="peer h-full w-full outline-none bg-grayTealinux text-sm text-gray-700 pr-2 pl-8"
 							bind:value={searchTerm}
-							on:click={handleFocusIn}
-							on:focus={handleFocusIn}
+							onclick={handleFocusIn}
+							onfocus={handleFocusIn}
 						/>
 						<div class="inset-y-0 left-0 flex items-center pr-4">
 							<!-- <img src={mag_glass} alt="" class="h-4 w-4" /> -->
@@ -156,7 +162,7 @@
 										id={locale.name}
 										class="h-6 w-6"
 										value={locale.name}
-										on:click={(e) => selectLocale(e.target.value)}
+										onclick={(e) => selectLocale(e.target.value)}
 									/>
 									<p>{locale.name}</p>
 								</label>
@@ -194,7 +200,7 @@
 					>
 					<a
 						href="/installation/account"
-						on:click={handleSetLocale}
+						onclick={handleSetLocale}
 						class="text-white bg-greenTealinux {selectedLocale
 							? ''
 							: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"

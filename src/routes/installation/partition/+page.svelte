@@ -1,4 +1,6 @@
 <script>
+	import { run } from 'svelte/legacy';
+
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { onMount } from 'svelte';
 	import { getRead } from '../global.js';
@@ -6,14 +8,14 @@
 	import SideBar from '$lib/components/Sidebar.svelte';
 	import prettyBytes from 'pretty-bytes';
 
-	let show = true;
-	let selectedDisk = 0;
-	let partitionDetail = [];
-	let bootloader = {
+	let show = $state(true);
+	let selectedDisk = $state(0);
+	let partitionDetail = $state([]);
+	let bootloader = $state({
 		firmwareType: null,
 		path: null
-	};
-    let bootloaderPartitionIndex = null;
+	});
+    let bootloaderPartitionIndex = $state(null);
 
 	const getStorageJSON = async () => {
 		let json = await getRead();
@@ -101,7 +103,7 @@
 		await invoke('blueprint_set_bootloader', { bootloader: bootloaderJSON });
 	};
 
-	let partitionColors = [];
+	let partitionColors = $state([]);
 
 	const getColors = (disks) => {
 		let length = disks[selectedDisk].partitions.length;
@@ -120,8 +122,8 @@
 		partitionColors = colors;
 	};
 
-	let activeTab = 'Efi';
-	let bootLoaderLocation = [];
+	let activeTab = $state('Efi');
+	let bootLoaderLocation = $state([]);
 
 	const setTab = async (tab) => {
 		activeTab = tab;
@@ -231,9 +233,8 @@
 		setup();
 	};
 
-    let partitionChecked = false;
+    let partitionChecked = $state(false);
 
-    $: partitionDetail, checkPartition();
 
     const checkPartition = () => {
         let root = partitionDetail.filter(obj => obj.mountpoint === '/');
@@ -246,6 +247,9 @@
 
 	onMount(() => {
 		setup();
+	});
+    run(() => {
+		partitionDetail, checkPartition();
 	});
 </script>
 
@@ -267,13 +271,13 @@
 				Set Installation Partition
 			</h1>
 			<div class=" font-poppinmedium font-medium flex gap-x-8 justify-center">
-				<button class=" bg-grayTealinux text-black py-2 px-4 rounded-lg" on:click={spawnGparted}>
+				<button class=" bg-grayTealinux text-black py-2 px-4 rounded-lg" onclick={spawnGparted}>
 					Gparted
 				</button>
-				<button class=" bg-grayTealinux text-black py-2 px-4 rounded-lg" on:click={spawnTerminal}>
+				<button class=" bg-grayTealinux text-black py-2 px-4 rounded-lg" onclick={spawnTerminal}>
 					Terminal
 				</button>
-				<button class=" bg-grayTealinux text-black py-2 px-4 rounded-lg" on:click={refresh}>
+				<button class=" bg-grayTealinux text-black py-2 px-4 rounded-lg" onclick={refresh}>
 					Refresh
 				</button>
 			</div>
@@ -293,7 +297,7 @@
 							class="w-full b appearance-none p-4 py-2"
 							id="diskSelect"
 							bind:value={selectedDisk}
-							on:change={() => getColors(disks)}
+							onchange={() => getColors(disks)}
 						>
 							{#each disks as disk, i}
 								{@const model = disk.model}
@@ -402,7 +406,7 @@
 											<div class="relative flex items-center">
 												<select
 													bind:value={partitionDetail[i].filesystem}
-													on:change={handleSetStorage}
+													onchange={handleSetStorage}
 													class=" appearance-none flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 pr-8 rounded-lg"
 												>
 													<option disabled={true} value={null}>Unallocated</option>
@@ -431,7 +435,7 @@
 											<div class="relative flex items-center">
 												<select
 													bind:value={partitionDetail[i].mountpoint}
-													on:change={handleSetStorage}
+													onchange={handleSetStorage}
 													class=" appearance-none flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 pr-8 rounded-lg"
 												>
 													<option value={null}>No Mountpoint</option>
@@ -466,7 +470,7 @@
 													id="format-{i}"
 													class="rounded-checkbox"
 													bind:checked={partitionDetail[i].format}
-													on:change={handleSetStorage}
+													onchange={handleSetStorage}
 												/>
 											</div>
 										</div>
@@ -478,7 +482,7 @@
 											<div class="relative flex items-center">
 												<select
 													bind:value={partitionDetail[i].filesystem}
-													on:change={handleSetStorage}
+													onchange={handleSetStorage}
 													class=" appearance-none flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 pr-8 rounded-lg"
 												>
 													{#if partitionDetail[i].filesystem === 'ntfs'}
@@ -511,7 +515,7 @@
 											<div class="relative flex items-center">
 												<select
 													bind:value={partitionDetail[i].mountpoint}
-													on:change={handleSetStorage}
+													onchange={handleSetStorage}
 													class=" appearance-none flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 pr-8 rounded-lg"
 												>
                                                     {#if partitionDetail[i].mountpoint === "/boot/efi"}
@@ -555,7 +559,7 @@
 													id="format-{i}"
 													class="rounded-checkbox"
 													bind:checked={partitionDetail[i].format}
-													on:change={handleSetStorage}
+													onchange={handleSetStorage}
 												/>
 											</div>
 										</div>
@@ -573,7 +577,7 @@
 									class={`py-2 px-4 rounded-t-md ${
 										activeTab === 'Efi' ? 'bg-transparent' : 'bg-gray-200 text-black'
 									}`}
-									on:click={async () => {
+									onclick={async () => {
 										await setTab('Efi');
 										refreshEfi();
                                         partitionDetail[bootloaderPartitionIndex].mountpoint = "/boot/efi";
@@ -588,7 +592,7 @@
 							class={`py-2 px-4 rounded-t-md ${
 								activeTab === 'Mbr' ? 'bg-transparent' : 'bg-gray-200 text-black'
 							}`}
-							on:click={async () => {
+							onclick={async () => {
 								await setTab('Mbr');
 								refreshMbr();
                                 partitionDetail[bootloaderPartitionIndex].mountpoint = null;
@@ -607,7 +611,7 @@
 								class="w-full b appearance-none p-4 py-2 rounded-full"
 								id="diskSelect"
 								bind:value={bootloader.path}
-                                on:change={handleSetBootloader}
+                                onchange={handleSetBootloader}
 							>
 								{#each bootLoaderLocation as location, i}
 									{#if activeTab === 'Efi'}
@@ -635,7 +639,7 @@
 			>
 			<a
 				href="/installation/summary"
-				on:click={handleSetStorage}
+				onclick={handleSetStorage}
 				class="text-white bg-greenTealinux focus:ring-4 font-medium
                     rounded-lg text-sm px-5 py-2.5 me-2 mb-2
                     {partitionChecked ? '' : 'brightness-75 pointer-events-none'}

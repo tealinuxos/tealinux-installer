@@ -8,13 +8,13 @@
 	import prettyBytes from 'pretty-bytes';
 	import { randomColor } from 'randomcolor';
 
-	let itActive = false;
+	let itActive = $state(false);
 	let timezone;
 	let mainLocale;
 	let locales;
 	let formattedPartitions;
 	let assignedPartitions;
-	let passwordVisible = false;
+	let passwordVisible = $state(false);
 
 	// ============================
 	function togglePasswordVisibility() {
@@ -124,7 +124,7 @@
 					<div class="mb-4 w-full">
 						<div class="flex justify-between">
 							<h2 class="font-poppin mb-2 font-semibold">Keyboard layout</h2>
-							<a href="/installation/keyboard" on:click={handleClickDButton}>
+							<a href="/installation/keyboard" onclick={handleClickDButton}>
 								<img src="/green-pencil.svg" alt="" class="mb-2" />
 							</a>
 						</div>
@@ -138,7 +138,7 @@
 						<div class="mb-4 w-full">
 							<div class="flex justify-between">
 								<h2 class="font-poppin text-left mb-2 font-semibold">Timezone</h2>
-								<a href="/installation/timezone" on:click={handleClickDButton}>
+								<a href="/installation/timezone" onclick={handleClickDButton}>
 									<img src="/green-pencil.svg" alt="" class="mb-2" />
 								</a>
 							</div>
@@ -167,7 +167,7 @@
 						<div class="mb-4 w-full">
 							<div class="flex justify-between">
 								<h2 class="font-poppin text-left mb-2 font-semibold">Locale</h2>
-								<a href="/installation/locale" on:click={handleClickDButton}>
+								<a href="/installation/locale" onclick={handleClickDButton}>
 									<img src="/green-pencil.svg" alt="" class="mb-2" />
 								</a>
 							</div>
@@ -186,7 +186,7 @@
 						<div class="mb-4 w-full">
 							<div class="flex justify-between">
 								<h2 class="font-poppin text-left mb-2 font-semibold">User</h2>
-								<a href="/installation/account" on:click={handleClickDButton}>
+								<a href="/installation/account" onclick={handleClickDButton}>
 									<img src="/green-pencil.svg" alt="" class="mb-2" />
 								</a>
 							</div>
@@ -223,7 +223,7 @@
 								  src="/eyeSlash.svg"
 								  alt="Toggle Visibility"
 								  class="mr-[17.18px] ml-auto cursor-pointer"
-								  on:click={togglePasswordVisibility}
+								  onclick={togglePasswordVisibility}
 								/>
 							</div>
 						</div>
@@ -232,7 +232,7 @@
 						<div class="w-full mx-auto mb-4">
 							<div class="flex relative items-center justify-between">
 								<h2 class="font-poppin font-semibold text-[15px]">Partition installation</h2>
-								<a href="/installation/partition" on:click={handleClickDButton}>
+								<a href="/installation/partition" onclick={handleClickDButton}>
 									<img src="/green-pencil.svg" alt="" class="" />
 								</a>
 							</div>
@@ -344,7 +344,7 @@
 				<div class="flex justify-center items-center mx-auto bg-white">
 					<a
 						href="/installation/summary/"
-						on:click={handleClickDButton}
+						onclick={handleClickDButton}
 						class="text-white bg-greenTealinux focus:ring-4 w-[224px] text-center font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-8"
 						>Back to summary page</a
 					>
@@ -352,7 +352,7 @@
 			</div>
 			<div
 				class="w-[5%] grid justify-end items-center cursor-pointer"
-				on:click={handleClickDButton}
+				onclick={handleClickDButton}
 			>
 				<img src="/dropDownMain.svg" alt="" class="rotate-90 h-6" />
 			</div>

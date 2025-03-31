@@ -1,4 +1,6 @@
 <script>
+	import { run } from 'svelte/legacy';
+
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { onMount } from 'svelte';
@@ -6,13 +8,13 @@
 	import { getBlueprint } from '../global.js';
 
 	let json = [];
-	let filteredKeyboards = [];
-	let selectedKeyboards = null;
+	let filteredKeyboards = $state([]);
+	let selectedKeyboards = $state(null);
 	let keyboardName = null;
 	let keyboardVariant = null;
-	let showOptions = false;
-	let searchTerm = '';
-	let showVariants = {};
+	let showOptions = $state(false);
+	let searchTerm = $state('');
+	let showVariants = $state({});
 
 	const getKeyboard = async () => {
 		invoke('get_keyboard_json').then((response) => {
@@ -34,7 +36,9 @@
 		filteredKeyboards = json.filter((e) => e.name.toLowerCase().includes(term));
 	}
 
-	$: searchTerm, filterOptions();
+	run(() => {
+		searchTerm, filterOptions();
+	});
 
 	const selectKeyboards = (code, variant, name) => {
 		keyboardName = code;
@@ -98,7 +102,7 @@
 						placeholder="select keyboard.."
 						class="peer h-full w-full outline-none text-sm text-black text-opacity-50 bg-transparent pr-2 pl-[12px] font-poppin"
 						bind:value={searchTerm}
-						on:click={toggleOptions}
+						onclick={toggleOptions}
 					/>
 					<svg
 						class="mr-[16px]"
@@ -131,7 +135,7 @@
 							>
 								<div
 									class="flex w-full items-center justify-between py-4 px-4 border border-b-grayBorder last:border-none bg-white transition-all"
-									on:click={() => toggleVariants(name)}
+									onclick={() => toggleVariants(name)}
 								>
 									<p>{name} - {code}</p>
 									<img
@@ -154,7 +158,7 @@
 												id="{name}-{code}"
 												value={variant.code}
 												class="w-5 h-5"
-												on:click={() => selectKeyboards(code, variant.code, name)}
+												onclick={() => selectKeyboards(code, variant.code, name)}
 											/>
 											<div class="text-start text-[14px]">
 												<p>{variant.code}</p>
@@ -177,7 +181,7 @@
 						>
 						<a
 							href="/installation/timezone"
-							on:click={handleSetKeyboard}
+							onclick={handleSetKeyboard}
 							class="text-white bg-greenTealinux {selectedKeyboards
 								? ''
 								: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 focus:outline-none"

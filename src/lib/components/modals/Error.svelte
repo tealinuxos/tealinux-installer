@@ -1,6 +1,12 @@
 <script>
-	export let errorMessage = 'Lorem ipsum dolor sit amet consectetur adipisicing elit.';
 	import { exit } from '@tauri-apps/api/process';
+	/**
+	 * @typedef {Object} Props
+	 * @property {string} [errorMessage]
+	 */
+
+	/** @type {Props} */
+	let { errorMessage = 'Lorem ipsum dolor sit amet consectetur adipisicing elit.' } = $props();
 
 	const exitOk = async () => {
 		await exit(0);
@@ -31,7 +37,7 @@
 		<h1 class=" text-3xl font-poppin mb-2">Error</h1>
 		<p class=" mb-4">{errorMessage}</p>
 
-		<button on:click={exitOk} class=" py-2 px-4 bg-red-500 text-white font-poppinsemibold rounded-md w-fit mx-auto"
+		<button onclick={exitOk} class=" py-2 px-4 bg-red-500 text-white font-poppinsemibold rounded-md w-fit mx-auto"
 			>Close</button
 		>
 	</div>

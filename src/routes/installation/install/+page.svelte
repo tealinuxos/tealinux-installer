@@ -5,9 +5,9 @@
 	import { onMount } from 'svelte';
 	import Error from '$lib/components/modals/Error.svelte';
 
-	let percentage = 100;
-	let message = '';
-    let errorMessage = null;
+	let percentage = $state(100);
+	let message = $state('');
+    let errorMessage = $state(null);
 
 	const listenInstall = listen('INSTALL', (event) => {
 		percentage = event.payload.percentage;
@@ -83,11 +83,11 @@
 			<div class="flex gap-x-8 justify-center mt-4">
 				<button
 					class="bg-greenTealinux text-white font-poppinmedium font-medium p-2 rounded-md min-w-20"
-					on:click={exitOk}>Exit</button
+					onclick={exitOk}>Exit</button
 				>
 				<button
 					class="bg-greenTealinux text-white font-poppinmedium font-medium p-2 rounded-md min-w-20"
-					on:click={reboot}>Reboot</button
+					onclick={reboot}>Reboot</button
 				>
 			</div>
 		</div>

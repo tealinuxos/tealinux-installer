@@ -1,14 +1,16 @@
 <script>
+	import { run } from 'svelte/legacy';
+
 	import { onMount } from 'svelte';
 	import { invoke } from '@tauri-apps/api/tauri';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { getBlueprint } from '../global.js';
 
-	let fullname, username, hostname, password, confirmPassword;
+	let fullname = $state(), username = $state(), hostname = $state(), password = $state(), confirmPassword = $state();
 	let isAdministrator = false;
-	let passwordsMatch = false;
-	let passwordVisible = false;
-	let passwordConfirmVisible = false;
+	let passwordsMatch = $state(false);
+	let passwordVisible = $state(false);
+	let passwordConfirmVisible = $state(false);
 
 	function togglePasswordVisibility() {
 		passwordVisible = !passwordVisible;
@@ -28,11 +30,13 @@
 		await invoke('blueprint_set_account', { fullname, username, hostname, password });
 	};
 
-	$: if (password && confirmPassword && password === confirmPassword) {
-		passwordsMatch = true;
-	} else {
-		passwordsMatch = false;
-	}
+	run(() => {
+		if (password && confirmPassword && password === confirmPassword) {
+			passwordsMatch = true;
+		} else {
+			passwordsMatch = false;
+		}
+	});
 
 	onMount(() => {
 		getBlueprint().then((blueprint) => {
@@ -151,7 +155,7 @@
 						height="24"
 						viewBox="0 0 24 24"
 						fill="none"
-						on:click={togglePasswordVisibility}
+						onclick={togglePasswordVisibility}
 						xmlns="http://www.w3.org/2000/svg"
 					>
 						<mask
@@ -206,7 +210,7 @@
 						height="24"
 						viewBox="0 0 24 24"
 						fill="none"
-						on:click={togglePasswordConfirmVisibility}
+						onclick={togglePasswordConfirmVisibility}
 						xmlns="http://www.w3.org/2000/svg"
 					>
 						<mask
@@ -252,7 +256,7 @@
 				>
 				<a
 					href="/installation/partition"
-					on:click={handleSetAccount}
+					onclick={handleSetAccount}
 					class="text-white bg-greenTealinux {passwordsMatch && fullname && username && hostname
 						? ''
 						: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"

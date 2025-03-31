@@ -5,7 +5,7 @@
 
 	import SummaryToAll from './SummaryToAll.svelte';
 
-	let isOpen = false;
+	let isOpen = $state(false);
 
 	function toggleSidebar() {
 		isOpen = !isOpen;
@@ -28,7 +28,7 @@
 		? ' bg-[#C8E8D6]'
 		: 'collapsed bg-greenTealinux'}"
 >
-	<button on:click={toggleSidebar} class=" self-start transition-all duration-1000">
+	<button onclick={toggleSidebar} class=" self-start transition-all duration-1000">
 		{#if isOpen}
 			<svg
 				class="h-8 w-8 text-black p-0.5 border-2 border-black rounded-md"
@@ -64,13 +64,13 @@
 	{#if isOpen}
 		<button
 			class="flex items-center space-x-2 bg-white p-2 rounded-md border-2 border-black"
-			on:click={openSysInfo}
+			onclick={openSysInfo}
 		>
 			<img src="/sysinfoComp.svg" alt="" class="h-6 w-6 text-black">
 			<span class="font-semibold">System information</span>
 		</button>
 		<button class="flex items-center space-x-2 bg-white p-2 rounded-md border-2 border-black"
-		on:click={openSummary}
+		onclick={openSummary}
 		>
 			<img src="/summary.svg" alt="" class="h-6 w-6 text-black">
 			<span class="font-semibold">Summary</span>

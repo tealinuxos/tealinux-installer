@@ -11,7 +11,7 @@
 	let locales;
 	let formattedPartitions;
 	let assignedPartitions;
-	let passwordVisible = false;
+	let passwordVisible = $state(false);
 
 	const getDisk = async () => {
 		let blueprint = await getBlueprint();
@@ -105,7 +105,7 @@
 					<div class="flex justify-between">
 						<h2 class="font-poppin mb-2 font-semibold">Keyboard layout</h2>
 						<img
-							on:click={() => (window.location.href = '/installation/keyboard')}
+							onclick={() => (window.location.href = '/installation/keyboard')}
 							src="/green-pencil.svg"
 							alt=""
 							class="text-left mb-2"
@@ -124,7 +124,7 @@
 					<div class="flex justify-between">
 						<h2 class="font-poppin text-left mb-2 font-semibold">Timezone</h2>
 						<img
-							on:click={() => (window.location.href = '/installation/timezone')}
+							onclick={() => (window.location.href = '/installation/timezone')}
 							src="/green-pencil.svg"
 							alt=""
 							class="text-left mb-2"
@@ -156,7 +156,7 @@
 					<div class="flex justify-between">
 						<h2 class="font-poppin text-left mb-2 font-semibold">Locale</h2>
 						<img
-							on:click={() => (window.location.href = '/installation/locale')}
+							onclick={() => (window.location.href = '/installation/locale')}
 							src="/green-pencil.svg"
 							alt=""
 							class="text-left mb-2"
@@ -178,7 +178,7 @@
 					<div class="flex justify-between">
 						<h2 class="font-poppin text-left mb-2 font-semibold">User</h2>
 						<img
-							on:click={() => (window.location.href = '/installation/account')}
+							onclick={() => (window.location.href = '/installation/account')}
 							src="/green-pencil.svg"
 							alt=""
 							class="text-left mb-2"
@@ -217,7 +217,7 @@
 						  src="/eyeSlash.svg"
 						  alt="Toggle Visibility"
 						  class="mr-[17.18px] ml-auto cursor-pointer"
-						  on:click={togglePasswordVisibility}
+						  onclick={togglePasswordVisibility}
 						/>
 					</div>
 				</div>
@@ -227,7 +227,7 @@
                         <div class="flex relative items-center justify-between">
                             <h2 class="font-poppin font-semibold text-[15px]">Partition installation</h2>
                             <img
-                                on:click={() => (window.location.href = '/installation/partition')}
+                                onclick={() => (window.location.href = '/installation/partition')}
                                 src="/green-pencil.svg"
                                 alt=""
                                 class="text-left mb-2"

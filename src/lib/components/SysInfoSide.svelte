@@ -6,7 +6,7 @@
 	import prettyBytes from 'pretty-bytes';
 	import { randomColor } from 'randomcolor';
 
-	let isActivated;
+	let isActivated = $state();
 
 	const unsubscribe = sysInfoActivated.subscribe((value) => {
 		isActivated = value;
@@ -243,7 +243,7 @@
 					</div>
 					<div class="flex justify-center items-center mx-auto bg-white">
 						<a
-							on:click={handleButtonClick}
+							onclick={handleButtonClick}
 							href="/installation/"
 							class="text-white bg-greenTealinux focus:ring-4 w-[300px] text-center font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-8"
 							>Back to system information page</a
@@ -252,7 +252,7 @@
 				</div>
 			{/await}
 		</div>
-		<div class="w-[5%] grid justify-end items-center cursor-pointer" on:click={handleButtonClick}>
+		<div class="w-[5%] grid justify-end items-center cursor-pointer" onclick={handleButtonClick}>
 			<svg viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg" class=" rotate-90 h-6">
 				<path
 					d="M1 1.5L7 7.5L13 1.5"
