@@ -1,4 +1,5 @@
 <script>
+	import Button from './ui/Button.svelte';
 	import GlowingText from './ui/GlowingText.svelte';
 
 	let currentStep = $state(1); // Use Svelte 5 reactive state
@@ -10,14 +11,11 @@
 <div class="rounded-sm w-[1050px] flex flex-col h-[72px] mx-auto">
 	<div class="flex items-center justify-between w-full bg-black/30 px-4 p-1">
 		<!-- Back Button -->
-		<button
-			class="cursor-pointer grid place-items-center py-[9px] px-[30px] text-xl bg-[#101010] rounded-sm hover:shadow-[0_0px_5px_1px_#00B85E] transition-all duration-300 border-[0.3px] border-[#3C6350]"
-			disabled={currentStep === 1}
+		<Button
+			isDisabled={currentStep === 1}
 			onclick={() => (currentStep = Math.max(1, currentStep - 1))}
-			aria-label="Go to previous step"
-		>
-			<GlowingText text="Back" />
-		</button>
+			btnText="Back"
+		/>
 
 		<!-- pages -->
 		<div class="flex flex-col items-center justify-between space-y-2 my-[10px]">
@@ -25,14 +23,11 @@
 		</div>
 
 		<!-- Next Button -->
-		<button
-			class="cursor-pointer grid place-items-center py-[9px] px-[30px] text-xl bg-[#101010] rounded-sm hover:shadow-[0_0px_5px_1px_#00B85E] transition-all duration-300 border-[0.3px] border-[#3C6350]"
-			disabled={currentStep === totalSteps}
+		<Button
+			isDisabled={currentStep === totalSteps}
 			onclick={() => (currentStep = Math.min(totalSteps, currentStep + 1))}
-			aria-label="Go to next step"
-		>
-			<GlowingText text="Next" />
-		</button>
+			btnText="Next"
+		/>
 	</div>
 	<!-- Step Indicator -->
 
