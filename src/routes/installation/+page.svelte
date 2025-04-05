@@ -5,6 +5,7 @@
 	import { randomColor } from 'randomcolor';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import TwoSide from '../../lib/components/layouts/TwoSide.svelte';
+	import GlowingText from '../../lib/components/ui/GlowingText.svelte';
 
 	const getStorageJSON = async () => {
 		let json = await getRead();
@@ -44,7 +45,7 @@
 	};
 
 	const checkUnknown = (s) => {
-		if (s.length === 0) {
+		if (!s || s.length === 0) {
 			return 'Unknown';
 		} else {
 			return s;
@@ -60,6 +61,9 @@
 
 <main class="min-h-dvh min-w-dvw grid place-items-center bg-tealinux font-jakarta">
 	{#await getRead() then json}
+		<!-- <pre>
+		{JSON.stringify(json, null, 2)}
+	</pre> -->
 		<div class="flex flex-col justify-between max-h-[720px] min-w-full min-h-full max-w-[1080px]">
 			<TwoSide>
 				<div slot="left">
@@ -77,9 +81,12 @@
 					</div>
 				</div>
 				<div slot="right">
+					<!-- information system -->
 					<div class="flex space-x-5 mb-[15px]">
-						<div class="w-1/2 bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px]">
-							<h2 class="text-green-500 text-lg font-semibold mb-4">Hardware</h2>
+						<div
+							class="w-1/2 bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px] space-y-5"
+						>
+							<GlowingText size="[15]" text="Hardware" />
 							<div class="space-y-5 text-[15px] tracking-[-0.6px]">
 								<div class="leading-none space-y-[10px]">
 									<p class="font-[500]">Hardware model</p>
@@ -101,12 +108,15 @@
 										{checkUnknown(json.lspci.cpu)}
 									</p>
 								</div>
-								{#each json.lspci.vga as vga}
-									<div class="leading-none space-y-[10px]">
-										<p class="font-[500]">Graphic</p>
-										<p class="font-[200]">{checkUnknown(vga)}</p>
-									</div>
-								{/each}
+								<div class="leading-none space-y-[10px]">
+									<p class="font-[500]">Primary Graphic Card</p>
+									<p class="font-[200]">{checkUnknown(json.lspci.vga[0])}</p>
+								</div>
+
+								<div class="leading-none space-y-[10px]">
+									<p class="font-[500]">Secondary Graphic Card</p>
+									<p class="font-[200]">{checkUnknown(json.lspci.vga[1])}</p>
+								</div>
 								{#await getTotalStorage() then totalSize}
 									{@const storage = totalSize * 512}
 									{@const storageGB = storage === 0 ? 'No disk' : prettyBytes(totalSize * 512)}
@@ -118,8 +128,10 @@
 							</div>
 						</div>
 
-						<div class="w-1/2 bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px]">
-							<h2 class="text-green-500 text-lg font-semibold mb-4">Operating System</h2>
+						<div
+							class="w-1/2 bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px] space-y-5"
+						>
+							<GlowingText size="[15]" text="Operating System" />
 							<div class="space-y-5 text-[15px] tracking-[-0.6px]">
 								<div class="leading-none space-y-[10px]">
 									<p class="font-[500]">Operating System</p>
@@ -141,8 +153,10 @@
 						</div>
 					</div>
 
+					<!-- partition -->
 					<div class="bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px]">
-						<h2 class="text-green-500 text-lg font-semibold mb-4">Partition</h2>
+						<GlowingText size="lg" text="Disk" />
+
 						{#await getStorageJSON()}
 							Loading...
 						{:then disks}
@@ -150,6 +164,17 @@
 								{@const size = parseInt(disks[idx].size.replace('s', ' '))}
 								{@const prettySize = size === 0 ? 'No disk' : prettyBytes(size * 512)}
 								{@const colors = getColors(disks, idx)}
+
+								<div class="mb-2 mt-1 flex justify-between items-center uppercase">
+									<p>
+										<span class="text-sm font-[500]">{disk.diskPath}</span>
+										{' '}
+										<span class="text-xs font-[400]">{disk.model}</span>
+									</p>
+									<p class="text-xs font-[200]">
+										{disk.label}
+									</p>
+								</div>
 
 								<div class=" flex gap-x-4 items-start">
 									<div class="w-full">
