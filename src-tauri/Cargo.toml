@@ -26,6 +26,7 @@ battery = "0.7.8"
 tea-partition-api-lib = { git = "https://github.com/tealinuxos/tea-partition-api-lib", tag = "v.0.3.3" }
 tea-arch-chroot-lib = { git = "https://github.com/tealinuxos/tea-arch-chroot-lib" }
 uname = "0.1.1"
+sudo = "0.6.0"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
