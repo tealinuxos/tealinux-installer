@@ -105,11 +105,11 @@
 					<div class="flex items-center gap-4">
 						<button
 							class="cursor-pointer text-primary/80 hover:text-primary text-xl transition-colors"
-							on:click={prevSlide}>&lsaquo;</button
+							onclick={prevSlide}>&lsaquo;</button
 						>
 						<button
 							class="cursor-pointer text-primary/80 hover:text-primary text-xl transition-colors"
-							on:click={nextSlide}>&rsaquo;</button
+							onclick={nextSlide}>&rsaquo;</button
 						>
 					</div>
 				</div>
