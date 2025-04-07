@@ -1,11 +1,11 @@
 <script>
-	// import { onMount } from 'svelte';
 	import { getRead } from './global.js';
 	import prettyBytes from 'pretty-bytes';
 	import { randomColor } from 'randomcolor';
 	import Navigation from '$lib/components/Navigation.svelte';
-	import TwoSide from '../../lib/components/layouts/TwoSide.svelte';
-	import GlowingText from '../../lib/components/ui/GlowingText.svelte';
+	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
+	import GlowingText from '$lib/components/ui/GlowingText.svelte';
+	import DiskSlider from '../../lib/components/DiskSlider.svelte';
 
 	const getStorageJSON = async () => {
 		let json = await getRead();
@@ -59,14 +59,16 @@
 	// });
 </script>
 
-<main class="min-h-dvh min-w-dvw grid place-items-center bg-tealinux font-jakarta">
+<main
+	class="max-h-[720px] max-w-[1080px] h-[720px] w-[1080px] grid place-items-center bg-tealinux font-jakarta"
+>
 	{#await getRead() then json}
 		<!-- <pre>
 		{JSON.stringify(json, null, 2)}
 	</pre> -->
 		<div class="flex flex-col justify-between max-h-[720px] min-w-full min-h-full max-w-[1080px]">
 			<TwoSide>
-				<div slot="left">
+				{#snippet left()}
 					<div class="w-[288px] space-y-[15px]">
 						<div class="flex space-x-[14px]">
 							<div class="w-[58px]">
@@ -76,11 +78,11 @@
 						</div>
 						<p class="font-jakarta text-sm font-[200] tracking-[-0.56px] text-center">
 							Qorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie,
-							dictum est a, mattis tellus.
+							dictum est a, mattis tellus
 						</p>
 					</div>
-				</div>
-				<div slot="right">
+				{/snippet}
+				{#snippet right()}
 					<!-- information system -->
 					<div class="flex space-x-5 mb-[15px]">
 						<div
@@ -153,84 +155,14 @@
 						</div>
 					</div>
 
-					<!-- partition -->
-					<div class="bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px]">
-						<GlowingText size="lg" text="Disk" />
-
-						{#await getStorageJSON()}
-							Loading...
-						{:then disks}
-							{#each disks as disk, idx}
-								{@const size = parseInt(disks[idx].size.replace('s', ' '))}
-								{@const prettySize = size === 0 ? 'No disk' : prettyBytes(size * 512)}
-								{@const colors = getColors(disks, idx)}
-
-								<div class="mb-2 mt-1 flex justify-between items-center uppercase">
-									<p>
-										<span class="text-sm font-[500]">{disk.diskPath}</span>
-										{' '}
-										<span class="text-xs font-[400]">{disk.model}</span>
-									</p>
-									<p class="text-xs font-[200]">
-										{disk.label}
-									</p>
-								</div>
-
-								<div class=" flex gap-x-4 items-start">
-									<div class="w-full">
-										<div class="flex mb-4 h-7 w-full overflow-hidden">
-											<div class="h-full flex overflow-hidden w-full">
-												{#each disk.partitions as partition, i}
-													{@const diskSize = disk.size.slice(0, -1)}
-													{@const partitionSize = partition.size.slice(0, -1)}
-													{@const percentage = (partitionSize / diskSize) * 100}
-
-													{@const color = colors[i]}
-
-													<div
-														style="width: {percentage}%; background-color: {color}"
-														class="h-full"
-													></div>
-												{/each}
-											</div>
-										</div>
-
-										<div class="flex gap-y-4 flex-wrap mb-4">
-											{#each disk.partitions as partition, i}
-												{@const color = colors[i]}
-												{@const size = partition.size.slice(0, -1) * 512}
-												{@const path =
-													partition.partitionPath == null
-														? 'Unallocated'
-														: partition.partitionPath.slice(5)}
-												{@const filesystem =
-													partition.filesystem == null
-														? path == 'Unallocated'
-															? 'Unallocated'
-															: 'Unknown'
-														: partition.filesystem}
-												{@const prettySize = prettyBytes(size)}
-												<div class="flex items-center pr-2 gap-x-[2px]">
-													<div style="background-color: {color}" class="w-2 h-2 rounded-full"></div>
-													<div class="flex flex-col text-[11px] font-jakarta">
-														<span class="pl-1">{filesystem}</span>
-														<!-- <span class="pl-1">{prettySize} {filesystem}</span> -->
-													</div>
-												</div>
-											{/each}
-										</div>
-									</div>
-								</div>
-							{/each}
-						{/await}
-					</div>
-				</div>
+					{#await getStorageJSON()}
+						Loading...
+					{:then disks}
+						<DiskSlider {disks} colors={getColors(disks, 0)} />
+					{/await}
+				{/snippet}
 			</TwoSide>
 			<Navigation />
 		</div>
 	{/await}
 </main>
-
-<style>
-	@reference "tailwindcss/theme";
-</style>
