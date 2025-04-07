@@ -3,7 +3,6 @@
 	import { onMount } from 'svelte';
 	import { getRead } from '../global.js';
 	import { randomColor } from 'randomcolor';
-	import SideBar from '$lib/components/Sidebar.svelte';
 	import prettyBytes from 'pretty-bytes';
 
 	let show = true;
@@ -13,7 +12,7 @@
 		firmwareType: null,
 		path: null
 	};
-    let bootloaderPartitionIndex = null;
+	let bootloaderPartitionIndex = null;
 
 	const getStorageJSON = async () => {
 		let json = await getRead();
@@ -34,18 +33,11 @@
 		return JSON.parse(filesystems);
 	};
 
-    const filesystems = [
-        "btrfs",
-        "ext4",
-        "fat32",
-        "fat16",
-        "exfat",
-        "linux-swap(v1)"
-    ];
+	const filesystems = ['btrfs', 'ext4', 'fat32', 'fat16', 'exfat', 'linux-swap(v1)'];
 
 	const handlePartitionDetail = async (disks, selectedDisk) => {
 		partitionDetail = [];
-        bootloaderPartitionIndex = null;
+		bootloaderPartitionIndex = null;
 
 		for (let i of disks[selectedDisk].partitions.keys()) {
 			let partitionPath = disks[selectedDisk].partitions[i].partitionPath;
@@ -55,17 +47,20 @@
 			let size = disks[selectedDisk].partitions[i].size.slice(0, -1);
 			let partitionNumber = disks[selectedDisk].partitions[i].number;
 			let partitionDiskPath = disks[selectedDisk].diskPath;
-            let mountpoint = (partitionPath === bootloader.path)
-                ? (bootloader.firmwareType === 'UEFI')
-                    ? '/boot/efi'
-                    : '/boot'
-                : null;
+			let mountpoint =
+				partitionPath === bootloader.path
+					? bootloader.firmwareType === 'UEFI'
+						? '/boot/efi'
+						: '/boot'
+					: null;
 
-            if (mountpoint) { bootloaderPartitionIndex = i };
+			if (mountpoint) {
+				bootloaderPartitionIndex = i;
+			}
 
 			partitionDetail.push({
-                number: parseInt(partitionNumber),
-                diskPath: partitionDiskPath,
+				number: parseInt(partitionNumber),
+				diskPath: partitionDiskPath,
 				path: partitionPath,
 				mountpoint,
 				filesystem: filesystemType,
@@ -147,7 +142,7 @@
 		getBootloaderPartition(activeTab).then((efi) => {
 			bootloader.firmwareType = 'UEFI';
 			efi === null ? (bootloader.path = null) : (bootloader.path = efi[0].partitionPath);
-            handleSetBootloader();
+			handleSetBootloader();
 		});
 	};
 
@@ -155,7 +150,7 @@
 		getBootloaderPartition(activeTab).then((disk) => {
 			bootloader.firmwareType = 'BIOS';
 			disk === null ? (bootloader.path = null) : (bootloader.path = disk[0].diskPath);
-            handleSetBootloader();
+			handleSetBootloader();
 		});
 	};
 
@@ -195,7 +190,6 @@
 	};
 
 	const setup = () => {
-
 		getFirmwareType().then((firmware) => {
 			if (firmware === 'UEFI') {
 				setTab('Efi');
@@ -204,13 +198,12 @@
 				setTab('Mbr');
 				refreshMbr();
 			}
-            getStorageJSON().then((disks) => {
-                getColors(disks);
-                handlePartitionDetail(disks, selectedDisk);
-                handleSetPartition();
-            });
+			getStorageJSON().then((disks) => {
+				getColors(disks);
+				handlePartitionDetail(disks, selectedDisk);
+				handleSetPartition();
+			});
 		});
-
 	};
 
 	const refresh = () => {
@@ -220,25 +213,21 @@
 		setup();
 	};
 
-    let partitionChecked = false;
+	let partitionChecked = false;
 
-    $: partitionDetail, checkPartition();
+	$: partitionDetail, checkPartition();
 
-    const checkPartition = () => {
-        let root = partitionDetail.filter(obj => obj.mountpoint === '/');
-        partitionChecked = (root.length > 0)
-            ? bootloader.firmwareType && bootloader.path
-                ? true
-                : false
-            : false;
-    };
+	const checkPartition = () => {
+		let root = partitionDetail.filter((obj) => obj.mountpoint === '/');
+		partitionChecked =
+			root.length > 0 ? (bootloader.firmwareType && bootloader.path ? true : false) : false;
+	};
 
 	onMount(() => {
 		setup();
 	});
 </script>
 
-<SideBar />
 <div class="relative w-full">
 	<header
 		class="flex items-center justify-center w-full gap-[10px] py-10 fixed top-0 bg-whiteTealinux z-30"
@@ -267,11 +256,11 @@
 				</button>
 			</div>
 
-            {#if !show}
+			{#if !show}
 				<div class="flex flex-col items-center justify-center p-4 font-poppinmedium">
-                    Loading partition...
-                </div>
-            {/if}
+					Loading partition...
+				</div>
+			{/if}
 			{#if show}
 				{#await getStorageJSON() then disks}
 					<!-- option -->
@@ -396,9 +385,9 @@
 												>
 													<option disabled={true} value={null}>Unallocated</option>
 
-														{#each filesystems as filesystem}
-															<option value={filesystem}>{filesystem}</option>
-														{/each}
+													{#each filesystems as filesystem}
+														<option value={filesystem}>{filesystem}</option>
+													{/each}
 												</select>
 												<svg
 													width="14"
@@ -476,9 +465,9 @@
 														<option disabled={true} value={null}>Unknown</option>
 													{/if}
 
-														{#each filesystems as filesystem}
-															<option value={filesystem}>{filesystem}</option>
-														{/each}
+													{#each filesystems as filesystem}
+														<option value={filesystem}>{filesystem}</option>
+													{/each}
 												</select>
 												<svg
 													width="14"
@@ -503,19 +492,14 @@
 													on:change={handleSetPartition}
 													class=" appearance-none flex gap-x-6 items-center bg-grayTealinux text-black py-2 px-4 pr-8 rounded-lg"
 												>
-                                                    {#if partitionDetail[i].mountpoint === "/boot/efi"}
-                                                        <option
-                                                            disabled={true}
-                                                            value="/boot/efi"
-                                                        >
-                                                            /boot/efi
-                                                        </option>
-                                                    {:else}
-                                                        <option value={null}>No Mountpoint</option>
-                                                        <option value="/">/</option>
-                                                        <option value="/home">/home</option>
-                                                        <option value="swap">swap</option>
-                                                    {/if}
+													{#if partitionDetail[i].mountpoint === '/boot/efi'}
+														<option disabled={true} value="/boot/efi"> /boot/efi </option>
+													{:else}
+														<option value={null}>No Mountpoint</option>
+														<option value="/">/</option>
+														<option value="/home">/home</option>
+														<option value="swap">swap</option>
+													{/if}
 												</select>
 												<svg
 													width="14"
@@ -565,8 +549,8 @@
 									on:click={async () => {
 										await setTab('Efi');
 										refreshEfi();
-                                        partitionDetail[bootloaderPartitionIndex].mountpoint = "/boot/efi";
-                                        handleSetPartition();
+										partitionDetail[bootloaderPartitionIndex].mountpoint = '/boot/efi';
+										handleSetPartition();
 									}}
 								>
 									Efi
@@ -580,8 +564,8 @@
 							on:click={async () => {
 								await setTab('Mbr');
 								refreshMbr();
-                                partitionDetail[bootloaderPartitionIndex].mountpoint = null;
-                                handleSetPartition();
+								partitionDetail[bootloaderPartitionIndex].mountpoint = null;
+								handleSetPartition();
 							}}
 						>
 							Mbr
@@ -596,7 +580,7 @@
 								class="w-full b appearance-none p-4 py-2 rounded-full"
 								id="diskSelect"
 								bind:value={bootloader.path}
-                                on:change={handleSetBootloader}
+								on:change={handleSetBootloader}
 							>
 								{#each bootLoaderLocation as location, i}
 									{#if activeTab === 'Efi'}
@@ -628,8 +612,7 @@
 				class="text-white bg-greenTealinux focus:ring-4 font-medium
                     rounded-lg text-sm px-5 py-2.5 me-2 mb-2
                     {partitionChecked ? '' : 'brightness-75 pointer-events-none'}
-                "
-				>Next</a
+                ">Next</a
 			>
 		</div>
 	</section>
