@@ -1,4 +1,5 @@
 <script>
+	import { goto } from '$app/navigation';
 	import Button from './ui/Button.svelte';
 	import GlowingText from './ui/GlowingText.svelte';
 
@@ -6,6 +7,25 @@
 	const totalSteps = 4;
 
 	let percentage = $derived((currentStep / totalSteps) * 100);
+
+	// Function to handle navigation based on the current step
+	function navigateToStep(step) {
+		currentStep = step;
+		switch (step) {
+			case 1:
+				goto('/installation');
+				break;
+			case 2:
+				goto('/installation/keyboard');
+				break;
+			case 3:
+				goto('/installation/account');
+				break;
+			case 4:
+				goto('/installation/summary');
+				break;
+		}
+	}
 </script>
 
 <div class="rounded-sm w-[1050px] flex flex-col h-[72px] mx-auto">
@@ -13,7 +33,7 @@
 		<!-- Back Button -->
 		<Button
 			isDisabled={currentStep === 1}
-			onclick={() => (currentStep = Math.max(1, currentStep - 1))}
+			onclick={() => navigateToStep(Math.max(1, currentStep - 1))}
 			btnText="Back"
 		/>
 
@@ -25,7 +45,7 @@
 		<!-- Next Button -->
 		<Button
 			isDisabled={currentStep === totalSteps}
-			onclick={() => (currentStep = Math.min(totalSteps, currentStep + 1))}
+			onclick={() => navigateToStep(Math.min(totalSteps, currentStep + 1))}
 			btnText="Next"
 		/>
 	</div>
