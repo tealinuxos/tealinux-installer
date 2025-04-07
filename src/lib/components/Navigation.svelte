@@ -34,7 +34,7 @@
 	<div class="h-1 w-full bg-[#234132]">
 		<div
 			style={`width: ${percentage}%`}
-			class={`h-full  bg-[#26A768] border-r-2 border-white`}
+			class={`h-full  bg-[#26A768] border-r-2 border-white transition-all ease-in-out`}
 		></div>
 	</div>
 </div>
