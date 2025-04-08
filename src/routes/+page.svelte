@@ -22,7 +22,7 @@
 	});
 </script>
 
-<div class="flex items-center justify-center min-h-screen">
+<div class="flex items-center justify-center min-h-screen text-white">
 	<div class="text-center">
 		<img src={Tealinux} alt="" class="mx-auto mb-4" />
 
