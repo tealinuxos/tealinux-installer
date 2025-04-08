@@ -3,12 +3,19 @@
 	import Button from './ui/Button.svelte';
 	import GlowingText from './ui/GlowingText.svelte';
 
-	let currentStep = $state(1); // Use Svelte 5 reactive state
+	let currentStep = $state(1);
 	const totalSteps = 4;
 
 	let percentage = $derived((currentStep / totalSteps) * 100);
 
-	// Function to handle navigation based on the current step
+	// Map steps to route names
+	const stepTitles = {
+		1: 'Installation',
+		2: 'Keyboard Setup',
+		3: 'Account Creation',
+		4: 'Summary'
+	};
+
 	function navigateToStep(step) {
 		currentStep = step;
 		switch (step) {
@@ -37,9 +44,9 @@
 			btnText="Back"
 		/>
 
-		<!-- pages -->
+		<!-- Dynamic page title -->
 		<div class="flex flex-col items-center justify-between space-y-2 my-[10px]">
-			<GlowingText text="About System" />
+			<GlowingText text={stepTitles[currentStep]} />
 		</div>
 
 		<!-- Next Button -->
@@ -50,11 +57,10 @@
 		/>
 	</div>
 	<!-- Step Indicator -->
-
 	<div class="h-1 w-full bg-[#234132]">
 		<div
 			style={`width: ${percentage}%`}
-			class={`h-full  bg-[#26A768] border-r-2 border-white transition-all ease-in-out`}
+			class={`h-full bg-[#26A768] border-r-2 border-white transition-all ease-in-out`}
 		></div>
 	</div>
 </div>
