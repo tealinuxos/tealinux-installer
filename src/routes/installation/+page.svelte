@@ -243,6 +243,7 @@
 			</a>
 		</div>
 	{/await}
+    <a href="/installation/partitionv2">Partitioning v2</a>
 </main>
 
 <style>
