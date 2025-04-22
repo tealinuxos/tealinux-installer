@@ -1,8 +1,9 @@
 <script>
 	import { invoke } from '@tauri-apps/api/core';
 	import { onMount } from 'svelte';
-	import { fly } from 'svelte/transition';
 	import { getBlueprint } from '../global.js';
+	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
+	import GlowingText from '$lib/components/ui/GlowingText.svelte';
 
 	let json = [];
 	let filteredKeyboards = [];
@@ -70,120 +71,111 @@
 	});
 </script>
 
-<div class="relative w-full">
-	<header class="absolute top-0 flex items-center justify-center w-full gap-[10px] mt-[40px]">
-		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
-		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
-		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
-		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
-		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
-		<div class="w-[20px] h-[20px] bg-grayTealinux rounded-full"></div>
-	</header>
-	<section class="flex flex-col items-center justify-center h-[85dvh]">
-		<form class="text-center w-[50dvw] rounded-md min-h-[50dvh]">
-			<div>
-				<h1 class="text-center mb-6 font-bold text-[32px] font-archivo">Select Keyboard Layout</h1>
-			</div>
-			<div class="relative max-w-md mx-auto mb-4">
-				<h2 class="font-poppinsemibold text-left mb-2">Region</h2>
+<TwoSide>
+	{#snippet left()}
+		<div class="mx-[35px] space-y-[15px]">
+			<h1 class="font-jakarta font-[800] text-[28px]">
+				Set up your keyboard<br />
+				layout, timezone, locale
+			</h1>
+			<p class="font-jakarta text-sm font-[200]">
+				Qorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum
+				est a, mattis tellus.
+			</p>
+		</div>
+	{/snippet}
+	{#snippet right()}
+		<div
+			class="flex flex-col h-[562px] p-5 space-y-[15px] mb-[15px] bg-black/30 border-[0.5px] border-gray-900 rounded-[10px] font-jakarta"
+		>
+			<!-- select locale -->
+			<div class=" space-y-[10px]">
+				<!-- label -->
+				<GlowingText size="[11]" text="Locale" />
+				<!-- selector? -->
 				<div
-					class="relative flex items-center w-full bg-grayTealinux h-[45px] {showOptions
-						? ' rounded-t-lg border border-greyBorder'
-						: 'rounded-lg border-2 border-black'} overflow-hidden shadow-lg"
+					class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] text-[15px] justify-between h-fit w-full"
 				>
-					<input
-						type="text"
-						placeholder="select keyboard.."
-						class="peer h-full w-full outline-hidden text-sm text-black text-opacity-50 bg-transparent pr-2 pl-[12px] font-poppin"
-						bind:value={searchTerm}
-						on:click={toggleOptions}
-					/>
-					<svg
-						class="mr-[16px]"
-						width="20"
-						height="21"
-						viewBox="0 0 20 21"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-					>
-						<path
-							d="M19 19.5L14.65 15.15M17 9.5C17 13.9183 13.4183 17.5 9 17.5C4.58172 17.5 1 13.9183 1 9.5C1 5.08172 4.58172 1.5 9 1.5C13.4183 1.5 17 5.08172 17 9.5Z"
-							stroke="black"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-						/>
-					</svg>
-				</div>
-				{#if showOptions}
-					<div
-						class="z-10 absolute w-full bg-white border border-greyBorder rounded-b-xl max-h-[30vh] overflow-y-auto"
-						in:fly={{ y: -10, duration: 1000 }}
-						out:fly={{ y: 10, duration: 300 }}
-					>
-						{#each filteredKeyboards.sort((a, b) => a.name.localeCompare(b.name)) as keyboard}
-							{@const name = keyboard.name}
-							{@const code = keyboard.code}
-							<div
-								class="border border-b-grayBorder last:border-none bg-white hover:bg-slate-100 transition-all"
-							>
-								<div
-									class="flex w-full items-center justify-between py-4 px-4 border border-b-grayBorder last:border-none bg-white transition-all"
-									on:click={() => toggleVariants(name)}
-								>
-									<p>{name} - {code}</p>
-									<img
-										src="/dropDownMain.svg"
-										alt="arrow"
-										class="{showVariants[name]
-											? 'rotate-180'
-											: ''} transition-transform duration-300"
-									/>
-								</div>
-								{#if showVariants[name]}
-									{#each keyboard.variant as variant}
-										<label
-											class="flex flex-row-reverse w-full items-center justify-between py-4 px-4 border border-b-grayBorder last:border-none bg-greyVariant transition-all"
-											for="{name}-{code}"
-										>
-											<input
-												required
-												type="radio"
-												id="{name}-{code}"
-												value={variant.code}
-												class="w-5 h-5"
-												on:click={() => selectKeyboards(code, variant.code, name)}
-											/>
-											<div class="text-start text-[14px]">
-												<p>{variant.code}</p>
-												<p class=" text-[#0D1814] text-opacity-50">{name} - {code}</p>
-											</div>
-										</label>
-									{/each}
-								{/if}
-							</div>
-						{/each}
+					<div>
+						<span>US</span>
 					</div>
-				{/if}
-
-				<div class="fixed bottom-[0px] w-[28rem] max-w-md mx-auto my-30 h-[15dvh]">
-					<div class="flex justify-between w-full font-poppin">
-						<a
-							href="/installation"
-							class="text-white cursor-pointer bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 mb-2"
-							>Back</a
-						>
-						<a
-							href="/installation/timezone"
-							on:click={handleSetKeyboard}
-							class="text-white bg-greenTealinux {selectedKeyboards
-								? ''
-								: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 focus:outline-hidden"
-							>Next</a
-						>
+					<div>
+						<span>united state</span>
 					</div>
 				</div>
 			</div>
-		</form>
-	</section>
-</div>
+			<!-- select Timezone -->
+			<div class=" space-y-[10px]">
+				<!-- label -->
+				<GlowingText size="[11]" text="Timezone" />
+				<!-- selector? -->
+				<div
+					class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] text-[15px] justify-between h-fit w-full"
+				>
+					<div>
+						<span>Region/City</span>
+					</div>
+					<div>
+						<span>---</span>
+					</div>
+				</div>
+			</div>
+			<!-- select Keyboard Layout -->
+			<div class=" space-y-[10px]">
+				<!-- label -->
+				<GlowingText size="[11]" text="Keyboard Layout" />
+				<!-- selector? -->
+				<div
+					class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] text-[15px] justify-between h-fit w-full"
+				>
+					<div>
+						<span>English (US)</span>
+					</div>
+					<div>
+						<span>---</span>
+					</div>
+				</div>
+				<!-- selector? -->
+				<div
+					class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] text-[15px] justify-between h-fit w-full"
+				>
+					<div>
+						<span>English (US)</span>
+					</div>
+					<div>
+						<span>---</span>
+					</div>
+				</div>
+				<!-- keyboard test -->
+				<input
+					type="text"
+					placeholder="test type here"
+					class="p-[10px] border border-border bg-[#101010] rounded-[14px] text-[15px] justify-between h-fit w-full"
+				/>
+			</div>
+			<div
+				class="flex flex-col p-[10px] gap-y-[15px] border border-border bg-[#101010] rounded-[14px] text-[15px] justify-between h-fit w-full"
+			>
+				<!-- label -->
+				<GlowingText size="[11]" text="Preview" />
+				<div class="flex flex-col gap-y-[10px]">
+					<!-- preview item -->
+					<div class="flex gap-x-4">
+						<img src="/icons/clock-vector.svg" alt="clock" />
+						<span>21:26:21</span>
+					</div>
+					<!-- preview item -->
+					<div class="flex gap-x-4">
+						<img src="/icons/calendar-vector.svg" alt="clock" />
+						<span>Sabtu, 14 Juni 2025</span>
+					</div>
+					<!-- preview item -->
+					<div class="flex gap-x-4">
+						<img src="/icons/currency-vector.svg" alt="clock" />
+						<span>1.234.567,89 - Rp 1.234,56</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	{/snippet}
+</TwoSide>
