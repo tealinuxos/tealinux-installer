@@ -5,14 +5,15 @@
 
 	// State untuk step yang sedang aktif
 	let currentStep = 1;
-	const totalSteps = 4;
+	const totalSteps = 5;
 
 	// Map setiap langkah ke judul halaman
 	const stepTitles = {
 		1: 'Installation',
-		2: 'Keyboard Setup',
-		3: 'Account Creation',
-		4: 'Summary'
+		2: 'Locale keyboard',
+		3: 'About System',
+		4: 'Account Creation',
+		5: 'Summary'
 	};
 
 	// Navigasi ke langkah tertentu
@@ -26,9 +27,12 @@
 				goto('/installation/keyboard');
 				break;
 			case 3:
-				goto('/installation/account');
+				goto('/installation/aboutSystem');
 				break;
 			case 4:
+				goto('/installation/account');
+				break;
+			case 5:
 				goto('/installation/summary');
 				break;
 		}
