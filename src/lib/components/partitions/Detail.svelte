@@ -58,6 +58,11 @@
     const cancelModifiedPartition = () => {
         tempModifiedPartition = [];
         tempModifiedPartition = JSON.parse(JSON.stringify(modifiedPartition));
+
+        if (newPartition) {
+            newPartitionIndex -= 1;
+        }
+
         showEdit = false;
     }
 
@@ -66,15 +71,24 @@
 
         let lastSize = Number(tempModifiedPartition[selectedPartition].size);
         let lastStart = Number(tempModifiedPartition[selectedPartition].start);
-        let lastEnd = Number(tempModifiedPartition[selectedPartition].end);
 
         let inputtedSizeSector = getSectorFromMB(inputtedSize);
 
         let newSize = lastSize - inputtedSizeSector;
 
+        let end = Number(lastStart + inputtedSizeSector + newSize);
+
+
         if (newSize >= 0) {
 
             if (newSize !== 0) {
+
+                // if (diskSize === end) {
+                //     end -= 1
+                // } else {
+                //     end -= 512;
+                //     newSize -= 511;
+                // }
 
                 let newUnallocated = {
                     number: Number(tempModifiedPartition[selectedPartition].number) + 1,
@@ -82,7 +96,7 @@
                     path: null,
                     size: newSize,
                     start: Number(lastStart + inputtedSizeSector),
-                    end: Number(lastStart + inputtedSizeSector + newSize) - 1,
+                    end,
                     filesystem: null,
                     label: null,
                     format: false,
@@ -92,10 +106,18 @@
                 };
 
                 tempModifiedPartition.splice(selectedPartition + 1, 0, newUnallocated);
+                tempModifiedPartition[selectedPartition + 1].size -= 511;
+                tempModifiedPartition[selectedPartition + 1].end -= 512;
             }
+
+            // tempModifiedPartition[selectedPartition].size = inputtedSizeSector - 511;
+            // tempModifiedPartition[selectedPartition].end = lastStart + inputtedSizeSector - 512;
 
             tempModifiedPartition[selectedPartition].size = inputtedSizeSector;
             tempModifiedPartition[selectedPartition].end = lastStart + inputtedSizeSector - 1;
+
+            // tempModifiedPartition[selectedPartition + 1].size -= 511;
+            // tempModifiedPartition[selectedPartition + 1].end -= 512;
 
             modifiedPartition = JSON.parse(JSON.stringify(tempModifiedPartition));
         }
@@ -145,7 +167,17 @@
 
         if (newPartition) {
 
-            newPartitionIndex += 1;
+            let partitionWithTag = modifiedPartition.filter(p => p.path ? p.path.includes("#") : false);
+
+            let number = partitionWithTag.map(p => Number(p.path.replace("#", "")));
+            
+            let highestIndex = number.length
+                ? Math.max(...number)
+                : 0;
+
+            console.log('highest index', highestIndex);
+
+            newPartitionIndex = highestIndex + 1;
 
             tempModifiedPartition[selectedPartition] = {
                 ...modifiedPartition[selectedPartition],
