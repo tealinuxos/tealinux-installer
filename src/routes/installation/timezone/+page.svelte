@@ -182,10 +182,10 @@
 							out:fly={{ y: 10, duration: 300 }}
 						>
 							{#each filteredTimezones as timezone}
-								<label
+								<button
 									class="flex flex-row-reverse w-full items-center justify-between py-4 px-4 border border-b-grayBorder last:border-none bg-white hover:bg-slate-100 transition-all"
 									for="timezone-{timezone}"
-									onclick={closeOptions(timezone)}
+									onclick={() => console.log('lll')}
 								>
 									<input
 										required
@@ -197,7 +197,7 @@
 										class="w-5 h-5"
 									/>
 									<p>{timezone}</p>
-								</label>
+								</button>
 							{/each}
 						</div>
 					{/if}
