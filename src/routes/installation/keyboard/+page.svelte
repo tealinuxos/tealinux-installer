@@ -7,12 +7,18 @@
 
 	let json = [];
 	let filteredKeyboards = [];
+	let filteredVariants = [];
 	let selectedKeyboards = null;
 	let keyboardName = null;
 	let keyboardVariant = null;
-	let showOptions = false;
+	let showNameModal = false;
+	let showVariantModal = false;
 	let searchTerm = '';
+	let variantSearchTerm = '';
 	let showVariants = {};
+	let currentSelectedKeyboard = null;
+
+	let locales = [];
 
 	const getKeyboard = async () => {
 		invoke('get_keyboard_json').then((response) => {
@@ -34,18 +40,36 @@
 		filteredKeyboards = json.filter((e) => e.name.toLowerCase().includes(term));
 	}
 
-	$: searchTerm, filterOptions();
+	function filterVariantOptions() {
+		const term = variantSearchTerm.toLowerCase();
+		if (currentSelectedKeyboard) {
+			filteredVariants = json
+				.filter((e) => e.code === currentSelectedKeyboard.code)
+				.filter((e) => e.variant.toLowerCase().includes(term));
+		}
+	}
 
-	const selectKeyboards = (code, variant, name) => {
-		keyboardName = code;
-		keyboardVariant = variant;
-		selectedKeyboards = variant;
-		searchTerm = name;
-		toggleOptions();
+	$: searchTerm, filterOptions();
+	$: variantSearchTerm, filterVariantOptions();
+
+	const selectKeyboardName = (keyboard) => {
+		console.log(`Selected Keyboard: ${keyboard.name}`);
+		currentSelectedKeyboard = keyboard;
+		keyboardName = keyboard.code;
+		searchTerm = keyboard.name;
+		showNameModal = false;
+		// Reset variant selection when changing keyboard
+		keyboardVariant = null;
+		selectedKeyboards = null;
+		variantSearchTerm = '';
 	};
 
-	const toggleOptions = () => {
-		showOptions = !showOptions;
+	const selectKeyboardVariant = (variant) => {
+		console.log(`Selected Variant: ${variant.variant}`);
+		keyboardVariant = variant.variant;
+		selectedKeyboards = variant.variant;
+		variantSearchTerm = variant.name;
+		showVariantModal = false;
 	};
 
 	const handleSetKeyboard = async () => {
@@ -61,11 +85,13 @@
 				keyboardVariant = 'euro';
 				selectedKeyboards = 'euro';
 				searchTerm = 'English (US)';
+				variantSearchTerm = 'English (US)';
 			} else {
 				keyboardName = blueprint.keyboard.layout;
 				selectedKeyboards = blueprint.keyboard.variant;
 				keyboardVariant = blueprint.keyboard.variant;
 				searchTerm = '';
+				variantSearchTerm = '';
 			}
 		});
 	});
@@ -110,13 +136,16 @@
 				<GlowingText size="[11]" text="Timezone" />
 				<!-- selector? -->
 				<div
-					class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] text-[15px] justify-between h-fit w-full"
+					class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] text-[15px] items-center justify-between h-fit w-full"
 				>
 					<div>
 						<span>Region/City</span>
 					</div>
 					<div>
-						<span>---</span>
+						<sp1an>							
+							<svg width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M1 1.5L7 7.5L13 1.5" stroke="#26A768" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							</svg></sp1an>
 					</div>
 				</div>
 			</div>
@@ -124,26 +153,57 @@
 			<div class=" space-y-[10px]">
 				<!-- label -->
 				<GlowingText size="[11]" text="Keyboard Layout" />
-				<!-- selector? -->
+				<!-- keyboard name -->
 				<div
-					class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] text-[15px] justify-between h-fit w-full"
+					class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] items-center text-[15px] justify-between h-fit w-full"
 				>
 					<div>
-						<span>English (US)</span>
-					</div>
+						<span>{searchTerm || "Select a keyboard layout"}</span>
+				  	</div>
+				  
 					<div>
-						<span>---</span>
+						<span>
+							<svg
+								width="14"
+								height="9"
+								viewBox="0 0 14 9"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+								class="cursor-pointer"
+								on:click={() => (showNameModal = true)}
+							>
+								<path d="M1 1.5L7 7.5L13 1.5" stroke="#26A768" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+							</svg>
+						</span>
 					</div>
 				</div>
-				<!-- selector? -->
+				<!-- keyboard varian -->
 				<div
-					class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] text-[15px] justify-between h-fit w-full"
+					class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] text-[15px] items-center justify-between h-fit w-full"
 				>
 					<div>
-						<span>English (US)</span>
+						<span>{variantSearchTerm || "Select a keyboard variant"}</span>
 					</div>
 					<div>
-						<span>---</span>
+						<span>
+							<svg
+								width="14"
+								height="9"
+								viewBox="0 0 14 9"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+								class="cursor-pointer"
+								on:click={() => {
+									if (!keyboardName) {
+										showNameModal = true;
+									} else {
+										showVariantModal = true;
+									}
+								}}
+							>
+								<path d="M1 1.5L7 7.5L13 1.5" stroke="#26A768" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+							</svg>
+						</span>
 					</div>
 				</div>
 				<!-- keyboard test -->
@@ -179,3 +239,85 @@
 		</div>
 	{/snippet}
 </TwoSide>
+
+<!-- Keyboard Name Modal -->
+{#if showNameModal}
+	<div class="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-80">
+		<div class="absolute inset-0 bg-black/50" on:click={() => (showNameModal = false)}></div>
+		<div class="flex flex-col min-w-[434px] max-h-full justify-center items-center p-4 bg-black rounded-lg border border-[#3C6350] shadow-[0_0_10px_rgba(38,167,104,0.25)] overflow-auto z-90">
+			<div class="w-full p-6 z-10">
+				<h2 class="text-xl font-bold mb-4 text-white">Select Keyboard Layout</h2>
+				<input
+					type="text"
+					bind:value={searchTerm}
+					placeholder="Search keyboard layout"
+					class="w-full p-2 border rounded-lg mb-4 bg-[#1c1c1c] text-white"
+				/>
+				<!-- daftar keyboard -->
+				<div class="max-h-60 overflow-auto space-y-2">
+					{#if filteredKeyboards.length > 0}
+						{#each filteredKeyboards as keyboard}
+							<div
+								class="flex items-center justify-between p-2 bg-[#303030] text-white rounded-md cursor-pointer hover:bg-gray-700"
+								style="height: 28px; padding: 3px 16px;"
+								on:click={() => selectKeyboardName(keyboard)}
+							>
+								<span>{keyboard.name}</span>
+								<span class="text-sm text-gray-400">{keyboard.description || ''}</span>
+							</div>
+						{/each}
+					{:else}
+						<div class="text-white">No keyboards found</div>
+					{/if}
+				</div>
+				<button
+					class="mt-4 w-full p-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+					on:click={() => (showNameModal = false)}
+				>
+					Close
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- Keyboard Variant Modal -->
+{#if showVariantModal}
+	<div class="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-80">
+		<div class="absolute inset-0 bg-black/50" on:click={() => (showVariantModal = false)}></div>
+		<div class="flex flex-col min-w-[434px] max-h-full justify-center items-center p-4 bg-black rounded-lg border border-[#3C6350] shadow-[0_0_10px_rgba(38,167,104,0.25)] overflow-auto z-90">
+			<div class="w-full p-6 z-10">
+				<h2 class="text-xl font-bold mb-4 text-white">Select Keyboard Variant for {currentSelectedKeyboard?.name || 'Selected Layout'}</h2>
+				<input
+					type="text"
+					bind:value={variantSearchTerm}
+					placeholder="Search keyboard variant"
+					class="w-full p-2 border rounded-lg mb-4 bg-[#1c1c1c] text-white"
+				/>
+				<!-- daftar variant -->
+				<div class="max-h-60 overflow-auto space-y-2">
+					{#if filteredVariants.length > 0}
+						{#each filteredVariants as variant}
+							<div
+								class="flex items-center justify-between p-2 bg-[#303030] text-white rounded-md cursor-pointer hover:bg-gray-700"
+								style="height: 28px; padding: 3px 16px;"
+								on:click={() => selectKeyboardVariant(variant)}
+							>
+								<span>{variant.name}</span>
+								<span class="text-sm text-gray-400">{variant.description || ''}</span>
+							</div>
+						{/each}
+					{:else}
+						<div class="text-white">No variants found</div>
+					{/if}
+				</div>
+				<button
+					class="mt-4 w-full p-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+					on:click={() => (showVariantModal = false)}
+				>
+					Close
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}

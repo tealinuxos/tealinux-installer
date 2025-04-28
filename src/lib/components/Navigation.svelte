@@ -3,19 +3,20 @@
 	import Button from './ui/Button.svelte';
 	import GlowingText from './ui/GlowingText.svelte';
 
-	let currentStep = $state(1);
-	const totalSteps = 4;
+	// State untuk step yang sedang aktif
+	let currentStep = 1;
+	const totalSteps = 5;
 
-	let percentage = $derived((currentStep / totalSteps) * 100);
-
-	// Map steps to route names
+	// Map setiap langkah ke judul halaman
 	const stepTitles = {
 		1: 'Installation',
-		2: 'Keyboard Setup',
-		3: 'Account Creation',
-		4: 'Summary'
+		2: 'Locale keyboard',
+		3: 'About System',
+		4: 'Account Creation',
+		5: 'Summary'
 	};
 
+	// Navigasi ke langkah tertentu
 	function navigateToStep(step) {
 		currentStep = step;
 		switch (step) {
@@ -26,9 +27,12 @@
 				goto('/installation/keyboard');
 				break;
 			case 3:
-				goto('/installation/account');
+				goto('/installation/aboutSystem');
 				break;
 			case 4:
+				goto('/installation/account');
+				break;
+			case 5:
 				goto('/installation/summary');
 				break;
 		}
@@ -37,30 +41,41 @@
 
 <div class="rounded-sm w-[1050px] flex flex-col h-[72px] mx-auto">
 	<div class="flex items-center justify-between w-full bg-black/30 px-4 p-1">
-		<!-- Back Button -->
-		<Button
+		<!-- Tombol Kembali -->
+		 <div class="flex items-center gap-6"> 
+			<Button
 			isDisabled={currentStep === 1}
 			onclick={() => navigateToStep(Math.max(1, currentStep - 1))}
 			btnText="Back"
-		/>
+			/>
+			<div class="flex items-center gap-1 ">
+					{#each Array(totalSteps).fill() as _, index}
+						<div
+							class="rounded-[8px] transition-all ease-in-out duration-300"
+							style={
+								currentStep === index + 1
+									? "background: #26A768; width: 25px; height: 4px;"
+									: "background: #D9D9D9; width: 15px; height: 4px;"
+							}
+						></div>
+					{/each}
+			</div>
+		 </div>
 
-		<!-- Dynamic page title -->
+
+		<!-- Judul halaman dinamis -->
 		<div class="flex flex-col items-center justify-between space-y-2 my-[10px]">
 			<GlowingText text={stepTitles[currentStep]} />
 		</div>
 
-		<!-- Next Button -->
+		<!-- Tombol Selanjutnya -->
 		<Button
 			isDisabled={currentStep === totalSteps}
 			onclick={() => navigateToStep(Math.min(totalSteps, currentStep + 1))}
 			btnText="Next"
 		/>
 	</div>
+
 	<!-- Step Indicator -->
-	<div class="h-1 w-full bg-[#234132]">
-		<div
-			style={`width: ${percentage}%`}
-			class={`h-full bg-[#26A768] border-r-2 border-white transition-all ease-in-out`}
-		></div>
-	</div>
+
 </div>
