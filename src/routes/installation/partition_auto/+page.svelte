@@ -13,6 +13,19 @@
 
 	let diskLists = [];
 
+	let singleOrDualToggle = 'single';
+
+	function toggleSingleDual() {
+		if (singleOrDualToggle == 'single') {
+			singleOrDualToggle = 'dual';
+			return;
+		}
+		if (singleOrDualToggle == 'dual') {
+			singleOrDualToggle = 'single';
+			return;
+		}
+	}
+
 	const get_disks_data = async () => {
 		invoke('get_disk_lists_key_val').then((response) => {
 			diskLists = JSON.parse(response);
@@ -51,54 +64,122 @@
 	</header>
 	<section class="flex flex-col items-center justify-center h-[85dvh]">
 		<form class="text-center p-8 rounded-md min-h-[50dvh]">
-			<div>
-				<h1 class="text-center mb-6 font-bold text-[32px] font-archivo">Select Disk</h1>
-			</div>
-			<p>
-				Let's decide installer to choose best settings for your partition, first choose the disk
-			</p>
-			<!-- {JSON.stringify(diskLists)} -->
+			<button onclick={() => toggleSingleDual()} class="text-white bg-greenTealinux">
+				{#if singleOrDualToggle === 'single'}
+					singleboot mode
+				{:else}
+					dualboot mode
+				{/if}
+			</button>
 
-			<div class="bg-white shadow-md rounded-lg p-6 mb-4">
-				<div class="flex flex-col space-y-4">
-					{#each diskLists as diskList}
-						<label class="radio-card">
-							<input
-								type="radio"
-								class="peer sr-only"
-								onclick={() => {
-									setStateSelected(diskList['blkname']);
-								}}
-							/>
-							<div
-								class="group flex items-center rounded-lg border border-gray-200 bg-white p-4 shadow-sm hover:border-blue-500 peer-checked:border-blue-500 peer-checked:ring-2 peer-checked:ring-blue-500"
-							>
-								<div>
-									<h5 class="text-lg font-medium text-gray-900">
-										<b>
-											{diskList['blkname']} ({diskList['blksize']})
-										</b>
-									</h5>
-								</div>
-								<svg
-									class="ml-auto h-6 w-6 text-gray-300 group-hover:text-blue-500 peer-checked:text-blue-500"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M5 13l4 4L19 7"
-									></path>
-								</svg>
-							</div>
-						</label>
-					{/each}
+			{#if singleOrDualToggle === 'single'}
+				<div>
+					<h1 class="text-center mb-6 font-bold text-[32px] font-archivo">
+						Single boot full install & Erase disk
+					</h1>
 				</div>
-			</div>
+				<p>
+					Let's decide installer to choose best settings for your partition, first choose the target
+					disk.
+				</p>
+				<p>⚠️ This will erase all data & rewrite all partition, are you sure?</p>
+				<!-- {JSON.stringify(diskLists)} -->
+
+				<div class="bg-white shadow-md rounded-lg p-6 mb-4">
+					<div class="flex flex-col space-y-4">
+						{#each diskLists as diskList}
+							<label class="radio-card">
+								<input
+									type="radio"
+									class="peer sr-only"
+									onclick={() => {
+										setStateSelected(diskList['blkname']);
+									}}
+								/>
+								<div
+									class="group flex items-center rounded-lg border border-gray-200 bg-white p-4 shadow-sm hover:border-blue-500 peer-checked:border-blue-500 peer-checked:ring-2 peer-checked:ring-blue-500"
+								>
+									<div>
+										<h5 class="text-lg font-medium text-gray-900">
+											<b>
+												{diskList['blkname']} ({diskList['blksize']})
+											</b>
+										</h5>
+									</div>
+									<svg
+										class="ml-auto h-6 w-6 text-gray-300 group-hover:text-blue-500 peer-checked:text-blue-500"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+										xmlns="http://www.w3.org/2000/svg"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M5 13l4 4L19 7"
+										></path>
+									</svg>
+								</div>
+							</label>
+						{/each}
+					</div>
+				</div>
+			{:else}
+				<hr />
+				<div>
+					<h1 class="text-center mb-6 font-bold text-[32px] font-archivo">Dual boot</h1>
+				</div>
+
+				<!-- 
+			///////////
+			show this menu IF other os is detected
+			///////////
+			-->
+				<p>decide installer to choose your unallocated partition!</p>
+
+				<div class="bg-white shadow-md rounded-lg p-6 mb-4">
+					<div class="flex flex-col space-y-4">
+						{#each diskLists as diskList}
+							<label class="radio-card">
+								<input
+									type="radio"
+									class="peer sr-only"
+									onclick={() => {
+										setStateSelected(diskList['blkname']);
+									}}
+								/>
+								<div
+									class="group flex items-center rounded-lg border border-gray-200 bg-white p-4 shadow-sm hover:border-blue-500 peer-checked:border-blue-500 peer-checked:ring-2 peer-checked:ring-blue-500"
+								>
+									<div>
+										<h5 class="text-lg font-medium text-gray-900">
+											<b>
+												{diskList['blkname']} ({diskList['blksize']})
+											</b>
+										</h5>
+									</div>
+									<svg
+										class="ml-auto h-6 w-6 text-gray-300 group-hover:text-blue-500 peer-checked:text-blue-500"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+										xmlns="http://www.w3.org/2000/svg"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M5 13l4 4L19 7"
+										></path>
+									</svg>
+								</div>
+							</label>
+						{/each}
+					</div>
+				</div>
+			{/if}
+
 			<div class="max-w-md mx-auto fixed bottom-0 mb-12">
 				<div class="grid grid-cols-2 gap-[295px]">
 					<a
