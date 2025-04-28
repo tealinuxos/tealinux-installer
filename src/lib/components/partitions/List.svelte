@@ -27,15 +27,14 @@
             <td>Format</td>
             <td>Filesystem</td>
             <td>Mountpoint</td>
-            <td>Selected</td>
+            <!-- <td>Selected</td> -->
         </tr>
     </thead>
     <tbody>
         {#key selectedDisk}
             {#if modifiedPartition}
                 {#each modifiedPartition as p, num}
-                    <!-- <tr class="{JSON.stringify(p) !== JSON.stringify(originalPartition[num]) ? 'bg-green-500' : ''}"> -->
-                    <tr>
+                    <tr onclick={() => changeSelectedPartition(num)} class="{ num === selectedPartition ? 'bg-green-500' : '' }">
                         <td>{
                             p.path 
                                 ? p.path.includes("#")
@@ -48,7 +47,6 @@
                         <td>{p.format}</td>
                         <td>{p.filesystem ? p.filesystem : p.path ? 'Unknown' : 'Unallocated'}</td>
                         <td>{p.mountpoint ? p.mountpoint : ''}</td>
-                        <td><input type="radio" value={num} onchange={() => changeSelectedPartition()} bind:group={selectedPartition} />
                     </tr>
                 {/each}
             {/if}
