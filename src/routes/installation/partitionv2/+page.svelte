@@ -18,6 +18,8 @@ let newPartition = $state(false);
 let diskSize = $state(0);
 let diskPath = $state('');
 
+let firmwareType = $state('');
+
 let originalPartition = $state([]);
 let modifiedPartition = $state([]);
 let tempModifiedPartition = $state([]);
@@ -36,11 +38,11 @@ const getStorageJSON = async () => {
 
     let json = await getRead();
 
-    storage.partitionTable = json.firmware;
+    firmwareType = json.firmware;
 
     json = json.disk.filter((disk) => disk.partitions !== null);
 
-    json.push(json[0])
+    // json.push(json[0])
 
     // console.log(json) // remove this later
 
@@ -55,6 +57,7 @@ const changeSelectedDisk = async (selected) => {
     let disks = await getStorageJSON();
 
     storage.diskPath = disks[selectedDisk].diskPath;
+    storage.partitionTable = disks[selectedPartition].label;
 
     let partitions = disks[selectedDisk].partitions;
 
@@ -142,6 +145,21 @@ const newPartitionTable = () => {
 
 const removePartition = () => {
 
+    let partitionWithTag = modifiedPartition.filter(p => p.path ? p.path.includes("#") : false);
+
+    let numbers = partitionWithTag.map(p => Number(p.path.replace("#", "")));
+
+    if (modifiedPartition[selectedPartition].path.includes("#")) {
+        if (numbers > 0) {
+            for (let [i, partition] of modifiedPartition.entries()) {
+                if (partition.path && partition.path.includes("#")) {
+                    let number = Number(partition.path.replace("#", ""));
+                    modifiedPartition[i].path = `#${number - 1}`;
+                }
+            }
+        }
+    }
+
     tempModifiedPartition[selectedPartition] = {
         ...tempModifiedPartition[selectedPartition],
         path: null,
@@ -167,6 +185,14 @@ const removePartition = () => {
 
 const handleSetBlueprint = () => {
 
+    let partitionWithBoot = modifiedPartition.find(p => p.mountpoint.includes("boot"));
+    let bootloaderPath = partitionWithBoot.path;
+
+    let bootloader = {
+        firmwareType,
+        path: bootloaderPath
+    };
+
     let filteredPartition = modifiedPartition.map(p => {
         return p.path
             ? p.path.includes("#")
@@ -176,6 +202,7 @@ const handleSetBlueprint = () => {
     });
 
     storage.partitions = filteredPartition;
+    invoke('blueprint_set_bootloader', { bootloader: JSON.stringify(bootloader) });
     invoke('blueprint_set_storage', { storage: JSON.stringify(storage) });
 }
 
@@ -262,5 +289,6 @@ onMount(async () => {
             {/if}
         {/if}
     </div>
-    <button onclick={handleSetBlueprint}>Apply</button>
+    <a href="/installation/summary" class="bg-green-500 px-4 py-2 rounded-lg" onclick={handleSetBlueprint}>Apply</a>
+    <button onclick={handleSetBlueprint}>Apply Without Summary</button>
 {/await}
