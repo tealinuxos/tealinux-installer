@@ -15,7 +15,7 @@ pub struct BluePrint
     pub keyboard: Option<Keyboard>
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all="camelCase")]
 pub struct Partition
 {
@@ -24,6 +24,7 @@ pub struct Partition
     pub path: Option<String>,
     pub mountpoint: Option<String>,
     pub filesystem: Option<String>,
+    pub label: Option<String>,
     pub format: bool,
     pub start: u64,
     pub end: u64,
