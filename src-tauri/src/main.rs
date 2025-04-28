@@ -9,6 +9,7 @@ mod system;
 mod utils;
 
 use api::account::*;
+use api::auto_partition::*;
 use api::firmware::*;
 use api::keyboard::*;
 use api::locale::*;
@@ -50,7 +51,9 @@ fn main() {
                     read_blueprint,
                     spawn_gparted,
                     spawn_terminal,
-                    get_disk_lists_key_val, // defined in partition api
+                    get_disk_lists_key_val,        // defined in partition api
+                    autogen_partition_select_disk, // defined in auto_partition
+                    get_disk_lists_key_val_with_otheros_check, // defined in partition api
                 ])
                 .build(tauri::generate_context!())
                 .expect("error while running tauri application")

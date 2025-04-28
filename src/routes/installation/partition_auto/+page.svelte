@@ -12,6 +12,7 @@
 	let currentDisk = '';
 
 	let diskLists = [];
+	let diskListsOtherOs = [];
 
 	let singleOrDualToggle = 'single';
 
@@ -32,6 +33,12 @@
 		});
 	};
 
+	const get_disks_data_with_otheros_check = async () => {
+		invoke('get_disk_lists_key_val_with_otheros_check').then((response) => {
+			diskListsOtherOs = JSON.parse(response);
+		});
+	};
+
 	const handleSetPartitionAuto = async () => {
 		console.log('invoking autogen_partition_select_disk' + currentDisk);
 		await invoke('autogen_partition_select_disk', { blkname: currentDisk });
@@ -46,6 +53,7 @@
 
 	onMount(() => {
 		get_disks_data();
+		get_disks_data_with_otheros_check();
 	});
 
 	$: console.log(showOptions);
@@ -136,11 +144,14 @@
 			show this menu IF other os is detected
 			///////////
 			-->
-				<p>decide installer to choose your unallocated partition!</p>
+				<p>
+					decide installer to choose your unallocated partition! if not exists, please back and
+					create it
+				</p>
 
 				<div class="bg-white shadow-md rounded-lg p-6 mb-4">
 					<div class="flex flex-col space-y-4">
-						{#each diskLists as diskList}
+						{#each diskListsOtherOs as diskListsOtherOs_i}
 							<label class="radio-card">
 								<input
 									type="radio"
@@ -155,7 +166,8 @@
 									<div>
 										<h5 class="text-lg font-medium text-gray-900">
 											<b>
-												{diskList['blkname']} ({diskList['blksize']})
+												{diskListsOtherOs_i['block_name']}
+												{diskListsOtherOs_i['fe_interface']}
 											</b>
 										</h5>
 									</div>

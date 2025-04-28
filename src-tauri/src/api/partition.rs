@@ -1,9 +1,9 @@
+use crate::installer::Partition;
 use duct::cmd;
 use serde::{Deserialize, Serialize};
 use serde_json;
 use std::collections::HashMap;
-
-use crate::installer::Partition;
+use tea_partition_generator::core::{PartitionGenerator, TeaPartitionGenerator};
 
 // this is lsblk stuff
 #[derive(Serialize, Deserialize, Debug)]
@@ -108,6 +108,64 @@ pub async fn get_disk_lists_key_val() -> String {
     println!("invoked");
     let ret = self::_get_disk_lists().await;
     let ret = serde_json::to_string(&ret);
+
+    if let Ok(ret_val) = ret {
+        ret_val
+    } else {
+        "[]".to_string()
+    }
+}
+
+// for js obj
+#[derive(Serialize, Deserialize, Debug)]
+struct DiskListsKeyValHasOs {
+    block_name: String,
+    fe_interface: String,
+}
+
+#[tauri::command]
+pub async fn get_disk_lists_key_val_with_otheros_check() -> String {
+    println!("invoked");
+
+    // simple hashmap for json formatting
+    // let mut disk_os: HashMap<String, String> = HashMap::new();
+    let mut disk_os: Vec<DiskListsKeyValHasOs> = Vec::new();
+
+    let ret = self::_get_disk_lists().await;
+    let other_os_lists = TeaPartitionGenerator::disk_list_other_os().await;
+
+    let mut mutex = false;
+    for ret_i in ret {
+        mutex = false;
+        if let Some(ref other_os_lists_val) = other_os_lists {
+            for other_os_lists_i in other_os_lists_val {
+                if ret_i.blkname.clone() == other_os_lists_i.path {
+                    // found
+                    let fe_interface = format!("{} ({})", other_os_lists_i.name, ret_i.blksize);
+                    // disk_os.insert(ret_i.blkname.clone(), fe_interface);
+                    disk_os.push(DiskListsKeyValHasOs {
+                        block_name: ret_i.blkname.clone(),
+                        fe_interface: fe_interface,
+                    });
+
+                    mutex = true;
+                }
+            }
+        }
+
+        if mutex == false {
+            let fe_interface = format!("({})", ret_i.blksize);
+            // disk_os.insert(ret_i.blkname, fe_interface);
+
+            disk_os.push(DiskListsKeyValHasOs {
+                block_name: ret_i.blkname.clone(),
+                fe_interface: fe_interface,
+            });
+        }
+    }
+
+    let ret = serde_json::to_string(&disk_os);
+    println!("{:#?}", ret);
 
     if let Ok(ret_val) = ret {
         ret_val
