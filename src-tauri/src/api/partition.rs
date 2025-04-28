@@ -71,7 +71,7 @@ pub async fn set_auto_config_partition() -> () {
 async fn _get_disk_lists() -> Vec<Disklists> {
     let disk = cmd!("lsblk", "-J").read();
 
-    let ignlist = vec!["zram0".to_string()];
+    let ignlist = vec!["zram0".to_string(), "fd0".to_string()];
 
     // intiial
     let mut ret: Vec<Disklists> = Vec::new();
