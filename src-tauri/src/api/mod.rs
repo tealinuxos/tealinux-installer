@@ -14,6 +14,7 @@ pub mod account;
 pub mod firmware;
 pub mod storage;
 pub mod partition;
+pub mod auto_partition;
 
 #[tauri::command]
 pub async fn get_read_json() -> String

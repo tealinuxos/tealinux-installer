@@ -3497,7 +3497,7 @@ dependencies = [
 [[package]]
 name = "tea_partition_generator"
 version = "0.1.0"
-source = "git+https://github.com/fadhil-riyanto/tea_partition_generator#f1f6432111d34729abf8679adb710a40f683a721"
+source = "git+https://github.com/fadhil-riyanto/tea_partition_generator#5a2babd02c57d99360036ad106b47d8cd0beca22"
 dependencies = [
  "async-trait",
  "duct",
@@ -4138,7 +4138,7 @@ version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf221c93e13a30d793f7645a0e7762c55d169dbb0a49671918a2319d289b10bb"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.48.0",
 ]
 
 [[package]]

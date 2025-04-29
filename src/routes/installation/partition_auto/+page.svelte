@@ -9,7 +9,11 @@
 
 	let showOptions = false;
 	let isDisabled = true;
+
 	let currentDisk = '';
+	let currentSelectedMode = '';
+	let currentSelectedPartitionTable = '';
+	let currentSelectedFs = '';
 
 	let diskLists = [];
 	let diskListsOtherOs = [];
@@ -40,13 +44,38 @@
 	};
 
 	const handleSetPartitionAuto = async () => {
-		console.log('invoking autogen_partition_select_disk' + currentDisk);
-		await invoke('autogen_partition_select_disk', { blkname: currentDisk });
+		if (
+			currentSelectedPartitionTable != '' &&
+			currentSelectedFs != '' &&
+			currentDisk != '' &&
+			currentSelectedMode != ''
+		) {
+			console.log('invoking autogen_partition_select_disk' + currentDisk);
+			await invoke('autogen_partition_select_disk', {
+				blkname: currentDisk,
+				mode: currentSelectedMode,
+				partitionTable: currentSelectedPartitionTable,
+				fs: currentSelectedFs
+			});
+
+			window.location.href = '/installation/summary';
+		} else {
+			alert('mohon isi semua form yang tersedia');
+		}
 	};
 
-	const setStateSelected = async (str) => {
+	const setStatePartitionTableSelect = async (table) => {
+		currentSelectedPartitionTable = table;
+	};
+
+	const setStateFsSelect = async (fs) => {
+		currentSelectedFs = fs;
+	};
+
+	const setStateSelected = async (str, mode) => {
 		isDisabled = false;
 		currentDisk = str;
+		currentSelectedMode = mode;
 
 		console.log(`debug: selected ${str}`);
 	};
@@ -74,9 +103,9 @@
 		<form class="text-center p-8 rounded-md min-h-[50dvh]">
 			<button onclick={() => toggleSingleDual()} class="text-white bg-greenTealinux">
 				{#if singleOrDualToggle === 'single'}
-					singleboot mode
-				{:else}
 					dualboot mode
+				{:else}
+					singleboot mode
 				{/if}
 			</button>
 
@@ -101,7 +130,7 @@
 									type="radio"
 									class="peer sr-only"
 									onclick={() => {
-										setStateSelected(diskList['blkname']);
+										setStateSelected(diskList['blkname'], 'singleboot');
 									}}
 								/>
 								<div
@@ -157,7 +186,7 @@
 									type="radio"
 									class="peer sr-only"
 									onclick={() => {
-										setStateSelected(diskList['blkname']);
+										setStateSelected(diskListsOtherOs_i['block_name'], 'doubleboot');
 									}}
 								/>
 								<div
@@ -192,6 +221,54 @@
 				</div>
 			{/if}
 
+			<div class="space-y-4">
+				<label class="inline-flex items-center">
+					<input
+						type="radio"
+						name="option"
+						value="option1"
+						onclick={() => setStatePartitionTableSelect('mbr')}
+						class="form-radio h-5 w-5 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+					/>
+					<span class="ml-2 text-gray-700">MBR</span>
+				</label>
+
+				<label class="inline-flex items-center">
+					<input
+						type="radio"
+						name="option"
+						value="option2"
+						onclick={() => setStatePartitionTableSelect('gpt')}
+						class="form-radio h-5 w-5 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+					/>
+					<span class="ml-2 text-gray-700">GPT (recommended)</span>
+				</label>
+			</div>
+
+			<div class="space-y-4">
+				<label class="inline-flex items-center">
+					<input
+						type="radio"
+						name="option4fs"
+						value="option1"
+						onclick={() => setStateFsSelect('ext4')}
+						class="form-radio h-5 w-5 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+					/>
+					<span class="ml-2 text-gray-700">EXT4</span>
+				</label>
+
+				<label class="inline-flex items-center">
+					<input
+						type="radio"
+						name="option4fs"
+						value="option2"
+						onclick={() => setStateFsSelect('btrfs')}
+						class="form-radio h-5 w-5 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+					/>
+					<span class="ml-2 text-gray-700">BTRFS</span>
+				</label>
+			</div>
+
 			<div class="max-w-md mx-auto fixed bottom-0 mb-12">
 				<div class="grid grid-cols-2 gap-[295px]">
 					<a
@@ -209,7 +286,7 @@
 						>
 					{:else}
 						<a
-							href="/installation/summary"
+							href="#x"
 							onclick={handleSetPartitionAuto}
 							class="disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed text-black disabled bg-greenTealinux focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-hidden"
 							>Next</a
