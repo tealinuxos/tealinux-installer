@@ -5,6 +5,8 @@
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
 	import GlowingText from '$lib/components/ui/GlowingText.svelte';
 	import prettyBytes from 'pretty-bytes';
+	import { getRead } from '../global.js';
+    import DiskSlider from '$lib/components/DiskSlider.svelte';
 
 	let disks = [];
 	let selectedDisk = null;
@@ -12,13 +14,29 @@
 	let diskPreview = null;
 	let showSingleBootWarning = false;
 	let warningPosition = { x: 0, y: 0 };
+    let colors = [];
 
-	const getDisks = async () => {
-		invoke('get_available_disks').then((response) => {
-			disks = JSON.parse(response);
-			console.log("Available disks:", disks);
-		});
+	// const getDisks = async () => {
+	// 	invoke('get_available_disks').then((response) => {
+	// 		disks = JSON.parse(response);
+	// 		console.log("Available disks:", disks);
+	// 	});
+	// };
+
+	const getStorageJSON = async () => {
+		let json = await getRead();
+
+		disks = json.disk.filter((disk) => disk.partitions !== null);
+
+        console.log(disks)
+
+		return json;
 	};
+
+	function getColors(disk, index) {
+		return disk[index].partitions.map((_, i) => colors[i % colors.length]);
+	}
+
 
 	const selectDisk = (disk) => {
 		console.log(`Selected Disk: ${disk.name}`);
@@ -64,7 +82,7 @@
 	};
 
 	onMount(() => {
-		getDisks();
+		// getDisks();
 		getBlueprint().then((blueprint) => {
 			console.log(blueprint);
 			if (blueprint.disk) {
@@ -94,28 +112,33 @@
 	{#snippet right()}
 		<div class="flex flex-col h-[562px] p-5 space-y-[15px] mb-[15px] bg-black/30 border-[0.5px] border-gray-900 rounded-[10px] font-jakarta">
 			<!-- Disk selection -->
-			<div class="space-y-[10px]">
-				<GlowingText size="[11]" text="Disk" />
-				{#if disks.length > 0}
-					<div class="space-y-2">
-						{#each disks as disk}
-							<div
-								class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] text-[15px] justify-between h-fit w-full cursor-pointer hover:bg-gray-900 transition-colors {selectedDisk?.name === disk.name ? 'border-[#3C6350]' : ''}"
-								on:click={() => selectDisk(disk)}
-							>
-								<div>
-									<span>{disk.name}</span>
-								</div>
-								<div>
-									<span>{prettyBytes(disk.size)}</span>
-								</div>
-							</div>
-						{/each}
-					</div>
-				{:else}
-					<div class="text-gray-400">Loading disks...</div>
-				{/if}
-			</div>
+			<!-- <div class="space-y-[10px]"> -->
+			<!-- 	<GlowingText size="[11]" text="Disk" /> -->
+			<!-- 	{#if disks.length > 0} -->
+			<!-- 		<div class="space-y-2"> -->
+			<!-- 			{#each disks as disk} -->
+			<!-- 				<div -->
+			<!-- 					class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] text-[15px] justify-between h-fit w-full cursor-pointer hover:bg-gray-900 transition-colors {selectedDisk?.name === disk.name ? 'border-[#3C6350]' : ''}" -->
+			<!-- 					on:click={() => selectDisk(disk)} -->
+			<!-- 				> -->
+			<!-- 					<div> -->
+			<!-- 						<span>{disk.name}</span> -->
+			<!-- 					</div> -->
+			<!-- 					<div> -->
+			<!-- 						<span>{prettyBytes(disk.size)}</span> -->
+			<!-- 					</div> -->
+			<!-- 				</div> -->
+			<!-- 			{/each} -->
+			<!-- 		</div> -->
+			<!-- 	{:else} -->
+			<!-- 		<div class="text-gray-400">Loading disks...</div> -->
+			<!-- 	{/if} -->
+			<!-- </div> -->
+			{#await getStorageJSON()}
+				Loading...
+			{:then}
+				<DiskSlider {disks} colors={getColors(disks, 0)} />
+			{/await}
 
 			<GlowingText size="[11]" text="Tools" />
 			<!-- Partitioning tools -->
