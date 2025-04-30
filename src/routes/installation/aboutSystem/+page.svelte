@@ -61,6 +61,7 @@
 		const colors = ['#3C6350', '#26A768', '#7A14EF', '#EF7E20', '#0D44E1'];
 		const index = diskName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length;
 		return colors[index];
+		
 	};
 
 	onMount(() => {
@@ -176,7 +177,7 @@
 						line-height: normal;
 						letter-spacing: -0.48px;
 					">
-						Choose this if you only want Team JuOS to be in early operating when made your computer
+						Choose this if you only want TeaLinux OS to be in early operating when made your computer
 					</p>
 				</div>
 				
@@ -223,7 +224,7 @@
 						line-height: normal;
 						letter-spacing: -0.48px;
 					">
-						Choose this if you want Team JuOS to be installed alongside other operating system
+						Choose this if you want TeaLinux OS to be installed alongside other operating system
 					</p>
 				</div>
 				
@@ -268,7 +269,7 @@
 						line-height: normal;
 						letter-spacing: -0.48px;
 					">
-						Choose this if you want Team JuOS to be installed alongside offline operating system
+						Choose this if you want TeaLinux OS to be installed alongside offline operating system
 					</p>
 				</div>
 			</div>

@@ -4,6 +4,7 @@
 	import { getBlueprint } from '../global.js';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
 	import GlowingText from '$lib/components/ui/GlowingText.svelte';
+	import SearchableModal from '$lib/components/modals/Modal.svelte';
 
 	let json = [];
 	let filteredKeyboards = [];
@@ -15,23 +16,18 @@
 	let showVariantModal = false;
 	let searchTerm = '';
 	let variantSearchTerm = '';
-	let showVariants = {};
-
-	let locales = [];
+	let isLoading = true;
 
 	const getKeyboard = async () => {
-		invoke('get_keyboard_json').then((response) => {
+		try {
+			const response = await invoke('get_keyboard_json');
 			json = JSON.parse(response);
 			filteredKeyboards = json;
-			console.log(json);
-		});
-	};
-
-	const toggleVariants = (keyboardName) => {
-		showVariants = {
-			...showVariants,
-			[keyboardName]: !showVariants[keyboardName]
-		};
+			isLoading = false;
+		} catch (error) {
+			console.error('Error loading keyboard data:', error);
+			isLoading = false;
+		}
 	};
 
 	function filterOptions() {
@@ -40,59 +36,49 @@
 	}
 
 	function filterVariantOptions() {
-
 		const term = variantSearchTerm.toLowerCase();
-
 		if (selectedKeyboard) {
 			filteredVariants = selectedKeyboard.variant
-				.filter(variant => variant.name.toLowerCase().includes(term))
+				.filter(variant => variant.name.toLowerCase().includes(term));
 		}
 	}
 
-	$: searchTerm, filterOptions();
-	$: variantSearchTerm, filterVariantOptions();
-    $: console.log(`Selected Keyboard: ${selectedLayout} - ${selectedVariant}`);
-
-	const selectKeyboardLayout = (keyboard) => {
-
+	const handleKeyboardSelect = (event) => {
+		const keyboard = event.detail;
 		selectedKeyboard = keyboard;
-		selectedLayout = selectedKeyboard.code;
-		searchTerm = selectedKeyboard.name;
-		showLayoutModal = false;
-
-		// Set variant selection when changing keyboard to the first entry
-		variantSearchTerm = selectedKeyboard.variant.length
-            ? selectedKeyboard.variant[0].name
-            : null;
-
-        selectedVariant = selectedKeyboard.variant.length
-            ? selectedKeyboard.variant[0].code
-            : null;
-
-        filterVariantOptions()
+		selectedLayout = keyboard.code;
+		searchTerm = keyboard.name;
+		
+		if (keyboard.variant.length > 0) {
+			variantSearchTerm = keyboard.variant[0].name;
+			selectedVariant = keyboard.variant[0].code;
+		}
 	};
 
-	const selectKeyboardVariant = (variant) => {
-
+	const handleVariantSelect = (event) => {
+		const variant = event.detail;
 		selectedVariant = variant.code;
 		variantSearchTerm = variant.name;
-		showVariantModal = false;
 	};
 
 	const handleSetKeyboard = async () => {
-		await invoke('blueprint_set_keyboard', { layout: selectedLayout, variant: selectedVariant });
+		if (selectedLayout && selectedVariant) {
+			await invoke('blueprint_set_keyboard', { 
+				layout: selectedLayout, 
+				variant: selectedVariant 
+			});
+		}
 	};
 
 	onMount(() => {
 		getKeyboard();
 		getBlueprint().then((blueprint) => {
-			console.log(blueprint);
 			if (blueprint.locale === null) {
 				selectedLayout = 'us';
 				selectedVariant = 'euro';
 				searchTerm = 'English (US)';
 				variantSearchTerm = 'English (US)';
-			} else {
+			} else if (blueprint.keyboard) {
 				selectedLayout = blueprint.keyboard.layout;
 				selectedVariant = blueprint.keyboard.variant;
 				searchTerm = '';
@@ -100,6 +86,12 @@
 			}
 		});
 	});
+
+	$: searchTerm, filterOptions();
+	$: variantSearchTerm, filterVariantOptions();
+	$: if (selectedLayout && selectedVariant) {
+		handleSetKeyboard();
+	}
 </script>
 
 <TwoSide>
@@ -245,84 +237,26 @@
 	{/snippet}
 </TwoSide>
 
-<!-- Keyboard Name Modal -->
-{#if showLayoutModal}
-	<div class="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-80">
-		<div class="absolute inset-0 bg-black/50" on:click={() => (showLayoutModal = false)}></div>
-		<div class="flex flex-col min-w-[434px] max-h-full justify-center items-center p-4 bg-black rounded-lg border border-[#3C6350] shadow-[0_0_10px_rgba(38,167,104,0.25)] overflow-auto z-90">
-			<div class="w-full p-6 z-10">
-				<h2 class="text-xl font-bold mb-4 text-white">Select Keyboard Layout</h2>
-				<input
-					type="text"
-					bind:value={searchTerm}
-					placeholder="Search keyboard layout"
-					class="w-full p-2 border rounded-lg mb-4 bg-[#1c1c1c] text-white"
-				/>
-				<!-- daftar keyboard -->
-				<div class="max-h-60 overflow-auto space-y-2">
-					{#if filteredKeyboards.length > 0}
-						{#each filteredKeyboards as keyboard}
-							<div
-								class="flex items-center justify-between p-2 bg-[#303030] text-white rounded-md cursor-pointer hover:bg-gray-700"
-								style="height: 28px; padding: 3px 16px;"
-								on:click={() => selectKeyboardLayout(keyboard)}
-							>
-								<span>{keyboard.name}</span>
-								<span class="text-sm text-gray-400">{keyboard.description || ''}</span>
-							</div>
-						{/each}
-					{:else}
-						<div class="text-white">No keyboards found</div>
-					{/if}
-				</div>
-				<button
-					class="mt-4 w-full p-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-					on:click={() => (showLayoutModal = false)}
-				>
-					Close
-				</button>
-			</div>
-		</div>
-	</div>
-{/if}
+<!-- Keyboard Layout Modal -->
+<SearchableModal
+  title="Select Keyboard Layout"
+  bind:showModal={showLayoutModal}
+  items={filteredKeyboards}
+  on:select={handleKeyboardSelect}
+  on:close={() => showLayoutModal = false}
+  placeholder="Search keyboard layouts"
+  noResultsText={isLoading ? "Loading keyboards..." : "No keyboards found"}
+/>
 
 <!-- Keyboard Variant Modal -->
-{#if showVariantModal}
-	<div class="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-80">
-		<div class="absolute inset-0 bg-black/50" on:click={() => (showVariantModal = false)}></div>
-		<div class="flex flex-col min-w-[434px] max-h-full justify-center items-center p-4 bg-black rounded-lg border border-[#3C6350] shadow-[0_0_10px_rgba(38,167,104,0.25)] overflow-auto z-90">
-			<div class="w-full p-6 z-10">
-				<h2 class="text-xl font-bold mb-4 text-white">Select Keyboard Variant for {selectedKeyboard?.name || 'Selected Layout'}</h2>
-				<input
-					type="text"
-					bind:value={variantSearchTerm}
-					placeholder="Search keyboard variant"
-					class="w-full p-2 border rounded-lg mb-4 bg-[#1c1c1c] text-white"
-				/>
-				<!-- daftar variant -->
-				<div class="max-h-60 overflow-auto space-y-2">
-					{#if filteredVariants.length > 0}
-						{#each filteredVariants as variant}
-							<div
-								class="flex items-center justify-between p-2 bg-[#303030] text-white rounded-md cursor-pointer hover:bg-gray-700"
-								style="height: 28px; padding: 3px 16px;"
-								on:click={() => selectKeyboardVariant(variant)}
-							>
-								<span>{variant.name}</span>
-								<span class="text-sm text-gray-400">{variant.description || ''}</span>
-							</div>
-						{/each}
-					{:else}
-						<div class="text-white">No variants found</div>
-					{/if}
-				</div>
-				<button
-					class="mt-4 w-full p-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-					on:click={() => (showVariantModal = false)}
-				>
-					Close
-				</button>
-			</div>
-		</div>
-	</div>
-{/if}
+<SearchableModal
+  title={`Select Variant for ${selectedKeyboard?.name || 'Keyboard'}`}
+  bind:showModal={showVariantModal}
+  items={filteredVariants}
+  on:select={handleVariantSelect}
+  on:close={() => showVariantModal = false}
+  placeholder="Search keyboard variants"
+  noResultsText={!selectedKeyboard ? "Please select a keyboard layout first" : 
+                selectedKeyboard.variant.length === 0 ? "No variants available for this keyboard" : 
+                "No variants found"}
+/>

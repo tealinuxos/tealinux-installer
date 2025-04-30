@@ -38,7 +38,7 @@
 		{@const prettySize = size === 0 ? 'No disk' : prettyBytes(size * 512)}
 		{@const colors = getColors(disk, currentSlide)}
 
-		<div class="mb-2 mt-1 flex justify-between items-center uppercase">
+		<div class="mb-2 mt-1 flex justify-between items-center ">
 			<p>
 				<span class="text-sm font-[500]">{disk.diskPath}</span>
 				{' '}

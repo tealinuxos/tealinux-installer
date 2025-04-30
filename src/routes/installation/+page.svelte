@@ -1,10 +1,12 @@
 <script>
 	import { getRead } from './global.js';
 	import prettyBytes from 'pretty-bytes';
-	import { randomColor } from 'randomcolor';
+	// import { randomColor } from 'randomcolor';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
 	import GlowingText from '$lib/components/ui/GlowingText.svelte';
 	import DiskSlider from '../../lib/components/DiskSlider.svelte';
+
+
 
 	const getStorageJSON = async () => {
 		let json = await getRead();
@@ -28,18 +30,34 @@
 	};
 
 	const getColors = (disks, partIdx) => {
-		let length = disks[partIdx].partitions.length;
-
+		// Fixed color palette for partitions
+		const fixedColors = [
+			'#FF453A', // sda1
+			'#FF9F0B', // sda2
+			'#FED709', // sda3
+			'#32D74B', // sda4 (green)
+			'#0A84FF', // sda5 (blue)
+			'#5E5CE6', // sda6 (purple)
+			'#BF5AF2', // sda7 (pink)
+			'#FF375F', // sda8 (red-pink)
+			'#30D158', // sda9 (green)
+			'#66D4CF', // sda10 (teal)
+		];
+		
+		// Color for unallocated space
+		const unallocatedColor = '#484848';
+		
 		let colors = [];
-
-		for (let i = 0; i < length; i++) {
-			colors.push(
-				randomColor({
-					luminosity: 'bright',
-					hue: 'random'
-				})
-			);
+		
+		if (disks[partIdx]?.partitions) {
+			for (let i = 0; i < disks[partIdx].partitions.length; i++) {
+				// Use fixed color if available, otherwise fall back to a default
+				colors.push(disks[partIdx].partitions[i].name === 'unallocated' ? 
+					unallocatedColor : 
+					(fixedColors[i] || '#FF453A')); // Default to first color if out of fixed colors
+			}
 		}
+		
 		return colors;
 	};
 
