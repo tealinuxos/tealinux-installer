@@ -3497,7 +3497,7 @@ dependencies = [
 [[package]]
 name = "tea_partition_generator"
 version = "0.1.0"
-source = "git+https://github.com/fadhil-riyanto/tea_partition_generator#5a2babd02c57d99360036ad106b47d8cd0beca22"
+source = "git+https://github.com/fadhil-riyanto/tea_partition_generator#6d7be94524b885f903ae1358e9e71fdf5d3c86fa"
 dependencies = [
  "async-trait",
  "duct",
