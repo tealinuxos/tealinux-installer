@@ -21,10 +21,12 @@
       dispatch('close');
     };
   
-    $: filteredItems = items.filter(item => 
-      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    $: filteredItems = items?.filter(item => 
+        item?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (item?.description?.toLowerCase().includes(searchTerm.toLowerCase()))
+    ) || [];
+
+
   </script>
   
   {#if showModal}
