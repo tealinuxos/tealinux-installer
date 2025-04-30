@@ -5,15 +5,19 @@
         keyword = $bindable(),
         show = $bindable(),
         data = $bindable(),
+        field = null,
+        title = "This is a title",
+        notFoundMessage = "Message not found",
         onclick = () => console.log('clicked')
     } = $props();
+
 </script>
 
 <div
     class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] items-center text-[15px] justify-between h-fit w-full"
 >
     <div>
-        <span>{keyword || "Select a keyboard layout"}</span>
+        <span>{keyword || title}</span>
     </div>
   
     <div>
@@ -38,4 +42,7 @@
     bind:keyword
     { data }
     { onclick }
+    { field }
+    { title }
+    { notFoundMessage }
 />

@@ -5,14 +5,28 @@
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
 	import GlowingText from '$lib/components/ui/GlowingText.svelte';
 	import SearchButton from './SearchButton.svelte';
+	import Preview from './Preview.svelte';
 
 	let json = $state([]);
 
     // Locale
-	let locales = [];
-    let filteredLocales = [];
-    let selectedLocale = null;
-    let showLocaleModal = false;
+	let locales = $state([]);
+    let filteredLocales = $state([]);
+    let selectedLocale = $state(null);
+    let showLocaleModal = $state(false);
+    let localeSearchTerm = $state('')
+
+    // Timezone
+    let timezones = $state([]);
+    let showRegionModal = $state(false);
+    let regionSearchTerm = $state('');
+    let showCityModal = $state(false);
+    let citySearchTerm = $state('');
+    let filteredRegion = $state([]);
+    let filteredCity = $state([]);
+    let selectedTimezone = $state(null);
+    let selectedRegion = $state(null);
+    let selectedCity = $state(null);
 
     // Keyboard Layout
 	let filteredLayouts = $state([]);
@@ -35,17 +49,17 @@
 	};
 
 	const getLocale = async () => {
-		invoke('get_locale_json').then((response) => {
-			locales = JSON.parse(response);
-			filteredLocales = locales;
-		});
+
+        let result = await invoke('get_locale_json');
+
+        return JSON.parse(result);
 	};
 
-	const toggleVariants = (keyboardName) => {
-		showVariants = {
-			...showVariants,
-			[keyboardName]: !showVariants[keyboardName]
-		};
+	const getTimezone = async () => {
+
+        let result = await invoke('get_timezone_json');
+
+        return JSON.parse(result);
 	};
 
 	const selectKeyboardLayout = (keyboard) => {
@@ -75,18 +89,56 @@
 		showVariantModal = false;
 	};
 
-	const handleSetKeyboard = async () => {
+	const selectTimezoneRegion = (timezone) => {
+
+		selectedTimezone = timezone;
+		selectedRegion = selectedTimezone.region;
+		showRegionModal = false;
+
+        regionSearchTerm = selectedRegion;
+
+		// Set city selection when changing timezone to the first entry
+		citySearchTerm = selectedCity = selectedTimezone.city.length
+            ? selectedTimezone.city[0]
+            : null;
+
+        filteredCity = selectedTimezone.city;
+	};
+
+	const selectTimezoneCity = (city) => {
+
+		selectedCity = city;
+		citySearchTerm = city;
+		showCityModal = false;
+	};
+
+	const selectLocale = (locale) => {
+
+		selectedLocale = locale.name;
+		localeSearchTerm = locale.name;
+		showLocaleModal = false;
+	};
+
+	const handleSetLocalization = async () => {
+		await invoke('blueprint_set_locale', { locale: selectedLocale })
+		await invoke('blueprint_set_timezone', { region: selectedRegion, city: selectedCity });
 		await invoke('blueprint_set_keyboard', { layout: selectedLayout, variant: selectedVariant });
 	};
 
 	onMount(async () => {
 
         json = await getKeyboard();
-        filteredLayouts = await getKeyboard();
+        filteredLayouts = json;
+
+        timezones = await getTimezone();
+        filteredRegion = timezones;
+
+        locales = await getLocale();
+        filteredLocales = locales;
 
         let defaultKeyboard = json.length ? json[0] : null;
-
-        // getLocale();
+        let defaultTimezone = timezones.length ? timezones.find(zone => zone.region === "Asia") : null;
+        let defaultLocale = locales.length ? locales.find(locale => locale.name === "en_US.UTF-8 UTF-8") : null;
 
         getBlueprint().then((blueprint) => {
 
@@ -98,6 +150,8 @@
             }
         });
 
+        selectLocale(defaultLocale);
+        selectTimezoneRegion(defaultTimezone);
         selectKeyboardLayout(defaultKeyboard);
 	});
 
@@ -130,35 +184,38 @@
 				<!-- label -->
 				<GlowingText size="[11]" text="Locale" />
 				<!-- selector? -->
-				<div
-					class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] text-[15px] justify-between h-fit w-full"
-				>
-					<div>
-						<span>US</span>
-					</div>
-					<div>
-						<span>united state</span>
-					</div>
-				</div>
+                <SearchButton
+                    title="Select Locale"
+                    notFoundMessage="Locale Not Found"
+                    bind:show={showLocaleModal}
+                    bind:keyword={localeSearchTerm}
+                    data={filteredLocales}
+                    field="name"
+                    onclick={selectLocale}
+                />
 			</div>
 			<!-- select Timezone -->
 			<div class=" space-y-[10px]">
 				<!-- label -->
 				<GlowingText size="[11]" text="Timezone" />
 				<!-- selector? -->
-				<div
-					class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] text-[15px] items-center justify-between h-fit w-full"
-				>
-					<div>
-						<span>Region/City</span>
-					</div>
-					<div>
-						<sp1an>							
-							<svg width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<path d="M1 1.5L7 7.5L13 1.5" stroke="#26A768" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-							</svg></sp1an>
-					</div>
-				</div>
+                <SearchButton
+                    title="Select Timezone Region"
+                    notFoundMessage="Timezone Region Not Found"
+                    bind:show={showRegionModal}
+                    bind:keyword={regionSearchTerm}
+                    data={filteredRegion}
+                    field="region"
+                    onclick={selectTimezoneRegion}
+                />
+                <SearchButton
+                    title="Select Timezone City"
+                    notFoundMessage="Timezone City Not Found"
+                    bind:show={showCityModal}
+                    bind:keyword={citySearchTerm}
+                    data={filteredCity}
+                    onclick={selectTimezoneCity}
+                />
 			</div>
 			<!-- select Keyboard Layout -->
 			<div class=" space-y-[10px]">
@@ -166,16 +223,21 @@
 				<GlowingText size="[11]" text="Keyboard Layout" />
 				<!-- keyboard name -->
                 <SearchButton
+                    title="Select Keyboard Layout"
+                    notFoundMessage="Keyboard Layout Not Found"
                     bind:show={showLayoutModal}
                     bind:keyword={layoutSearchTerm}
                     data={filteredLayouts}
+                    field="name"
                     onclick={selectKeyboardLayout}
                 />
 				<!-- keyboard varian -->
                 <SearchButton
+                    title="Select Keyboard Variant"
+                    notFoundMessage="Keyboard Variant Not Found"
                     bind:show={showVariantModal}
                     bind:keyword={variantSearchTerm}
-                    bind:result={selectedVariant}
+                    field="name"
                     data={filteredVariants}
                     onclick={selectKeyboardVariant}
                 />
@@ -191,23 +253,11 @@
 			>
 				<!-- label -->
 				<GlowingText size="[11]" text="Preview" />
-				<div class="flex flex-col gap-y-[10px]">
-					<!-- preview item -->
-					<div class="flex gap-x-4">
-						<img src="/icons/clock-vector.svg" alt="clock" />
-						<span>21:26:21</span>
-					</div>
-					<!-- preview item -->
-					<div class="flex gap-x-4">
-						<img src="/icons/calendar-vector.svg" alt="clock" />
-						<span>Sabtu, 14 Juni 2025</span>
-					</div>
-					<!-- preview item -->
-					<div class="flex gap-x-4">
-						<img src="/icons/currency-vector.svg" alt="clock" />
-						<span>1.234.567,89 - Rp 1.234,56</span>
-					</div>
-				</div>
+                <Preview
+                    { selectedLocale }
+                    { selectedRegion }
+                    { selectedCity }
+                />
 			</div>
 		</div>
 	{/snippet}
