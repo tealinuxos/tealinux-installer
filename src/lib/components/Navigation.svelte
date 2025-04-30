@@ -10,7 +10,7 @@
 	// Map setiap langkah ke judul halaman
 	const stepTitles = {
 		1: 'Installation',
-		2: 'Locale keyboard',
+		2: 'Localization',
 		3: 'About System',
 		4: 'Account Creation',
 		5: 'Summary'
@@ -24,7 +24,7 @@
 				goto('/installation');
 				break;
 			case 2:
-				goto('/installation/keyboard');
+				goto('/installation/localization');
 				break;
 			case 3:
 				goto('/installation/aboutSystem');
