@@ -415,6 +415,6 @@
 	currentStep={3}
 	currentTitle="Partitioning"
 	prevPath="/installation/localization"
-	nextPath="/installation"
+	nextPath="/installation/partitioning/{selectedMethod}"
 	nextAction={null}
 />
