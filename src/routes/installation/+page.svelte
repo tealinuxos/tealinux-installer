@@ -5,6 +5,7 @@
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
 	import GlowingText from '$lib/components/ui/GlowingText.svelte';
 	import DiskSlider from '../../lib/components/DiskSlider.svelte';
+	import Navigation from '../../lib/components/Navigation.svelte';
 
 	const getStorageJSON = async () => {
 		let json = await getRead();
@@ -79,7 +80,7 @@
 		{/snippet}
 		{#snippet right()}
 			<!-- information system -->
-			<div class="flex space-x-5 mb-[15px]">
+			<div class="flex space-x-5 mb-[10px]">
 				<div
 					class="w-1/2 bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px] space-y-5"
 				>
@@ -121,6 +122,7 @@
 								<p class="font-[500]">Disk Capacity</p>
 								<p class="font-[200]">{storageGB}</p>
 							</div>
+							sud
 						{/await}
 					</div>
 				</div>
@@ -158,3 +160,12 @@
 		{/snippet}
 	</TwoSide>
 {/await}
+
+<Navigation
+	totalSteps={5}
+	currentStep={1}
+	currentTitle="System Information"
+	prevPath="/installation"
+	nextPath="/installation/localization"
+	nextAction={null}
+/>

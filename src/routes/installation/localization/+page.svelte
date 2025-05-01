@@ -6,29 +6,30 @@
 	import GlowingText from '$lib/components/ui/GlowingText.svelte';
 	import SearchButton from './SearchButton.svelte';
 	import Preview from './Preview.svelte';
+	import Navigation from '../../../lib/components/Navigation.svelte';
 
 	let json = $state([]);
 
-    // Locale
+	// Locale
 	let locales = $state([]);
-    let filteredLocales = $state([]);
-    let selectedLocale = $state(null);
-    let showLocaleModal = $state(false);
-    let localeSearchTerm = $state('')
+	let filteredLocales = $state([]);
+	let selectedLocale = $state(null);
+	let showLocaleModal = $state(false);
+	let localeSearchTerm = $state('');
 
-    // Timezone
-    let timezones = $state([]);
-    let showRegionModal = $state(false);
-    let regionSearchTerm = $state('');
-    let showCityModal = $state(false);
-    let citySearchTerm = $state('');
-    let filteredRegion = $state([]);
-    let filteredCity = $state([]);
-    let selectedTimezone = $state(null);
-    let selectedRegion = $state(null);
-    let selectedCity = $state(null);
+	// Timezone
+	let timezones = $state([]);
+	let showRegionModal = $state(false);
+	let regionSearchTerm = $state('');
+	let showCityModal = $state(false);
+	let citySearchTerm = $state('');
+	let filteredRegion = $state([]);
+	let filteredCity = $state([]);
+	let selectedTimezone = $state(null);
+	let selectedRegion = $state(null);
+	let selectedCity = $state(null);
 
-    // Keyboard Layout
+	// Keyboard Layout
 	let filteredLayouts = $state([]);
 	let filteredVariants = $state([]);
 	let selectedKeyboard = $state(null);
@@ -40,126 +41,112 @@
 	let variantSearchTerm = $state('');
 	let showVariants = {};
 
-
 	const getKeyboard = async () => {
+		let result = await invoke('get_keyboard_json');
 
-        let result = await invoke('get_keyboard_json');
-
-        return JSON.parse(result);
+		return JSON.parse(result);
 	};
 
 	const getLocale = async () => {
+		let result = await invoke('get_locale_json');
 
-        let result = await invoke('get_locale_json');
-
-        return JSON.parse(result);
+		return JSON.parse(result);
 	};
 
 	const getTimezone = async () => {
+		let result = await invoke('get_timezone_json');
 
-        let result = await invoke('get_timezone_json');
-
-        return JSON.parse(result);
+		return JSON.parse(result);
 	};
 
 	const selectKeyboardLayout = (keyboard) => {
-
 		selectedKeyboard = keyboard;
 		selectedLayout = selectedKeyboard.code;
 		showLayoutModal = false;
 
-        layoutSearchTerm = selectedKeyboard.name;
+		layoutSearchTerm = selectedKeyboard.name;
 
 		// Set variant selection when changing keyboard to the first entry
-		variantSearchTerm = selectedKeyboard.variant.length
-            ? selectedKeyboard.variant[0].name
-            : null;
+		variantSearchTerm = selectedKeyboard.variant.length ? selectedKeyboard.variant[0].name : null;
 
-        selectedVariant = selectedKeyboard.variant.length
-            ? selectedKeyboard.variant[0].code
-            : null;
+		selectedVariant = selectedKeyboard.variant.length ? selectedKeyboard.variant[0].code : null;
 
-        filteredVariants = selectedKeyboard.variant;
+		filteredVariants = selectedKeyboard.variant;
 	};
 
 	const selectKeyboardVariant = (variant) => {
-
 		selectedVariant = variant.code;
 		variantSearchTerm = variant.name;
 		showVariantModal = false;
 	};
 
 	const selectTimezoneRegion = (timezone) => {
-
 		selectedTimezone = timezone;
 		selectedRegion = selectedTimezone.region;
 		showRegionModal = false;
 
-        regionSearchTerm = selectedRegion;
+		regionSearchTerm = selectedRegion;
 
 		// Set city selection when changing timezone to the first entry
-		citySearchTerm = selectedCity = selectedTimezone.city.length
-            ? selectedTimezone.city[0]
-            : null;
+		citySearchTerm = selectedCity = selectedTimezone.city.length ? selectedTimezone.city[0] : null;
 
-        filteredCity = selectedTimezone.city;
+		filteredCity = selectedTimezone.city;
 	};
 
 	const selectTimezoneCity = (city) => {
-
 		selectedCity = city;
 		citySearchTerm = city;
 		showCityModal = false;
 	};
 
 	const selectLocale = (locale) => {
-
 		selectedLocale = locale.name;
 		localeSearchTerm = locale.name;
 		showLocaleModal = false;
 	};
 
 	const handleSetLocalization = async () => {
-		await invoke('blueprint_set_locale', { locale: selectedLocale })
+		await invoke('blueprint_set_locale', { locale: selectedLocale });
 		await invoke('blueprint_set_timezone', { region: selectedRegion, city: selectedCity });
 		await invoke('blueprint_set_keyboard', { layout: selectedLayout, variant: selectedVariant });
 	};
 
 	onMount(async () => {
+		json = await getKeyboard();
+		filteredLayouts = json;
 
-        json = await getKeyboard();
-        filteredLayouts = json;
+		timezones = await getTimezone();
+		filteredRegion = timezones;
 
-        timezones = await getTimezone();
-        filteredRegion = timezones;
+		locales = await getLocale();
+		filteredLocales = locales;
 
-        locales = await getLocale();
-        filteredLocales = locales;
+		let defaultKeyboard = json.length ? json[0] : null;
+		let defaultTimezone = timezones.length
+			? timezones.find((zone) => zone.region === 'Asia')
+			: null;
+		let defaultLocale = locales.length
+			? locales.find((locale) => locale.name === 'en_US.UTF-8 UTF-8')
+			: null;
 
-        let defaultKeyboard = json.length ? json[0] : null;
-        let defaultTimezone = timezones.length ? timezones.find(zone => zone.region === "Asia") : null;
-        let defaultLocale = locales.length ? locales.find(locale => locale.name === "en_US.UTF-8 UTF-8") : null;
+		getBlueprint().then((blueprint) => {
+			if (blueprint.locale !== null) {
+				selectedLayout = blueprint.keyboard.layout;
+				selectedVariant = blueprint.keyboard.variant;
+				layoutSearchTerm = '';
+				variantSearchTerm = '';
+			}
+		});
 
-        getBlueprint().then((blueprint) => {
-
-            if (blueprint.locale !== null) {
-                selectedLayout = blueprint.keyboard.layout;
-                selectedVariant = blueprint.keyboard.variant;
-                layoutSearchTerm = '';
-                variantSearchTerm = '';
-            }
-        });
-
-        selectLocale(defaultLocale);
-        selectTimezoneRegion(defaultTimezone);
-        selectKeyboardLayout(defaultKeyboard);
+		selectLocale(defaultLocale);
+		selectTimezoneRegion(defaultTimezone);
+		selectKeyboardLayout(defaultKeyboard);
 	});
 
-    // debugging purpose; remove this later
-    $effect(() => {
-        $inspect(`Selected Keyboard: ${selectedLayout} - ${selectedVariant}`);
-    })
-
+	// debugging purpose; remove this later
+	$effect(() => {
+		$inspect(`Selected Keyboard: ${selectedLayout} - ${selectedVariant}`);
+	});
 </script>
 
 <TwoSide>
@@ -184,63 +171,63 @@
 				<!-- label -->
 				<GlowingText size="[11]" text="Locale" />
 				<!-- selector? -->
-                <SearchButton
-                    title="Select Locale"
-                    notFoundMessage="Locale Not Found"
-                    bind:show={showLocaleModal}
-                    bind:keyword={localeSearchTerm}
-                    data={filteredLocales}
-                    field="name"
-                    onclick={selectLocale}
-                />
+				<SearchButton
+					title="Select Locale"
+					notFoundMessage="Locale Not Found"
+					bind:show={showLocaleModal}
+					bind:keyword={localeSearchTerm}
+					data={filteredLocales}
+					field="name"
+					onclick={selectLocale}
+				/>
 			</div>
 			<!-- select Timezone -->
 			<div class=" space-y-[10px]">
 				<!-- label -->
 				<GlowingText size="[11]" text="Timezone" />
 				<!-- selector? -->
-                <SearchButton
-                    title="Select Timezone Region"
-                    notFoundMessage="Timezone Region Not Found"
-                    bind:show={showRegionModal}
-                    bind:keyword={regionSearchTerm}
-                    data={filteredRegion}
-                    field="region"
-                    onclick={selectTimezoneRegion}
-                />
-                <SearchButton
-                    title="Select Timezone City"
-                    notFoundMessage="Timezone City Not Found"
-                    bind:show={showCityModal}
-                    bind:keyword={citySearchTerm}
-                    data={filteredCity}
-                    onclick={selectTimezoneCity}
-                />
+				<SearchButton
+					title="Select Timezone Region"
+					notFoundMessage="Timezone Region Not Found"
+					bind:show={showRegionModal}
+					bind:keyword={regionSearchTerm}
+					data={filteredRegion}
+					field="region"
+					onclick={selectTimezoneRegion}
+				/>
+				<SearchButton
+					title="Select Timezone City"
+					notFoundMessage="Timezone City Not Found"
+					bind:show={showCityModal}
+					bind:keyword={citySearchTerm}
+					data={filteredCity}
+					onclick={selectTimezoneCity}
+				/>
 			</div>
 			<!-- select Keyboard Layout -->
 			<div class=" space-y-[10px]">
 				<!-- label -->
 				<GlowingText size="[11]" text="Keyboard Layout" />
 				<!-- keyboard name -->
-                <SearchButton
-                    title="Select Keyboard Layout"
-                    notFoundMessage="Keyboard Layout Not Found"
-                    bind:show={showLayoutModal}
-                    bind:keyword={layoutSearchTerm}
-                    data={filteredLayouts}
-                    field="name"
-                    onclick={selectKeyboardLayout}
-                />
+				<SearchButton
+					title="Select Keyboard Layout"
+					notFoundMessage="Keyboard Layout Not Found"
+					bind:show={showLayoutModal}
+					bind:keyword={layoutSearchTerm}
+					data={filteredLayouts}
+					field="name"
+					onclick={selectKeyboardLayout}
+				/>
 				<!-- keyboard varian -->
-                <SearchButton
-                    title="Select Keyboard Variant"
-                    notFoundMessage="Keyboard Variant Not Found"
-                    bind:show={showVariantModal}
-                    bind:keyword={variantSearchTerm}
-                    field="name"
-                    data={filteredVariants}
-                    onclick={selectKeyboardVariant}
-                />
+				<SearchButton
+					title="Select Keyboard Variant"
+					notFoundMessage="Keyboard Variant Not Found"
+					bind:show={showVariantModal}
+					bind:keyword={variantSearchTerm}
+					field="name"
+					data={filteredVariants}
+					onclick={selectKeyboardVariant}
+				/>
 				<!-- keyboard test -->
 				<input
 					type="text"
@@ -253,12 +240,17 @@
 			>
 				<!-- label -->
 				<GlowingText size="[11]" text="Preview" />
-                <Preview
-                    { selectedLocale }
-                    { selectedRegion }
-                    { selectedCity }
-                />
+				<Preview {selectedLocale} {selectedRegion} {selectedCity} />
 			</div>
 		</div>
 	{/snippet}
 </TwoSide>
+
+<Navigation
+	totalSteps={5}
+	currentStep={2}
+	currentTitle="Localization"
+	prevPath="/installation"
+	nextPath="/installation/partitioning"
+	nextAction={null}
+/>
