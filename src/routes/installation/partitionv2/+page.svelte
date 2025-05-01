@@ -1,15 +1,13 @@
 <script>
 
 import { onMount } from 'svelte';
-import { getRead } from '/src/routes/installation/global.js';
-import { invoke } from '@tauri-apps/api/core';
+import { getRead } from '../global.js';
+import { invoke } from '@tauri-apps/api/tauri';
 import { prettySize } from '$lib/essentials.js';
 import prettyBytes from 'pretty-bytes';
 import List from '$lib/components/partitions/List.svelte';
 import Detail from '$lib/components/partitions/Detail.svelte';
 import Preview from '$lib/components/partitions/Preview.svelte';
-import DiskPreview from '$lib/components/DiskPreview.svelte';
-import Navigation from "$lib/components/Navigation.svelte";
 
 let selectedDisk = $state(0);
 let selectedPartition = $state(0);
@@ -59,7 +57,7 @@ const changeSelectedDisk = async (selected) => {
     let disks = await getStorageJSON();
 
     storage.diskPath = disks[selectedDisk].diskPath;
-    storage.partitionTable = disks[selectedDisk].label;
+    storage.partitionTable = disks[selectedPartition].label;
 
     let partitions = disks[selectedDisk].partitions;
 
@@ -244,17 +242,15 @@ onMount(async () => {
                         </option>
                 {/each}
             </select>
-            <div class="text-white">
-                <button onclick={revertChanges}>Revert Changes</button>
-                <button onclick={newPartitionTable}>New Partition Table</button>
-            </div>
+            <button onclick={revertChanges}>Revert Changes</button>
+            <button onclick={newPartitionTable}>New Partition Table</button>
         </div>
         <Preview
             bind:modifiedPartition
             bind:diskSize
         />
     </div>
-    <div class="flex flex-row space-x-2 text-white">
+    <div class="flex flex-row space-x-2">
         <div class="flex flex-col">
             <List
                 bind:selectedDisk
@@ -287,21 +283,12 @@ onMount(async () => {
                     bind:newPartitionIndex
                 />
             {:else}
-                <div class="flex border-4 border-green-900 px-4 justify-center items-center">
+                <div class="flex border-4 border-black px-4 justify-center items-center">
                     <span>Select partition to edit!</span>
                 </div>
             {/if}
         {/if}
     </div>
     <a href="/installation/summary" class="bg-green-500 px-4 py-2 rounded-lg" onclick={handleSetBlueprint}>Apply</a>
-    <button class="text-white bg-green-900" onclick={handleSetBlueprint}>Apply Without Summary</button>
+    <button onclick={handleSetBlueprint}>Apply Without Summary</button>
 {/await}
-
-<Navigation
-	totalSteps={5}
-	currentStep={4}
-	currentTitle="Manual Partitioning"
-	prevPath="/installation/partitioning"
-	nextPath="/installation"
-	nextAction={null}
-/>
