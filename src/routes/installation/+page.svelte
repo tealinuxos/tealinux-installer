@@ -85,7 +85,7 @@
 					class="w-1/2 bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px] space-y-5"
 				>
 					<GlowingText size="[15]" text="Hardware" />
-					<div class="space-y-5 text-[15px] tracking-[-0.6px]">
+					<div class="space-y-5 text-[15px]">
 						<div class="leading-none space-y-[10px]">
 							<p class="font-[500]">Hardware model</p>
 							<p class="font-[200]">
@@ -131,7 +131,7 @@
 					class="w-1/2 bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px] space-y-5"
 				>
 					<GlowingText size="[15]" text="Operating System" />
-					<div class="space-y-5 text-[15px] tracking-[-0.6px]">
+					<div class="space-y-5 text-[15px]">
 						<div class="leading-none space-y-[10px]">
 							<p class="font-[500]">Operating System</p>
 							<p class="font-[200]">Arch Linux</p>
