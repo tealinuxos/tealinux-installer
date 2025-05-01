@@ -22,7 +22,7 @@
 	}
 </script>
 
-<div class="bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px]">
+<div class="bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] py-[10px] rounded-[14px]">
 	<GlowingText size="lg" text="Disk" />
 
 	{#if loading}
@@ -44,9 +44,9 @@
 
 		<div class="flex gap-x-4 items-start">
 			<div class="w-full">
-                {#key disk}
-                    <DiskPreview { disk } />
-                {/key}
+				{#key disk}
+					<DiskPreview {disk} />
+				{/key}
 				<div class="flex items-center justify-between w-full gap-4">
 					<!-- Slider indicators (centered) -->
 					<div class="flex gap-2 mx-auto">
