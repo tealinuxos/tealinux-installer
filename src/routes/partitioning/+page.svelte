@@ -63,74 +63,79 @@ https://svelte.dev/e/node_invalid_placement -->
     </div>
 
     <table class="w-full">
-        <tr>
-            <th class="p-5">Partition</th>
-            <th class="p-5">Name</th>
-            <th class="p-5">File System</th>
-            <th class="p-5">Mount Point</th>
-            <th class="p-5">Size</th>
-            <th class="p-5">Flags</th>
-        </tr>
-
-        {#each disks[selectedDisk].partitions as partition}
-            
-            {@const disk = disks[selectedDisk]}
-            {@const partitionSize = partition.size.slice(0, -1) / 2048}
-
+        <thead>
             <tr>
-                {#if partition.typePartisi == "free"}
-                    
-                    <td class="px-5 text-center">unallocated</td>
-                    <td class="px-5 text-center"></td>
-                    <td class="px-5 text-center">unallocated</td>
-                    <td class="px-5 text-center"></td>
-                    <td class="px-5 text-center">{Math.floor(partitionSize)}</td>
-                    <td class="px-5 text-center"></td>
-
-                {:else}
-
-                    <td class="px-5 text-center">{partition.partitionPath}</td>
-
-                    {#if partition.name !== null}
-                        <td class="px-5 text-center">{partition.name}</td>
-                    {:else}
-                        <td class="px-5 text-center"></td>
-                    {/if}
-
-                    {#if partition.filesystem !== null}
-                        <td class="px-5 text-center">{partition.filesystem}</td>
-                    {:else}
-                        <td class="px-5 text-center"></td>
-                    {/if}
-
-                    <td class="px-5 text-center">{partition.mountpoint}</td>
-
-                    <td class="px-5 text-center">{Math.floor(partitionSize)}</td>
-
-                    {#if partition.flags !== null}
-
-                        <td class="px-5 text-center">
-
-                        {#each partition.flags as flag, i}
-
-                            {#if i !== partition.flags.length - 1}
-                                <span>{flag}, </span>
-                            {:else}
-                                <span>{flag}</span>
-                            {/if}
-
-                        {/each}
-
-                        </td>
-
-                    {:else}
-                        <td class="px-5 text-center"></td>
-                    {/if}
-
-                {/if}
-
+                <th class="p-5">Partition</th>
+                <th class="p-5">Name</th>
+                <th class="p-5">File System</th>
+                <th class="p-5">Mount Point</th>
+                <th class="p-5">Size</th>
+                <th class="p-5">Flags</th>
             </tr>
-        {/each}
+        </thead>
+
+        <tbody>
+            {#each disks[selectedDisk].partitions as partition}
+            
+                {@const disk = disks[selectedDisk]}
+                {@const partitionSize = partition.size.slice(0, -1) / 2048}
+
+                <tr>
+                    {#if partition.typePartisi == "free"}
+                        
+                        <td class="px-5 text-center">unallocated</td>
+                        <td class="px-5 text-center"></td>
+                        <td class="px-5 text-center">unallocated</td>
+                        <td class="px-5 text-center"></td>
+                        <td class="px-5 text-center">{Math.floor(partitionSize)}</td>
+                        <td class="px-5 text-center"></td>
+
+                    {:else}
+
+                        <td class="px-5 text-center">{partition.partitionPath}</td>
+
+                        {#if partition.name !== null}
+                            <td class="px-5 text-center">{partition.name}</td>
+                        {:else}
+                            <td class="px-5 text-center"></td>
+                        {/if}
+
+                        {#if partition.filesystem !== null}
+                            <td class="px-5 text-center">{partition.filesystem}</td>
+                        {:else}
+                            <td class="px-5 text-center"></td>
+                        {/if}
+
+                        <td class="px-5 text-center">{partition.mountpoint}</td>
+
+                        <td class="px-5 text-center">{Math.floor(partitionSize)}</td>
+
+                        {#if partition.flags !== null}
+
+                            <td class="px-5 text-center">
+
+                            {#each partition.flags as flag, i}
+
+                                {#if i !== partition.flags.length - 1}
+                                    <span>{flag}, </span>
+                                {:else}
+                                    <span>{flag}</span>
+                                {/if}
+
+                            {/each}
+
+                            </td>
+
+                        {:else}
+                            <td class="px-5 text-center"></td>
+                        {/if}
+
+                    {/if}
+
+                </tr>
+            {/each}
+        </tbody>
+        
 
     </table>
 
