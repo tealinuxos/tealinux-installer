@@ -16,7 +16,7 @@
   
   <!-- UI -->
   <div
-    class="flex items-center justify-between h-[56px] px-3 py-3 rounded-lg w-full"
+    class="flex items-center justify-between h-[48px] px-3 py-3 rounded-lg w-full"
     style="border: 1.3px solid {borderColor}; background: {backgroundColor};"
   >
     <!-- Kiri -->
