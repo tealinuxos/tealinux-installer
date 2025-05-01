@@ -11,7 +11,7 @@
 	const stepTitles = {
 		1: 'Installation',
 		2: 'Localization',
-		3: 'About System',
+		3: 'Partitioning',
 		4: 'Account Creation',
 		5: 'Summary'
 	};
@@ -27,7 +27,7 @@
 				goto('/installation/localization');
 				break;
 			case 3:
-				goto('/installation/aboutSystem');
+				goto('/installation/partitioning');
 				break;
 			case 4:
 				goto('/installation/account');
