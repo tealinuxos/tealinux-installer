@@ -28,6 +28,13 @@ pub async fn autogen_partition_select_disk(
 
             blueprint.storage = Some(ret_val.into());
 
+            let bootloader = ctx.gen_current_bootloader();
+            if let Some(bootloader_val) = bootloader {
+                blueprint.bootloader = Some(bootloader_val.into());
+            } else {
+                println!("failed to generate bootloader for autopartitioning.");
+            }
+
             super::write_blueprint(blueprint).unwrap();
         }
     }

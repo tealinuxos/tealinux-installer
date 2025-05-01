@@ -74,3 +74,26 @@ impl From<crate::installer::Storage> for tea_partition_generator::blueprint::Sto
         }
     }
 }
+
+// for bootloader section
+impl From<tea_partition_generator::blueprint::Bootloader>
+    for crate::installer::blueprint::Bootloader
+{
+    fn from(data: tea_partition_generator::blueprint::Bootloader) -> Self {
+        crate::installer::blueprint::Bootloader {
+            firmware_type: data.firmware_type,
+            path: data.path,
+        }
+    }
+}
+
+impl From<crate::installer::blueprint::Bootloader>
+    for tea_partition_generator::blueprint::Bootloader
+{
+    fn from(data: crate::installer::blueprint::Bootloader) -> Self {
+        tea_partition_generator::blueprint::Bootloader {
+            firmware_type: data.firmware_type,
+            path: data.path,
+        }
+    }
+}

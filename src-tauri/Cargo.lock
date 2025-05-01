@@ -3497,7 +3497,7 @@ dependencies = [
 [[package]]
 name = "tea_partition_generator"
 version = "0.1.0"
-source = "git+https://github.com/fadhil-riyanto/tea_partition_generator#6d7be94524b885f903ae1358e9e71fdf5d3c86fa"
+source = "git+https://github.com/fadhil-riyanto/tea_partition_generator#489e31edab71dadc0139916666f41b92eb5d8d43"
 dependencies = [
  "async-trait",
  "duct",
@@ -3505,6 +3505,7 @@ dependencies = [
  "regex",
  "serde",
  "serde_json",
+ "tea-arch-chroot-lib",
  "tokio",
 ]
 
