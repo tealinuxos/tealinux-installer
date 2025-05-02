@@ -22,7 +22,7 @@
 	});
 </script>
 
-<div class="flex items-center justify-center min-h-screen">
+<div class="flex items-center justify-center min-h-screen text-white">
 	<div class="text-center">
 		<img src={Tealinux} alt="" class="mx-auto mb-4" />
 
@@ -35,7 +35,7 @@
 				<div>
 					<button
 						on:click={() => (window.location.href = '/installation')}
-						class=" bg-greenTealinux rounded-3xl hover:bg-green-800 text-white font-poppinsemibold text-xl py-[10px] px-28 disabled:bg-green-400 border-2 border-black/15"
+						class=" bg-green-tealinux rounded-3xl hover:bg-green-800 text-white font-poppinsemibold text-xl py-[10px] px-28 disabled:bg-green-400 border-2 border-black/15"
 					>
 						START
 					</button>

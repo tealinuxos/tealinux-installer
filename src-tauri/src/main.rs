@@ -19,6 +19,7 @@ use system::reboot::reboot;
 use system::spawn::*;
 use users::get_current_uid;
 use installer::{ start_install, is_online, print_json };
+use tauri::RunEvent;
 
 fn main()
 {
@@ -50,11 +51,20 @@ fn main()
                     spawn_gparted,
                     spawn_terminal
                 ])
-                .run(tauri::generate_context!())
-                .expect("error while running tauri application");
+                .build(tauri::generate_context!())
+                .expect("error while running tauri application")
+                .run(|_app_handle, _event| {
+                    match _event {
+                        RunEvent::Exit => {
+                            duct::cmd!("xhost", "-si:localuser:root").run().unwrap();
+                        },
+                        _ => ()
+                    }
+                });
         }
         _ => {
-            println!("Run with sudo privileges!");
+            duct::cmd!("xhost", "si:localuser:root").run().unwrap();
+            sudo::escalate_if_needed().unwrap();
         }
     }
 }

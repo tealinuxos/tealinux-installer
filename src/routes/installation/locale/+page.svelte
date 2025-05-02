@@ -1,5 +1,4 @@
 <script>
-	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { invoke } from '@tauri-apps/api/core';
 	import { onMount } from 'svelte';
 	import { getShortLocale, getBlueprint } from '../global.js';
@@ -90,7 +89,6 @@
 	});
 </script>
 
-<Sidebar />
 <div class="relative w-full">
 	<header
 		class="flex items-center justify-center w-full gap-[10px] py-10 fixed top-0 bg-whiteTealinux z-30"

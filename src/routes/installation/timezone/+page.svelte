@@ -1,7 +1,6 @@
 <script>
 	import { invoke } from '@tauri-apps/api/core';
 	import { onMount } from 'svelte';
-	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { fly } from 'svelte/transition';
 	import { getBlueprint } from '../global.js';
 
@@ -116,7 +115,6 @@
 	$: console.log(showOptions);
 </script>
 
-<Sidebar />
 <div class="relative w-full">
 	<header class="flex items-center justify-center w-full gap-[10px] mt-[40px]">
 		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
