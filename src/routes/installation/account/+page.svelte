@@ -147,13 +147,13 @@
 							placeholder="Enter your password"
 						/>
 					{/if}
+                    <button onclick={togglePasswordVisibility} aria-label="Password Visibility">
 					<svg
 						class="mr-[16px]"
 						width="24"
 						height="24"
 						viewBox="0 0 24 24"
 						fill="none"
-						onclick={togglePasswordVisibility}
 						xmlns="http://www.w3.org/2000/svg"
 					>
 						<mask
@@ -174,6 +174,7 @@
 							/>
 						</g>
 					</svg>
+                    </button>
 				</div>
 			</div>
 
@@ -202,13 +203,13 @@
 							placeholder="Confirm your password"
 						/>
 					{/if}
+                    <button onclick={togglePasswordConfirmVisibility} aria-label="Password Confirm Visibility">
 					<svg
 						class="mr-[16px]"
 						width="24"
 						height="24"
 						viewBox="0 0 24 24"
 						fill="none"
-						onclick={togglePasswordConfirmVisibility}
 						xmlns="http://www.w3.org/2000/svg"
 					>
 						<mask
@@ -229,6 +230,7 @@
 							/>
 						</g>
 					</svg>
+                    </button>
 				</div>
 				{#if passwordsMatch === false && password}
 					<p class="text-red-500 text-[14px] mt-[5px]">Passwords do not match</p>
@@ -261,6 +263,14 @@
 					>Next</a
 				>
 			</div>
+            <a
+                href="/installation/partitionv2"
+                onclick={handleSetAccount}
+                class="text-white bg-greenTealinux {passwordsMatch && fullname && username && hostname
+                    ? ''
+                    : ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
+                >Next (Beta)</a
+            >
 		</div>
 	</section>
 </div>

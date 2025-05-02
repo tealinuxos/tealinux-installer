@@ -1,11 +1,11 @@
-use crate::installer::BluePrint;
+use crate::installer::{BluePrint, Partition};
 use crate::read::get_read;
-use crate::storage::{ format, mount, umount, format_unallocated };
+use crate::storage::{ create_new_partition_table, create_new_partition_table_with_partition, format, format_unallocated, mount, umount };
 use crate::storage::btrfs::{ mount_subvolume, create_subvolume };
 use duct::cmd;
 use tea_arch_chroot_lib::resource::FirmwareKind;
 use tea_partition_api_lib::GetDiskInformation;
-use std::io::Error;
+use std::io::{Error, ErrorKind};
 use std::fs::{create_dir, create_dir_all};
 
 fn force_umount()
@@ -39,7 +39,47 @@ pub fn partitioning(blueprint: &BluePrint) -> Result<(), Error>
 
 fn partitioning_new_partition_table(blueprint: &BluePrint) -> Result<(), Error>
 {
-    todo!();
+    force_umount();
+
+    let disk_path = &blueprint.storage.as_ref().unwrap().disk_path;
+    let partition_table = &blueprint.storage.as_ref().unwrap().partition_table;
+    let partitions = blueprint.storage.as_ref().unwrap().partitions.clone();
+
+    let firmware_type = &blueprint.bootloader.as_ref().unwrap().firmware_type;
+    let bootloader_path = &blueprint.bootloader.as_ref().unwrap().path;
+
+    create_new_partition_table(disk_path.as_ref().unwrap(), partition_table.as_ref().unwrap())?;
+
+    println!("create new partition table done");
+
+    let mut temp_partitions: Vec<Partition> = Vec::new();
+
+    for partition in partitions.as_ref().unwrap()
+    {
+        let path = format_unallocated(
+            partitions.as_ref().unwrap(),
+            disk_path.as_ref().unwrap(),
+            partition.start,
+            partition.end,
+            partition.filesystem.as_ref().unwrap(),
+            partition.label.clone()
+        )?;
+
+        temp_partitions.push(
+            Partition {
+                path,
+                ..partition.to_owned()
+            }
+        )
+    }
+
+    println!("partitioning done");
+
+    println!("{:#?}", temp_partitions);
+
+    actual_partitioning(Some(temp_partitions))?;
+
+    Ok(())
 }
 
 fn partitioning_layout_changed(blueprint: &BluePrint) -> Result<(), Error>
@@ -54,69 +94,9 @@ fn partitioning_layout_preserved(blueprint: &BluePrint) -> Result<(), Error>
     let firmware_type = &blueprint.bootloader.as_ref().unwrap().firmware_type;
     let bootloader_path = &blueprint.bootloader.as_ref().unwrap().path;
 
-    let max_number = blueprint.storage.as_ref().unwrap().partitions.as_ref().unwrap().iter().max_by_key(|partition| partition.number);
-    let max_number = max_number.unwrap().number;
-    let max_number = max_number + 1;
+    let partitions = blueprint.storage.as_ref().unwrap().partitions.as_ref().unwrap();
 
-    for i in blueprint.storage.as_ref().unwrap().partitions.as_ref().unwrap().iter().to_owned().rev()
-    {
-        let mut i_path = i.path.clone();
-        let i_format = i.format;
-        let i_mountpoint = &i.mountpoint;
-        let i_filesystem = &i.filesystem;
-        let i_start = i.start;
-        let i_end = i.end;
-        let i_disk_path = &i.disk_path.as_ref().unwrap();
-
-        if i_format && i_path.is_none() && i_filesystem.is_some()
-        {
-            let path = format_unallocated(i_disk_path, i_start, i_end, max_number , i_filesystem.as_ref().unwrap())?;
-            i_path = path;
-        }
-
-        if i_format && i_filesystem.is_some() && i_path.is_some()
-        {
-            format(i_filesystem.as_ref().unwrap(), i_path.as_ref().unwrap())?;
-        }
-
-        if let Some(i_mountpoint) = i_mountpoint
-        {
-            if i_mountpoint.contains("swap")
-            {
-                cmd!("swapon", i_path.as_ref().unwrap()).run()?;
-            }
-
-            if i_mountpoint.contains("boot")
-            {
-                cmd!("mkdir", "--parents", format!("/tealinux-mount{}", i_mountpoint)).run()?;
-                mount(i_path.as_ref().unwrap(), &format!("/tealinux-mount{}", i_mountpoint), None)?;
-            }
-
-            if i_mountpoint.eq("/")
-            {
-                if i_filesystem.as_ref().unwrap().eq("btrfs")
-                {
-                    mount(i_path.as_ref().unwrap(), "/tealinux-mount", None)?;
-
-                    create_subvolume("/tealinux-mount/@")?;
-                    create_subvolume("/tealinux-mount/@home")?;
-
-                    umount("/tealinux-mount")?;
-
-                    mount_subvolume("@", i_path.as_ref().unwrap(), "/tealinux-mount")?;
-
-                    create_dir("/tealinux-mount/home")?;
-
-                    mount_subvolume("@home", i_path.as_ref().unwrap(), "/tealinux-mount/home")?;
-                }
-                
-                else
-                {
-                    mount(i_path.as_ref().unwrap(), "/tealinux-mount", None)?;
-                }
-            }
-        }
-    }
+    actual_partitioning(Some(partitions.to_vec()))?;
 
     match firmware_type
     {
@@ -169,4 +149,98 @@ pub fn get_boot_path(blueprint: &BluePrint) -> Option<String>
     }
 
     boot_path.cloned()
+}
+
+fn actual_partitioning(partitions: Option<Vec<Partition>>) -> Result<(), Error>
+{
+    match partitions
+    {
+        Some(partitions) => {
+
+            // Find partition that assigned as root, and deal with it first
+
+            let root = partitions.iter().find(|p| p.mountpoint.as_ref().is_some_and(|m| m.eq("/")));
+
+            println!("Checking if root is available");
+
+            if let Some(root) = root
+            {
+                let mut path: Option<String> = root.to_owned().path;
+
+                println!("Checking if the partition is unallocated");
+                if root.format &&
+                    root.path.is_none() &&
+                    root.filesystem.is_some()
+                {
+                    println!("Unallocated detected! Formatting unallocated partition");
+                    path = format_unallocated(
+                        &partitions,
+                        root.disk_path.as_ref().unwrap(),
+                        root.start,
+                        root.end,
+                        root.filesystem.as_ref().unwrap(),
+                        root.label.clone()
+                    )?;
+                }
+
+                else if root.format &&
+                    root.path.is_some() &&
+                    root.filesystem.is_some()
+                {
+                    println!("Checking the rest of the allocated partition");
+                    format(
+                        root.filesystem.as_ref().unwrap(),
+                        root.path.as_ref().unwrap()
+                    )?;
+                    println!("Allocated partition formatted");
+                }
+
+                if let Some(filesystem) = root.to_owned().filesystem
+                {
+                    mount(path.as_ref().unwrap(), "/tealinux-mount", None)?;
+
+                    if filesystem.eq("btrfs")
+                    {
+                        create_subvolume("/tealinux-mount/@")?;
+                        create_subvolume("/tealinux-mount/@home")?;
+
+                        umount("/tealinux-mount")?;
+
+                        mount_subvolume("@", path.as_ref().unwrap(), "/tealinux-mount")?;
+
+                        create_dir("/tealinux-mount/home")?;
+
+                        mount_subvolume("@home", path.as_ref().unwrap(), "/tealinux-mount/home")?;
+                    }
+                }
+            }
+
+            // Deal with rest of the partition
+
+            for i in partitions
+            {
+                if let Some(mountpoint) = i.to_owned().mountpoint
+                {
+                    // Ignore root
+
+                    if !mountpoint.eq("/")
+                    {
+                        if mountpoint.contains("swap")
+                        {
+                            cmd!("swapon", i.path.as_ref().unwrap()).run()?;
+                        }
+
+                        if mountpoint.contains("boot")
+                        {
+                            cmd!("mkdir", "--parents", format!("/tealinux-mount{}", mountpoint)).run()?;
+                            mount(i.path.as_ref().unwrap(), &format!("/tealinux-mount{}", mountpoint), None)?;
+                        }
+                    }
+                }
+            }
+
+            Ok(())
+        },
+        None => Err(Error::from(ErrorKind::NotFound))
+    }
 }

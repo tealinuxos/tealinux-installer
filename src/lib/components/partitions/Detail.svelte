@@ -41,8 +41,6 @@
         return flags.concat(flagList);
     }
 
-    $effect(() => $inspect(tempModifiedPartition[selectedPartition]))
-
     const isArrayIdentical = (a, b) => {
         return JSON.stringify(a) === JSON.stringify(b);
     }

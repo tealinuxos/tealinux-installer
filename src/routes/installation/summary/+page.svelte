@@ -339,6 +339,11 @@
 					>Back</a
 				>
 				<a
+					href="/installation/partitionv2"
+					class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ml-[100px]"
+					>Back (Beta)</a
+				>
+				<a
 					href="/installation/install"
 					class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mr-[100px]"
 					>Install</a

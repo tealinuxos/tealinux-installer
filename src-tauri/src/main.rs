@@ -16,6 +16,7 @@ use api::account::*;
 use api::partition::*;
 use api::storage::*;
 use api::firmware::*;
+use storage::umount_all_target;
 use system::reboot::reboot;
 use system::spawn::*;
 use users::get_current_uid;
@@ -56,11 +57,11 @@ fn main()
                 .build(tauri::generate_context!())
                 .expect("error while running tauri application")
                 .run(|_app_handle, _event| {
-                    match _event {
-                        RunEvent::Exit => {
-                            duct::cmd!("xhost", "-si:localuser:root").run().unwrap();
-                        },
-                        _ => ()
+                    if let RunEvent::Exit = _event
+                    {
+
+                        let _ = duct::cmd!("xhost", "-si:localuser:root").run();
+                        let _ = umount_all_target("/tealinux-mount");
                     }
                 });
         }

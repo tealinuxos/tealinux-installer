@@ -133,7 +133,7 @@
 							<div
 								class="border border-b-grayBorder last:border-none bg-white hover:bg-slate-100 transition-all"
 							>
-								<div
+								<button
 									class="flex w-full items-center justify-between py-4 px-4 border border-b-grayBorder last:border-none bg-white transition-all"
 									onclick={() => toggleVariants(name)}
 								>
@@ -145,7 +145,7 @@
 											? 'rotate-180'
 											: ''} transition-transform duration-300"
 									/>
-								</div>
+								</button>
 								{#if showVariants[name]}
 									{#each keyboard.variant as variant}
 										<label
