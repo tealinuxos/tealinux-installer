@@ -1,9 +1,6 @@
 <script>
-	import { run } from 'svelte/legacy';
-
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { onMount } from 'svelte';
-	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { fly } from 'svelte/transition';
 	import { getBlueprint } from '../global.js';
 
@@ -126,7 +123,6 @@
 	});
 </script>
 
-<Sidebar />
 <div class="relative w-full">
 	<header class="flex items-center justify-center w-full gap-[10px] mt-[40px]">
 		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
@@ -153,7 +149,7 @@
 						<input
 							type="text"
 							placeholder="Select Region"
-							class="h-full w-full outline-none text-sm text-gray-700 bg-grayTealinux pr-2 pl-[12px] font-poppin"
+							class="h-full w-full outline-hidden text-sm text-gray-700 bg-grayTealinux pr-2 pl-[12px] font-poppin"
 							onfocus={openOptions}
 							bind:value={searchTerm}
 						/>
@@ -212,7 +208,7 @@
 							placeholder="Select city"
 							disabled
 							value={selectedCity}
-							class="h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px] font-poppin bg-grayTealinux"
+							class="h-full w-full outline-hidden text-sm text-gray-700 pr-2 pl-[12px] font-poppin bg-grayTealinux"
 						/>
 					</div>
 				</div>
@@ -255,7 +251,7 @@
 							onclick={handleSetTimezone}
 							class="text-white bg-greenTealinux {selectedTimezone
 								? ''
-								: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
+								: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-hidden"
 							>Next</a
 						>
 					</div>

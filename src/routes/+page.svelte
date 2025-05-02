@@ -1,5 +1,5 @@
 <script>
-	import { invoke } from '@tauri-apps/api/tauri';
+	import { invoke } from '@tauri-apps/api/core';
 	import { onMount } from 'svelte';
 	import Tealinux from '$lib/assets/Vector.png';
 
@@ -22,7 +22,7 @@
 	});
 </script>
 
-<div class="flex items-center justify-center min-h-screen">
+<div class="flex items-center justify-center min-h-screen text-white">
 	<div class="text-center">
 		<img src={Tealinux} alt="" class="mx-auto mb-4" />
 

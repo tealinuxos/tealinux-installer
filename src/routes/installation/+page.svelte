@@ -1,9 +1,11 @@
 <script>
-	import { invoke } from '@tauri-apps/api/tauri';
-	import { onMount } from 'svelte';
 	import { getRead } from './global.js';
 	import prettyBytes from 'pretty-bytes';
 	import { randomColor } from 'randomcolor';
+	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
+	import GlowingText from '$lib/components/ui/GlowingText.svelte';
+	import DiskSlider from '../../lib/components/DiskSlider.svelte';
+	import Navigation from '../../lib/components/Navigation.svelte';
 
 	const getStorageJSON = async () => {
 		let json = await getRead();
@@ -13,19 +15,18 @@
 		return json;
 	};
 
-    const getTotalStorage = async () => {
-        let storage = await getStorageJSON();
-        let total = 0;
+	const getTotalStorage = async () => {
+		let storage = await getStorageJSON();
+		let total = 0;
 
-        for (let i of storage.keys())
-        {
-            let size = storage[i].size.slice(0, -1);
+		for (let i of storage.keys()) {
+			let size = storage[i].size.slice(0, -1);
 
-            total += parseInt(size);
-        }
+			total += parseInt(size);
+		}
 
-        return total;
-    }
+		return total;
+	};
 
 	const getColors = (disks, partIdx) => {
 		let length = disks[partIdx].partitions.length;
@@ -43,216 +44,128 @@
 		return colors;
 	};
 
-    const checkUnknown = (s) => {
-        if (s.length === 0) {
-            return 'Unknown';
-        } else {
-            return s;
-        }
-    }
+	const checkUnknown = (s) => {
+		if (!s || s.length === 0) {
+			return 'Unknown';
+		} else {
+			return s;
+		}
+	};
 
-	onMount(() => {
-		getStorageJSON().then((disks) => {
-			getColors(disks, 0);
-		});
-	});
+	// onMount(() => {
+	// 	getStorageJSON().then((disks) => {
+	// 		getColors(disks, 0);
+	// 	});
+	// });
 </script>
 
-<main class="max-h-dvh">
-	{#await getRead() then json}
-		{@const memoryPercent = (json.memory.used / json.memory.capacity) * 100}
-		<div class=" py-8 px-16 mx-auto overflow-auto max-h-[85dvh] scrollbar-none">
-			<div class=" bg-greenTealinux bg-opacity-25 w-full p-5 rounded-[43px] mb-6">
-				<div class="bg-white flex justify-between items-center py-8 px-8 h-fit rounded-3xl">
-					<div class="flex flex-[1] flex-col items-center">
-						<img src="/windows.svg" alt="" />
-						<p class="text-2xl font-medium mt-[8px]">{checkUnknown(json.model.systemProductName)}</p>
-						<p>{checkUnknown(json.model.systemProductName) + ' - ' + checkUnknown(json.model.systemVersion)}</p>
-						<h2 class="font-medium font-poppin text-[16px] flex items-center">
-							<img src="/battrey.svg" alt="" class="pr-[8px]" />
-							{json.battery.capacity}%
-						</h2>
-						<div class="flex items-center">
-							<img src="/Connection.svg" alt="" class="pr-[8px]" />
-							<h2 class="font-medium font-poppin text-[16px] flex items-center">
-								Online
-								{#if json.online.status}
-									<span
-										class="w-3 ml-2 aspect-square rounded-full bg-green-400 inline-block border border-slate-600 pl-[6px]"
-									></span>
-								{:else}
-									<span>false</span>
-								{/if}
-							</h2>
-						</div>
+{#await getRead() then json}
+	<!-- <pre>
+		{JSON.stringify(json, null, 2)}
+	</pre> -->
+	<TwoSide>
+		{#snippet left()}
+			<div class="w-[288px] space-y-[15px]">
+				<div class="flex space-x-[14px]">
+					<div class="w-[58px]">
+						<img src="/logo-tealinux.svg" class="w-full" alt="logo" />
 					</div>
-					<div class="flex flex-[2] items-center justify-evenly flex-wrap gap-y-4">
-						<div>
-							<!-- RAM -->
-							<div class="flex flex-col items-center h-full">
-								<div class="flex items-center justify-center h-full">
-									<h2 class="font-archivo font-bold text-[20px]">Ram</h2>
-								</div>
-								<div class="w-[241px] h-[16px] bg-grayTealinux rounded-[128px]">
-									<div
-										class="bg-[#F1C21B] h-[16px] rounded-[128px]"
-										style="width: {memoryPercent.toFixed()}%"
-									></div>
-								</div>
-								<h2 class="font-medium font-poppin text-[16px] mt-2">
-									{memoryPercent.toFixed(2)}% of 100%
-								</h2>
-							</div>
-							<!-- CPU -->
-							<div class="flex flex-col items-center h-full">
-								<div class="flex items-center justify-center h-full">
-									<h2 class="font-archivo font-bold text-[20px] text-center">CPU</h2>
-								</div>
-								<h2 class="font-poppin font-medium text-[16px]">{checkUnknown(json.lspci.cpu)}</h2>
-							</div>
-						</div>
-						<div>
-							<!-- Storage -->
-							<div class="flex flex-col items-center h-full">
-								<div class="flex items-center justify-center h-full">
-									<h2 class="font-archivo font-bold text-[20px]">Storage</h2>
-								</div>
-								<div class="w-[241px] h-[16px] bg-grayTealinux rounded-[128px]">
-									<div
-										class="bg-[#F1C21B] h-[16px] rounded-[128px] flex items-center"
-										style="width: 90%"
-									></div>
-								</div>
-                                {#await getTotalStorage() then totalSize}
-                                    {@const storage = totalSize * 512}
-                                    {@const storageGB = storage === 0 ? 'No disk' : prettyBytes(totalSize * 512)}
-                                    <h2 class="font-medium font-poppin text-[16px] mt-2">{storageGB}</h2>
-                                {/await}
-							</div>
-
-							<!-- GPU -->
-							<div class="flex flex-col items-center h-full">
-								<div class="flex items-center justify-center h-full">
-									<h2 class="font-archivo font-bold text-[20px] text-center">GPU</h2>
-								</div>
-								<ul class="list-disc">
-									{#each json.lspci.vga as vga}
-										<li>
-											<h2 class="font-poppin font-medium text-[16px]">{checkUnknown(vga)}</h2>
-										</li>
-									{/each}
-								</ul>
-							</div>
-						</div>
-					</div>
+					<h1 class="font-archivo font-[600] text-[40px] tracking-[-1.8px]">TeaLinux OS</h1>
 				</div>
+				<p class="font-jakarta text-sm font-[200] tracking-[-0.56px] text-center">
+					Qorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum
+					est a, mattis tellus
+				</p>
 			</div>
-			<!-- ============================================================================================ -->
-			<div
-				class=" bg-greenTealinux bg-opacity-25 w-full p-5 rounded-[43px] mb-6 flex justify-center"
-			>
+		{/snippet}
+		{#snippet right()}
+			<!-- information system -->
+			<div class="flex space-x-5 mb-[10px]">
 				<div
-					class="bg-white place-items-center py-3 px-16 max-h-[40dvh] overflow-y-auto min-w-full rounded-3xl"
+					class="w-1/2 bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px] space-y-5"
 				>
-					{#await getStorageJSON()}
-						Loading...
-					{:then disks}
-						{#each disks as disk, idx}
-                            {@const size = parseInt(disks[idx].size.replace('s', ' '))}
-							{@const prettySize = size === 0 ? 'No disk' : prettyBytes(size * 512)}
-							{@const colors = getColors(disks, idx)}
-							<div
-								class="flex items-center justify-between bg-gray-300 h-fit rounded-[10px] mt-[30.05px] w-full"
-							>
-								<p
-									class="font-poppin font-medium text-[#0D1814] text-[14px] mt-[12px] ml-[12px] mb-[12px]"
-								>
-									{disk.model + ' (' + disk.diskPath + ')'}
-								</p>
-								<p class="font-poppin text-[14px] text-[#0D1814] mt-[12px] mr-[12px] mb-[12px]">
-									Disk Size : {prettySize}
-								</p>
+					<GlowingText size="[15]" text="Hardware" />
+					<div class="space-y-5 text-[15px]">
+						<div class="leading-none space-y-[10px]">
+							<p class="font-[500]">Hardware model</p>
+							<p class="font-[200]">
+								{checkUnknown(json.model.systemVersion)}-{checkUnknown(
+									json.model.systemProductName
+								)}
+							</p>
+						</div>
+						<div class="leading-none space-y-[10px]">
+							<p class="font-[500]">Memory</p>
+							<p class="font-[200]">
+								{parseFloat((json.memory.capacity / 1024).toFixed(2))} GiB
+							</p>
+						</div>
+						<div class="leading-none space-y-[10px]">
+							<p class="font-[500]">Processor</p>
+							<p class="font-[200]">
+								{checkUnknown(json.lspci.cpu)}
+							</p>
+						</div>
+						<div class="leading-none space-y-[10px]">
+							<p class="font-[500]">Primary Graphic Card</p>
+							<p class="font-[200]">{checkUnknown(json.lspci.vga[0])}</p>
+						</div>
+
+						<div class="leading-none space-y-[10px]">
+							<p class="font-[500]">Secondary Graphic Card</p>
+							<p class="font-[200]">{checkUnknown(json.lspci.vga[1])}</p>
+						</div>
+						{#await getTotalStorage() then totalSize}
+							{@const storage = totalSize * 512}
+							{@const storageGB = storage === 0 ? 'No disk' : prettyBytes(totalSize * 512)}
+							<div class="leading-none space-y-[10px]">
+								<p class="font-[500]">Disk Capacity</p>
+								<p class="font-[200]">{storageGB}</p>
 							</div>
-							<div class="mt-[33px] flex gap-x-4 items-start">
-								<p class="font-poppin font-medium text-[18px]">Current:</p>
+							sud
+						{/await}
+					</div>
+				</div>
 
-								<div class="w-full">
-									<div class="flex mb-4 h-8 w-full overflow-hidden rounded-full">
-										<div class="h-full flex rounded-full overflow-hidden w-full">
-											{#each disk.partitions as partition, i}
-												{@const diskSize = disk.size.slice(0, -1)}
-												{@const partitionSize = partition.size.slice(0, -1)}
-												{@const percentage = (partitionSize / diskSize) * 100}
-
-												{@const color = colors[i]}
-
-												<div
-													style="width: {percentage}%; background-color: {color}"
-													class="h-full"
-												></div>
-											{/each}
-										</div>
-									</div>
-
-									<div class="flex gap-y-4 flex-wrap mb-4">
-										{#each disk.partitions as partition, i}
-											{@const color = colors[i]}
-											{@const size = partition.size.slice(0, -1) * 512}
-											{@const path =
-												partition.partitionPath == null
-													? 'Unallocated'
-													: partition.partitionPath.slice(5)}
-											{@const filesystem =
-												partition.filesystem == null
-													? path == 'Unallocated'
-														? 'Unallocated'
-														: 'Unknown'
-													: partition.filesystem}
-											{@const prettySize = prettyBytes(size)}
-											<div class="flex pr-2 gap-x-2">
-												<div style="background-color: {color}" class="w-4 h-4 rounded-sm"></div>
-												<div class="flex flex-col text-sm font-poppinmedium font-medium">
-													<span class="pl-1">{path}</span>
-													<span class="pl-1">{prettySize} {filesystem}</span>
-												</div>
-											</div>
-										{/each}
-									</div>
-								</div>
-							</div>
-						{/each}
-					{/await}
+				<div
+					class="w-1/2 bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px] space-y-5"
+				>
+					<GlowingText size="[15]" text="Operating System" />
+					<div class="space-y-5 text-[15px]">
+						<div class="leading-none space-y-[10px]">
+							<p class="font-[500]">Operating System</p>
+							<p class="font-[200]">Arch Linux</p>
+						</div>
+						<div class="leading-none space-y-[10px]">
+							<p class="font-[500]">Operating System Architecture</p>
+							<p class="font-[200]">x86_64</p>
+						</div>
+						<div class="leading-none space-y-[10px]">
+							<p class="font-[500]">Desktop Environment</p>
+							<p class="font-[200]">COSMIC</p>
+						</div>
+						<div class="leading-none space-y-[10px]">
+							<p class="font-[500]">Windowing System</p>
+							<p class="font-[200]">Wayland</p>
+						</div>
+					</div>
 				</div>
 			</div>
-		</div>
 
-		<div
-			class="fixed bottom-0 left-0 right-0 flex justify-between h-[15dvh] items-center w-full px-16 font-poppin bg-white"
-		>
-			<a
-				href="/"
-				class="py-[10px] px-[20px] bg-greenTealinux text-white font-poppin text-base rounded-lg"
-			>
-				Back
-			</a>
-			<a
-				href="/installation/keyboard"
-				class="py-[10px] px-[20px] bg-greenTealinux text-white font-poppin text-base rounded-lg"
-			>
-				Next
-			</a>
-		</div>
-	{/await}
-</main>
+			{#await getStorageJSON()}
+				Loading...
+			{:then disks}
+				<DiskSlider {disks} colors={getColors(disks, 0)} />
+			{/await}
+		{/snippet}
+	</TwoSide>
+{/await}
 
-<style>
-	/* .scrollbar-none::-webkit-scrollbar {
-		display: none;
-	} */
-
-	/* Hide scrollbar for IE, Edge and Firefox */
-	.scrollbar-none {
-		-ms-overflow-style: none; /* IE and Edge */
-		scrollbar-width: none; /* Firefox */
-	}
-</style>
+<Navigation
+	totalSteps={5}
+	currentStep={1}
+	currentTitle="System Information"
+	prevPath="/installation"
+	nextPath="/installation/localization"
+	nextAction={null}
+/>

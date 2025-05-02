@@ -2,7 +2,7 @@
 https://svelte.dev/e/node_invalid_placement -->
 <script>
 
-    import { invoke } from "@tauri-apps/api/tauri";
+    import { invoke } from "@tauri-apps/api/core";
     import { onMount } from "svelte";
 
     let disks = [];
@@ -63,14 +63,17 @@ https://svelte.dev/e/node_invalid_placement -->
     </div>
 
     <table class="w-full">
-        <tr>
-            <th class="p-5">Partition</th>
-            <th class="p-5">Name</th>
-            <th class="p-5">File System</th>
-            <th class="p-5">Mount Point</th>
-            <th class="p-5">Size</th>
-            <th class="p-5">Flags</th>
-        </tr>
+        <thead>
+            <tr>
+                <th class="p-5">Partition</th>
+                <th class="p-5">Name</th>
+                <th class="p-5">File System</th>
+                <th class="p-5">Mount Point</th>
+                <th class="p-5">Size</th>
+                <th class="p-5">Flags</th>
+            </tr>
+        </thead>
+        <tbody>
 
         {#each disks[selectedDisk].partitions as partition}
             
@@ -131,7 +134,7 @@ https://svelte.dev/e/node_invalid_placement -->
 
             </tr>
         {/each}
-
+        </tbody>
     </table>
 
 {/if}

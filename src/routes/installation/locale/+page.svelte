@@ -1,8 +1,5 @@
 <script>
-	import { run } from 'svelte/legacy';
-
-	import Sidebar from '$lib/components/Sidebar.svelte';
-	import { invoke } from '@tauri-apps/api/tauri';
+	import { invoke } from '@tauri-apps/api/core';
 	import { onMount } from 'svelte';
 	import { getShortLocale, getBlueprint } from '../global.js';
 	import { getCurrency } from 'locale-currency';
@@ -96,7 +93,6 @@
 	});
 </script>
 
-<Sidebar />
 <div class="relative w-full">
 	<header
 		class="flex items-center justify-center w-full gap-[10px] py-10 fixed top-0 bg-whiteTealinux z-30"
@@ -122,7 +118,7 @@
 						<input
 							type="text"
 							placeholder="Search..."
-							class="peer h-full w-full outline-none bg-grayTealinux text-sm text-gray-700 pr-2 pl-8"
+							class="peer h-full w-full outline-hidden bg-grayTealinux text-sm text-gray-700 pr-2 pl-8"
 							bind:value={searchTerm}
 							onclick={handleFocusIn}
 							onfocus={handleFocusIn}
@@ -176,7 +172,7 @@
 					<div
 						class="relative flex items-center w-full h-[45px] rounded-lg overflow-hidden bg-grayTealinux border-2 border-black pr-2 pl-8"
 					>
-						<!-- <input type="text" id="" class="peer h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px]"> -->
+						<!-- <input type="text" id="" class="peer h-full w-full outline-hidden text-sm text-gray-700 pr-2 pl-[12px]"> -->
 						<span>{timePreview}</span>
 					</div>
 				</div>
@@ -186,7 +182,7 @@
 					<div
 						class="relative flex items-center w-full h-[45px] rounded-lg overflow-hidden bg-grayTealinux border-2 border-black pr-2 pl-8"
 					>
-						<!-- <input type="text" id="" class="peer h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px]"> -->
+						<!-- <input type="text" id="" class="peer h-full w-full outline-hidden text-sm text-gray-700 pr-2 pl-[12px]"> -->
 						<span>{numberPreview} - {currencyPreview}</span>
 					</div>
 				</div>
@@ -203,7 +199,7 @@
 						onclick={handleSetLocale}
 						class="text-white bg-greenTealinux {selectedLocale
 							? ''
-							: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
+							: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-hidden"
 						>Next</a
 					>
 				</div>

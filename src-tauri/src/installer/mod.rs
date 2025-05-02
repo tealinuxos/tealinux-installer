@@ -14,6 +14,7 @@ use std::thread::sleep;
 use std::time::Duration;
 use duct::cmd;
 use std::path::Path;
+use tauri::Emitter;
 
 pub use self::blueprint::BluePrint;
 pub use self::blueprint::Partition;
