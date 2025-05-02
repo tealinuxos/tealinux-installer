@@ -189,7 +189,7 @@ const removePartition = () => {
     showEdit = false;
 }
 
-const handleSetBlueprint = () => {
+const handleSetStorage = () => {
 
     let partitionWithBoot = modifiedPartition.find(p => p.mountpoint.includes("boot"));
     let bootloaderPath = partitionWithBoot.path;
@@ -297,8 +297,8 @@ onMount(async () => {
             {/if}
         {/if}
     </div>
-    <a href="/installation/summary" class="bg-green-500 px-4 py-2 rounded-lg" onclick={handleSetBlueprint}>Apply</a>
-    <button class="text-white bg-green-900" onclick={handleSetBlueprint}>Apply Without Summary</button>
+    <!-- <a href="/installation/summary" class="bg-green-500 px-4 py-2 rounded-lg" onclick={handleSetBlueprint}>Apply</a> -->
+    <button class="text-white bg-green-900" onclick={handleSetStorage}>Apply Without Summary</button>
 {/await}
 
 <Navigation
