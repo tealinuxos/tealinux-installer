@@ -2,7 +2,7 @@
 	import { run } from 'svelte/legacy';
 
 	import Sidebar from '$lib/components/Sidebar.svelte';
-	import { invoke } from '@tauri-apps/api/tauri';
+	import { invoke } from '@tauri-apps/api/core';
 	import { onMount } from 'svelte';
 	import { getShortLocale, getBlueprint } from '../global.js';
 	import { getCurrency } from 'locale-currency';

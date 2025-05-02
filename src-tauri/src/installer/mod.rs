@@ -12,6 +12,7 @@ use std::path::Path;
 use std::thread::sleep;
 use std::time::Duration;
 use tauri::Window;
+use tauri::Emitter;
 use tea_arch_chroot_lib::chroot::*;
 use tea_arch_chroot_lib::prechroot::*;
 

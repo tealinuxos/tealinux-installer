@@ -1,6 +1,6 @@
 <script>
 	import Sidebar from '$lib/components/Sidebar.svelte';
-	import { invoke } from '@tauri-apps/api/tauri';
+	import { invoke } from '@tauri-apps/api/core';
 	import { onMount } from 'svelte';
 	import { getRead, getBlueprint } from '../global.js';
 	import prettyBytes from 'pretty-bytes';

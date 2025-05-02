@@ -1,7 +1,7 @@
 <script>
 	// this is deprecated
 	// import { invoke } from '@tauri-apps/api/core';
-	import { invoke } from '@tauri-apps/api/tauri';
+	import { invoke } from '@tauri-apps/api/core';
 	import { onMount } from 'svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { fly } from 'svelte/transition';

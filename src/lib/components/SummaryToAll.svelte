@@ -2,7 +2,7 @@
 	import { summaryActive } from './store';
 	import { onDestroy } from 'svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
-	import { invoke } from '@tauri-apps/api/tauri';
+	import { invoke } from '@tauri-apps/api/core';
 	import { onMount } from 'svelte';
 	import { getRead, getBlueprint } from '../../routes/installation/global';
 	import prettyBytes from 'pretty-bytes';

@@ -1,5 +1,5 @@
 <script>
-	import { exit } from '@tauri-apps/api/process';
+	import { exit } from '@tauri-apps/plugin-process';
 	/**
 	 * @typedef {Object} Props
 	 * @property {string} [errorMessage]
