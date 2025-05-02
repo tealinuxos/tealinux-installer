@@ -6,7 +6,7 @@
 	import GlowingText from '$lib/components/ui/GlowingText.svelte';
 	import Navigation from "$lib/components/Navigation.svelte";
 	import DiskPreview from '$lib/components/DiskPreview.svelte';
-	import InfoCard from './InfoCard.svelte';
+	import CardTextArea from '../components/CardTextArea.svelte';
 	import PreviewButton from '../components/PreviewButton.svelte';
 	
   
@@ -77,7 +77,7 @@
 		<div class="flex flex-col gap-2">
 			<GlowingText size="[11]" text="Selected Disk" />
   
-			<InfoCard
+			<CardTextArea
 			  initialDevice="/dev/nvme0n1"
 			  initialDescription="WD Black SN850X"
 			  showCaption={false}
@@ -91,15 +91,15 @@
   
 		<GlowingText size="[11]" text="File System" />
 		<div class="flex flex-col gap-2">
-			<InfoCard initialDevice="BTRFS" caption="Stable and widely used!" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
-			<InfoCard initialDevice="EXT4" caption="Stable and widely used!" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
+			<CardTextArea initialDevice="BTRFS" caption="Stable and widely used!" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
+			<CardTextArea initialDevice="EXT4" caption="Stable and widely used!" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
 		</div>
 
   
 		<GlowingText size="[11]" text="Swap Option" />
 		<div class="flex flex-col gap-2">
-			<InfoCard initialDevice="SWAP" caption="Recommended" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
-			<InfoCard initialDevice="NO SWAP" caption="Stable and widely used!" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
+			<CardTextArea initialDevice="SWAP" caption="Recommended" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
+			<CardTextArea initialDevice="NO SWAP" caption="Stable and widely used!" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
 	  
 		</div>
 
@@ -130,7 +130,9 @@
 			  Select a disk to see preview
 			</div>
 		  {/if}
+		  
 		</div>
+
 	  </div>
 
 	{/snippet}
