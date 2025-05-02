@@ -151,12 +151,16 @@ const removePartition = () => {
 
     let numbers = partitionWithTag.map(p => Number(p.path.replace("#", "")));
 
+    console.log("numbers", numbers)
+
     if (modifiedPartition[selectedPartition].path.includes("#")) {
-        if (numbers > 0) {
+        if (numbers) {
             for (let [i, partition] of modifiedPartition.entries()) {
                 if (partition.path && partition.path.includes("#")) {
                     let number = Number(partition.path.replace("#", ""));
-                    modifiedPartition[i].path = `#${number - 1}`;
+                    if (number > 1) {
+                        modifiedPartition[i].path = `#${number - 1}`;
+                    }
                 }
             }
         }
