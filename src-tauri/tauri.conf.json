@@ -14,10 +14,10 @@
     "allowlist": {
       "all": false,
       "process": {
-          "exit": true
+        "exit": true
       },
       "dialog": {
-          "message": true
+        "message": true
       }
     },
     "bundle": {
@@ -46,7 +46,9 @@
       },
       "resources": [],
       "shortDescription": "",
-      "targets": ["deb"],
+      "targets": [
+        "deb"
+      ],
       "windows": {
         "certificateThumbprint": null,
         "digestAlgorithm": "sha256",
@@ -61,7 +63,7 @@
     },
     "windows": [
       {
-        "fullscreen": true,
+        "fullscreen": false,
         "height": 720,
         "resizable": true,
         "title": "TeaLinux Installer",
