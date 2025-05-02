@@ -62,8 +62,8 @@
 	{#snippet left()}
 	  <div class="mx-[35px] space-y-[15px]">
 		<h1 class="font-jakarta font-[800] text-[28px]">
-		  Set up your keyboard<br />
-		  layout, timezone, locale
+			Configure Single Boot<br />
+		  
 		</h1>
 		<p class="font-jakarta text-sm font-[200]">
 		  Qorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum
