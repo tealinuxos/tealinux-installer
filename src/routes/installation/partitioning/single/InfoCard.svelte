@@ -33,7 +33,7 @@
           </svg>
         {/if}
         <span
-          class="text-[16px] font-medium leading-[140%] font-['Plus Jakarta Sans']"
+          class="text-[15px] font-medium leading-[140%] font-['Plus Jakarta Sans']"
           style="color: {iconColor}"
         >
           {device}
@@ -41,7 +41,7 @@
       </div>
       {#if showCaption}
         <div
-          class="mt-1 text-[11px] font-normal font-['Plus Jakarta Sans']"
+          class=" text-[11px] font-normal font-['Plus Jakarta Sans']"
           style="color: #9F9F9F; line-height: 140%;"
         >
           {caption}

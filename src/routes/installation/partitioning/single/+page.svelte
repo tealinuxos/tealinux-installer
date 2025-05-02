@@ -74,26 +74,35 @@
   
 	{#snippet right()}
 	  <div class="flex flex-col h-[562px] p-3 space-y-[15px] mb-[15px] bg-black/30 border-[0.5px] border-gray-900 rounded-[10px] font-jakarta">
-		<GlowingText size="[11]" text="Selected Disk" />
+		<div class="flex flex-col gap-2">
+			<GlowingText size="[11]" text="Selected Disk" />
   
-		<InfoCard
-		  initialDevice="/dev/nvme0n1"
-		  initialDescription="WD Black SN850X"
-		  showCaption={false}
-		  showIcon={true}
-		  borderColor="#4CDA95"
-		  backgroundColor="#032B17"
-		  iconColor="#4CDA95"
-		/>
+			<InfoCard
+			  initialDevice="/dev/nvme0n1"
+			  initialDescription="WD Black SN850X"
+			  showCaption={false}
+			  showIcon={true}
+			  borderColor="#4CDA95"
+			  backgroundColor="#032B17"
+			  iconColor="#4CDA95"
+			/>
+		</div>
+
   
 		<GlowingText size="[11]" text="File System" />
-		<InfoCard initialDevice="BTRFS" caption="Stable and widely used!" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
-		<InfoCard initialDevice="EXT4" caption="Stable and widely used!" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
+		<div class="flex flex-col gap-2">
+			<InfoCard initialDevice="BTRFS" caption="Stable and widely used!" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
+			<InfoCard initialDevice="EXT4" caption="Stable and widely used!" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
+		</div>
+
   
 		<GlowingText size="[11]" text="Swap Option" />
-		<InfoCard initialDevice="SWAP" caption="Recommended" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
-		<InfoCard initialDevice="NO SWAP" caption="Stable and widely used!" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
-  
+		<div class="flex flex-col gap-2">
+			<InfoCard initialDevice="SWAP" caption="Recommended" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
+			<InfoCard initialDevice="NO SWAP" caption="Stable and widely used!" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
+	  
+		</div>
+
 		<div class="flex flex-col p-[15px] gap-[10px] self-stretch rounded-[10.267px] border border-[#3C6350] bg-[#101010]">
 		  {#if $selectedDisk}
 			<div class="flex flex-row space-x-2">
@@ -123,8 +132,8 @@
 		  {/if}
 		</div>
 	  </div>
+
 	{/snippet}
-	<button>apply</button>
   </TwoSide>
 
 
