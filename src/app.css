@@ -1,23 +1,119 @@
-@tailwind base;
-@tailwind component;
-@tailwind utilities;
+@import 'tailwindcss';
 
-@font-face {
-    font-family: poppins;
-    src: url("/fonts/poppins.ttf");
+@theme {
+	--color-green-tealinux: #26a768;
+	--color-grey-button: #929aab;
+	--color-grey-border: #e4e7e6;
+	--color-grey-variant: #d6d6d6;
+	--color-user-check-box: #757575;
+	--color-gray-tealinux: #e7eded;
+	--color-white-tealinux: #fffefb;
+
+	/* new variant */
+	--color-primary: #26a768;
+	--color-danger: #ff453a;
+	--color-warning: #f1c21b;
+	--color-border: #3c6350;
+
+	--font-poppin: poppins, sans-serif;
+	--font-poppinsemibold: poppinssemibold, sans-serif;
+	--font-poppinmedium: poppinmedium, sans-serif;
+	--font-archivo: archivo, sans-serif;
+
+	--font-jakarta: jakarta, sans-serif;
+	--font-jakartaitalic: jakartaitalic, sans-serif;
+	--drop-shadow-text: 0px 0px 5px #00b85e;
+}
+
+body {
+	@apply bg-blue-300;
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+
+@layer base {
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		border-color: var(--color-gray-200, currentColor);
+	}
+}
+
+@layer components {
+	.bg-tealinux-image {
+		background-image: url('/background.svg');
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-position: center;
+	}
+
+	.bg-tealinux {
+		background: radial-gradient(
+				92.04% 82.52% at 104.4% -8.33%,
+				rgba(122, 75, 222, 0.23) 0%,
+				rgba(0, 0, 0, 0.23) 100%
+			),
+			radial-gradient(
+				84.01% 85.84% at -27.59% 123.12%,
+				rgba(0, 87, 255, 0.29) 0%,
+				rgba(0, 0, 0, 0.29) 100%
+			),
+			radial-gradient(
+				126.17% 95.07% at -6.94% -14.79%,
+				rgba(38, 167, 104, 0.29) 0%,
+				rgba(0, 0, 0, 0.29) 100%
+			),
+			#07080a;
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-position: center;
+	}
+
+	.bg-grad-tealinux {
+		background: radial-gradient(
+				200.54% 139.81% at 0% 0%,
+				rgba(38, 167, 104, 0.13) 0%,
+				rgba(38, 167, 104, 0) 100%
+			),
+			#101010;
+	}
 }
 
 @font-face {
-    font-family: poppinssemibold;
-    src: url("/fonts/poppins-semibold.ttf");
+	font-family: poppins;
+	src: url('/fonts/poppins.ttf');
 }
 
 @font-face {
-    font-family: poppinsmedium;
-    src: url("/fonts/poppins-medium.ttf");
+	font-family: poppinssemibold;
+	src: url('/fonts/poppins-semibold.ttf');
 }
 
 @font-face {
-    font-family: archivo;
-    src: url("/fonts/archivo.ttf");
+	font-family: poppinsmedium;
+	src: url('/fonts/poppins-medium.ttf');
+}
+
+@font-face {
+	font-family: archivo;
+	src: url('/fonts/archivo.ttf');
+}
+
+@font-face {
+	font-family: jakarta;
+	src: url('/fonts/jakarta.ttf');
+}
+
+@font-face {
+	font-family: jakartaitalic;
+	src: url('/fonts/jakarta-italic.ttf');
 }

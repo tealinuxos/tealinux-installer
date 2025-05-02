@@ -3,7 +3,6 @@
 
 	import { onMount } from 'svelte';
 	import { invoke } from '@tauri-apps/api/core';
-	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { getBlueprint } from '../global.js';
 
 	let fullname = $state(), username = $state(), hostname = $state(), password = $state(), confirmPassword = $state();
@@ -51,7 +50,6 @@
 	});
 </script>
 
-<Sidebar />
 <div class="relative w-full">
 	<header
 		class="flex items-center justify-center w-full gap-[10px] py-10 fixed top-0 bg-whiteTealinux z-30"
@@ -78,7 +76,7 @@
 					class="relative flex items-center w-[451px] h-[45px] rounded-lg overflow-hidden border-2 border-black bg-grayTealinux"
 				>
 					<input
-						class="peer h-full w-full outline-none text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
+						class="peer h-full w-full outline-hidden text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
 						type="text"
 						bind:value={fullname}
 						placeholder="Full name"
@@ -97,7 +95,7 @@
 					class="relative flex items-center w-[451px] h-[45px] rounded-lg overflow-hidden border-2 border-black bg-grayTealinux"
 				>
 					<input
-						class="peer h-full w-full outline-none text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
+						class="peer h-full w-full outline-hidden text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
 						type="text"
 						bind:value={username}
 						placeholder="Username"
@@ -116,7 +114,7 @@
 					class="relative flex items-center w-[451px] h-[45px] rounded-lg overflow-hidden border-2 border-black bg-grayTealinux"
 				>
 					<input
-						class="peer h-full w-full outline-none text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
+						class="peer h-full w-full outline-hidden text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
 						type="text"
 						bind:value={hostname}
 						placeholder="Computer name"
@@ -136,26 +134,26 @@
 				>
 					{#if passwordVisible}
 						<input
-							class="peer h-full w-full outline-none text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
+							class="peer h-full w-full outline-hidden text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
 							type="text"
 							bind:value={password}
 							placeholder="Enter your password"
 						/>
 					{:else}
 						<input
-							class="peer h-full w-full outline-none text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
+							class="peer h-full w-full outline-hidden text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
 							type="password"
 							bind:value={password}
 							placeholder="Enter your password"
 						/>
 					{/if}
+                    <button onclick={togglePasswordVisibility} aria-label="Password Visibility">
 					<svg
 						class="mr-[16px]"
 						width="24"
 						height="24"
 						viewBox="0 0 24 24"
 						fill="none"
-						onclick={togglePasswordVisibility}
 						xmlns="http://www.w3.org/2000/svg"
 					>
 						<mask
@@ -176,6 +174,7 @@
 							/>
 						</g>
 					</svg>
+                    </button>
 				</div>
 			</div>
 
@@ -191,26 +190,26 @@
 				>
 					{#if passwordConfirmVisible}
 						<input
-							class="peer h-full w-full outline-none text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
+							class="peer h-full w-full outline-hidden text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
 							type="text"
 							bind:value={confirmPassword}
 							placeholder="Confirm your password"
 						/>
 					{:else}
 						<input
-							class="peer h-full w-full outline-none text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
+							class="peer h-full w-full outline-hidden text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
 							type="password"
 							bind:value={confirmPassword}
 							placeholder="Confirm your password"
 						/>
 					{/if}
+                    <button onclick={togglePasswordConfirmVisibility} aria-label="Password Confirm Visibility">
 					<svg
 						class="mr-[16px]"
 						width="24"
 						height="24"
 						viewBox="0 0 24 24"
 						fill="none"
-						onclick={togglePasswordConfirmVisibility}
 						xmlns="http://www.w3.org/2000/svg"
 					>
 						<mask
@@ -231,6 +230,7 @@
 							/>
 						</g>
 					</svg>
+                    </button>
 				</div>
 				{#if passwordsMatch === false && password}
 					<p class="text-red-500 text-[14px] mt-[5px]">Passwords do not match</p>
@@ -259,10 +259,18 @@
 					onclick={handleSetAccount}
 					class="text-white bg-greenTealinux {passwordsMatch && fullname && username && hostname
 						? ''
-						: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
+						: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-hidden"
 					>Next</a
 				>
 			</div>
+            <a
+                href="/installation/partitionv2"
+                onclick={handleSetAccount}
+                class="text-white bg-greenTealinux {passwordsMatch && fullname && username && hostname
+                    ? ''
+                    : ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
+                >Next (Beta)</a
+            >
 		</div>
 	</section>
 </div>

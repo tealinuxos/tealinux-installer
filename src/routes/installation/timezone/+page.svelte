@@ -1,9 +1,6 @@
 <script>
-	import { run } from 'svelte/legacy';
-
 	import { invoke } from '@tauri-apps/api/core';
 	import { onMount } from 'svelte';
-	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { fly } from 'svelte/transition';
 	import { getBlueprint } from '../global.js';
 
@@ -64,16 +61,17 @@
 		searchTerm = value.split('/')[0];
 	};
 
-	run(() => {
-		searchTerm, filterOptions();
-	});
+	$effect(() => {
 
-	run(() => {
+		searchTerm, filterOptions();
+
 		if (selectedTimezone) {
 			const parts = selectedTimezone.split('/');
 			selectedCity = parts.length > 1 ? parts[1] : null;
 			showOptions = false; // Hide options when an option is selected
 		}
+
+		selectedTimezone, handlePreview();
 	});
 
 	onMount(() => {
@@ -117,16 +115,8 @@
 			timePreview = timeFormat.format(date);
 		}
 	};
-
-	run(() => {
-		selectedTimezone, handlePreview();
-	});
-	run(() => {
-		console.log(showOptions);
-	});
 </script>
 
-<Sidebar />
 <div class="relative w-full">
 	<header class="flex items-center justify-center w-full gap-[10px] mt-[40px]">
 		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
@@ -153,7 +143,7 @@
 						<input
 							type="text"
 							placeholder="Select Region"
-							class="h-full w-full outline-none text-sm text-gray-700 bg-grayTealinux pr-2 pl-[12px] font-poppin"
+							class="h-full w-full outline-hidden text-sm text-gray-700 bg-grayTealinux pr-2 pl-[12px] font-poppin"
 							onfocus={openOptions}
 							bind:value={searchTerm}
 						/>
@@ -182,10 +172,10 @@
 							out:fly={{ y: 10, duration: 300 }}
 						>
 							{#each filteredTimezones as timezone}
-								<label
+								<button
 									class="flex flex-row-reverse w-full items-center justify-between py-4 px-4 border border-b-grayBorder last:border-none bg-white hover:bg-slate-100 transition-all"
 									for="timezone-{timezone}"
-									onclick={closeOptions(timezone)}
+									onclick={() => console.log('lll')}
 								>
 									<input
 										required
@@ -197,7 +187,7 @@
 										class="w-5 h-5"
 									/>
 									<p>{timezone}</p>
-								</label>
+								</button>
 							{/each}
 						</div>
 					{/if}
@@ -212,7 +202,7 @@
 							placeholder="Select city"
 							disabled
 							value={selectedCity}
-							class="h-full w-full outline-none text-sm text-gray-700 pr-2 pl-[12px] font-poppin bg-grayTealinux"
+							class="h-full w-full outline-hidden text-sm text-gray-700 pr-2 pl-[12px] font-poppin bg-grayTealinux"
 						/>
 					</div>
 				</div>
@@ -255,7 +245,7 @@
 							onclick={handleSetTimezone}
 							class="text-white bg-greenTealinux {selectedTimezone
 								? ''
-								: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
+								: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-hidden"
 							>Next</a
 						>
 					</div>

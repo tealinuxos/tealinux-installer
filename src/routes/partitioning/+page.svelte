@@ -71,7 +71,6 @@
                 <th class="p-5">Flags</th>
             </tr>
         </thead>
-
         <tbody>
             {#each disks[selectedDisk].partitions as partition}
             
@@ -133,8 +132,6 @@
                 </tr>
             {/each}
         </tbody>
-        
-
     </table>
 
 {/if}

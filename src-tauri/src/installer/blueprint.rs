@@ -15,13 +15,15 @@ pub struct BluePrint {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct Partition {
+#[serde(rename_all="camelCase")]
+pub struct Partition
+{
     pub number: u64,
     pub disk_path: Option<String>,
     pub path: Option<String>,
     pub mountpoint: Option<String>,
     pub filesystem: Option<String>,
+    pub label: Option<String>,
     pub format: bool,
     pub start: u64,
     pub end: u64,

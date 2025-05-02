@@ -18,6 +18,8 @@ use api::storage::*;
 use api::timezone::*;
 use api::*;
 use installer::{is_online, print_json, start_install};
+use api::firmware::*;
+use storage::umount_all_target;
 use system::reboot::reboot;
 use system::spawn::*;
 use tauri::RunEvent;
@@ -57,11 +59,12 @@ fn main() {
                 ])
                 .build(tauri::generate_context!())
                 .expect("error while running tauri application")
-                .run(|_app_handle, _event| match _event {
-                    RunEvent::Exit => {
-                        duct::cmd!("xhost", "-si:localuser:root").run().unwrap();
+                .run(|_app_handle, _event| {
+                    if let RunEvent::Exit = _event
+                    {
+                        let _ = duct::cmd!("xhost", "-si:localuser:root").run();
+                        let _ = umount_all_target("/tealinux-mount");
                     }
-                    _ => (),
                 });
         }
         _ => {

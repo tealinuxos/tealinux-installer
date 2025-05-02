@@ -5,18 +5,34 @@ Tauri & SvelteKit
 ## Prequisites
 - [`rust`](https://www.rust-lang.org/)
 - [`bun`](https://bun.sh)
-- [`tauri`](https://tauri.app/v1/guides/getting-started/prerequisites/)
+- [`tauri`](https://v2.tauri.app/start/prerequisites/)
 
 ## Linux Dependency
 - lshw
 - rsync
 - fuse2
 - gcc-libs
-- webkit2gtk
+- webkit2gtk-4.1
+- libappindicator-gtk3
+- appmenu-gtk-module
 
 To install the required dependencies on a Linux system using `pacman`, run the following command:
 ```bash
-sudo pacman -S lshw dmidecode rsync fuse2 gcc-libs webkit2gtk
+sudo pacman -Sy \
+  webkit2gtk-4.1 \
+  base-devel \
+  curl \
+  wget \
+  file \
+  openssl \
+  appmenu-gtk-module \
+  libappindicator-gtk3 \
+  librsvg \ 
+  lshw \ 
+  dmidecode \ 
+  rsync \ 
+  fuse2 \ 
+  gcc-libs \ 
 ```
 
 ## Running

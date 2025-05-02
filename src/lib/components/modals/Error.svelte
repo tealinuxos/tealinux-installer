@@ -1,11 +1,6 @@
 <script>
 	import { exit } from '@tauri-apps/plugin-process';
-	/**
-	 * @typedef {Object} Props
-	 * @property {string} [errorMessage]
-	 */
 
-	/** @type {Props} */
 	let { errorMessage = 'Lorem ipsum dolor sit amet consectetur adipisicing elit.' } = $props();
 
 	const exitOk = async () => {
@@ -13,7 +8,7 @@
 	};
 </script>
 
-<div class="absolute h-screen w-screen z-[90] grid place-items-center bg-black/50 top-0">
+<div class="absolute h-screen w-screen z-90 grid place-items-center bg-black/50 top-0">
 	<div
 		class=" bg-whiteTealinux border-2 border-greyBorder p-8 min-w-[450px] max-w-[700px] flex flex-col items-center rounded-lg"
 	>
