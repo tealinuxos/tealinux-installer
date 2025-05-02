@@ -15,6 +15,8 @@
         newPartitionIndex = $bindable()
     } = $props();
 
+    let index = selectedPartition;
+
     let inputtedSize = $state(0);
     let actualSize = $state(0);
 
@@ -39,7 +41,7 @@
         return flags.concat(flagList);
     }
 
-    $effect(() => $inspect(selectedPartition))
+    $effect(() => $inspect(tempModifiedPartition[selectedPartition]))
 
     const isArrayIdentical = (a, b) => {
         return JSON.stringify(a) === JSON.stringify(b);
@@ -65,8 +67,8 @@
     const createPartition = () => {
         modifiedPartition = [];
 
-        let lastSize = Number(tempModifiedPartition[selectedPartition].size);
-        let lastStart = Number(tempModifiedPartition[selectedPartition].start);
+        let lastSize = Number(tempModifiedPartition[index].size);
+        let lastStart = Number(tempModifiedPartition[index].start);
 
         let inputtedSizeSector = getSectorFromMB(inputtedSize);
 
@@ -87,7 +89,7 @@
                 // }
 
                 let newUnallocated = {
-                    number: Number(tempModifiedPartition[selectedPartition].number) + 1,
+                    number: Number(tempModifiedPartition[index].number) + 1,
                     diskPath,
                     path: null,
                     size: newSize,
@@ -101,19 +103,19 @@
                     flags: []
                 };
 
-                tempModifiedPartition.splice(selectedPartition + 1, 0, newUnallocated);
-                tempModifiedPartition[selectedPartition + 1].size -= 511;
-                tempModifiedPartition[selectedPartition + 1].end -= 512;
+                tempModifiedPartition.splice(index + 1, 0, newUnallocated);
+                tempModifiedPartition[index + 1].size -= 511;
+                tempModifiedPartition[index + 1].end -= 512;
             }
 
-            // tempModifiedPartition[selectedPartition].size = inputtedSizeSector - 511;
-            // tempModifiedPartition[selectedPartition].end = lastStart + inputtedSizeSector - 512;
+            // tempModifiedPartition[index].size = inputtedSizeSector - 511;
+            // tempModifiedPartition[index].end = lastStart + inputtedSizeSector - 512;
 
-            tempModifiedPartition[selectedPartition].size = inputtedSizeSector;
-            tempModifiedPartition[selectedPartition].end = lastStart + inputtedSizeSector - 1;
+            tempModifiedPartition[index].size = inputtedSizeSector;
+            tempModifiedPartition[index].end = lastStart + inputtedSizeSector - 1;
 
-            // tempModifiedPartition[selectedPartition + 1].size -= 511;
-            // tempModifiedPartition[selectedPartition + 1].end -= 512;
+            // tempModifiedPartition[index + 1].size -= 511;
+            // tempModifiedPartition[index + 1].end -= 512;
 
             modifiedPartition = JSON.parse(JSON.stringify(tempModifiedPartition));
         }
@@ -175,8 +177,8 @@
 
             newPartitionIndex = highestIndex + 1;
 
-            tempModifiedPartition[selectedPartition] = {
-                ...modifiedPartition[selectedPartition],
+            tempModifiedPartition[index] = {
+                ...modifiedPartition[index],
                 path: `#${newPartitionIndex}`,
                 format: true,
                 filesystem: "ext4",
@@ -184,7 +186,7 @@
                 flags: []
             };
 
-            actualSize = modifiedPartition[selectedPartition].size;
+            actualSize = modifiedPartition[index].size;
 
             inputtedSize = ( actualSize * 512 ) / ( 1024 * 1024 );
         }
@@ -192,99 +194,97 @@
 
 </script>
 
-{#key selectedPartition}
-    <div class="flex flex-col border-4 border-black rounded-lg p-4 space-y-4">
-        <span>{
-            tempModifiedPartition[selectedPartition].path
-                ? tempModifiedPartition[selectedPartition].path.includes("#")
-                    ? `New Partition ${tempModifiedPartition[selectedPartition].path}`
-                    : tempModifiedPartition[selectedPartition].path
-                : tempModifiedPartition.path
-        }</span>
-        <div class="flex flex-row space-x-2 justify-between">
-            <div class="border-4 border-black rounded-lg flex items-center p-4 space-x-2">
-                {#if newPartition}
-                    <span>New Size</span>
-                    <input type="number" bind:value={inputtedSize} />
-                    <span>MB</span>
-                {:else}
-                    <span>Size</span>
-                    <span>
-                        {prettySize(tempModifiedPartition[selectedPartition].size)}
-                    </span>
-                {/if}
-            </div>
-            <div class="flex flex-col items-start justify-center">
-                {#if !newPartition}
-                    <div class="flex flex-row items-center justify-center space-x-2">
-                        <input type="radio" value={false} bind:group={tempModifiedPartition[selectedPartition].format} />
-                        <span>Keep data</span>
-                    </div>
-                    <div class="flex flex-row items-center justify-center space-x-2">
-                        <input type="radio" value={true} bind:group={tempModifiedPartition[selectedPartition].format} />
-                        <span>Erase data</span>
-                    </div>
-                {/if}
-            </div>
-        </div>
-        <div class="flex flex-row space-x-2 justify-between text-black">
-            <div class="flex flex-col">
-                <span>Filesystem</span>
-                <select bind:value={tempModifiedPartition[selectedPartition].filesystem}>
-                    <option value="btrfs">btrfs</option>
-                    <option value="fat32">fat32</option>
-                    <option value="ext4">ext4</option>
-                </select>
-            </div>
-            <div class="flex flex-col">
-                <span>Mountpoint</span>
-                <select bind:value={tempModifiedPartition[selectedPartition].mountpoint}>
-                    <option value={null}>None</option>
-                    <option value="/">/</option>
-                    <option value="/boot/efi">/boot/efi</option>
-                    <option value="/home">/home</option>
-                </select>
-            </div>
-        </div>
-        <div class="flex flex-col">
-            <span>Label</span>
-            <input type="text" class="border-2" bind:value={tempModifiedPartition[selectedPartition].label} />
-        </div>
-        <div class="flex flex-col">
-            <span>Flags</span>
-            <div class="flex flex-row justify-start items-center space-x-2">
-                {#each getFlagList(tempModifiedPartition[selectedPartition].flags) as flag}
-                    {@const existFlag = tempModifiedPartition[selectedPartition].flags}
-                    <input
-                        type="checkbox"
-                        id={flag}
-                        checked={tempModifiedPartition[selectedPartition].flags.includes(flag)}
-                        onchange={(event) => {
-                            let checked = event.target.checked;
-
-                            if (checked) {
-                                if (!existFlag.includes(flag)) {
-                                    tempModifiedPartition[selectedPartition].flags.push(flag)
-                                }
-                            } else {
-                                if (existFlag.includes(flag)) {
-                                    tempModifiedPartition[selectedPartition].flags = existFlag.filter(f => f !== flag);
-                                }
-                            }
-                        }}
-                    />
-                    <label for={flag}>{flag}</label>
-                {/each}
-            </div>
-        </div>
-        <div class="flex flex-col">
+<div class="flex flex-col border-4 border-black rounded-lg p-4 space-y-4">
+    <span>{
+        tempModifiedPartition[index].path
+            ? tempModifiedPartition[index].path.includes("#")
+                ? `New Partition ${tempModifiedPartition[index].path}`
+                : tempModifiedPartition[index].path
+            : tempModifiedPartition.path
+    }</span>
+    <div class="flex flex-row space-x-2 justify-between">
+        <div class="border-4 border-black rounded-lg flex items-center p-4 space-x-2">
             {#if newPartition}
-                <button onclick={cancelModifiedPartition} disabled={false} class="bg-red-500 p-4 disabled:bg-red-900">Cancel</button>
-                <button onclick={createPartition} disabled={false} class="bg-green-500 p-4 disabled:bg-green-900">Create</button>
+                <span>New Size</span>
+                <input type="number" bind:value={inputtedSize} />
+                <span>MB</span>
             {:else}
-                <button onclick={cancelModifiedPartition} disabled={isArrayIdentical(tempModifiedPartition, modifiedPartition)} class="bg-red-500 p-4 disabled:bg-red-900">Cancel</button>
-                <button onclick={applyModifiedPartition} disabled={isArrayIdentical(tempModifiedPartition, modifiedPartition)} class="bg-green-500 p-4 disabled:bg-green-900">Apply</button>
+                <span>Size</span>
+                <span>
+                    {prettySize(tempModifiedPartition[index].size)}
+                </span>
+            {/if}
+        </div>
+        <div class="flex flex-col items-start justify-center">
+            {#if !newPartition}
+                <div class="flex flex-row items-center justify-center space-x-2">
+                    <input type="radio" value={false} bind:group={tempModifiedPartition[index].format} />
+                    <span>Keep data</span>
+                </div>
+                <div class="flex flex-row items-center justify-center space-x-2">
+                    <input type="radio" value={true} bind:group={tempModifiedPartition[index].format} />
+                    <span>Erase data</span>
+                </div>
             {/if}
         </div>
     </div>
-{/key}
+    <div class="flex flex-row space-x-2 justify-between text-black">
+        <div class="flex flex-col">
+            <span>Filesystem</span>
+            <select bind:value={tempModifiedPartition[index].filesystem}>
+                <option value="btrfs">btrfs</option>
+                <option value="fat32">fat32</option>
+                <option value="ext4">ext4</option>
+            </select>
+        </div>
+        <div class="flex flex-col">
+            <span>Mountpoint</span>
+            <select bind:value={tempModifiedPartition[index].mountpoint}>
+                <option value={null}>None</option>
+                <option value="/">/</option>
+                <option value="/boot/efi">/boot/efi</option>
+                <option value="/home">/home</option>
+            </select>
+        </div>
+    </div>
+    <div class="flex flex-col">
+        <span>Label</span>
+        <input type="text" class="border-2" bind:value={tempModifiedPartition[index].label} />
+    </div>
+    <div class="flex flex-col">
+        <span>Flags</span>
+        <div class="flex flex-row justify-start items-center space-x-2">
+            {#each getFlagList(tempModifiedPartition[index].flags) as flag}
+                {@const existFlag = tempModifiedPartition[index].flags}
+                <input
+                    type="checkbox"
+                    id={flag}
+                    checked={tempModifiedPartition[index].flags.includes(flag)}
+                    onchange={(event) => {
+                        let checked = event.target.checked;
+
+                        if (checked) {
+                            if (!existFlag.includes(flag)) {
+                                tempModifiedPartition[index].flags.push(flag)
+                            }
+                        } else {
+                            if (existFlag.includes(flag)) {
+                                tempModifiedPartition[index].flags = existFlag.filter(f => f !== flag);
+                            }
+                        }
+                    }}
+                />
+                <label for={flag}>{flag}</label>
+            {/each}
+        </div>
+    </div>
+    <div class="flex flex-col">
+        {#if newPartition}
+            <button onclick={cancelModifiedPartition} disabled={false} class="bg-red-500 p-4 disabled:bg-red-900">Cancel</button>
+            <button onclick={createPartition} disabled={false} class="bg-green-500 p-4 disabled:bg-green-900">Create</button>
+        {:else}
+            <button onclick={cancelModifiedPartition} disabled={isArrayIdentical(tempModifiedPartition, modifiedPartition)} class="bg-red-500 p-4 disabled:bg-red-900">Cancel</button>
+            <button onclick={applyModifiedPartition} disabled={isArrayIdentical(tempModifiedPartition, modifiedPartition)} class="bg-green-500 p-4 disabled:bg-green-900">Apply</button>
+        {/if}
+    </div>
+</div>
