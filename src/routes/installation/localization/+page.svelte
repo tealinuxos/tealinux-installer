@@ -186,7 +186,8 @@
 				<!-- label -->
 				<GlowingText size="[11]" text="Timezone" />
 				<!-- selector? -->
-				<SearchButton
+				 <div class="flex gap-3">
+					<SearchButton
 					title="Select Timezone Region"
 					notFoundMessage="Timezone Region Not Found"
 					bind:show={showRegionModal}
@@ -203,13 +204,16 @@
 					data={filteredCity}
 					onclick={selectTimezoneCity}
 				/>
+				 </div>
+
 			</div>
 			<!-- select Keyboard Layout -->
 			<div class=" space-y-[10px]">
 				<!-- label -->
 				<GlowingText size="[11]" text="Keyboard Layout" />
 				<!-- keyboard name -->
-				<SearchButton
+				 <div class="flex gap-3">
+					<SearchButton
 					title="Select Keyboard Layout"
 					notFoundMessage="Keyboard Layout Not Found"
 					bind:show={showLayoutModal}
@@ -228,6 +232,8 @@
 					data={filteredVariants}
 					onclick={selectKeyboardVariant}
 				/>
+				 </div>
+
 				<!-- keyboard test -->
 				<input
 					type="text"

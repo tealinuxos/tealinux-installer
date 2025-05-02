@@ -124,7 +124,10 @@
 		</div>
 	  </div>
 	{/snippet}
+	<button>apply</button>
   </TwoSide>
+
+
   
   <Navigation
 	totalSteps={5}
