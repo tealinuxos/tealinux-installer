@@ -2,29 +2,31 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod api;
-mod read;
-mod utils;
-mod storage;
 mod installer;
+mod read;
+mod storage;
 mod system;
+mod utils;
 
-use api::*;
-use api::locale::*;
-use api::timezone::*;
-use api::keyboard::*;
 use api::account::*;
-use api::partition::*;
+use api::auto_partition::*;
 use api::firmware::*;
+use api::keyboard::*;
+use api::locale::*;
+use api::partition::*;
+use api::storage::*;
+use api::timezone::*;
+use api::*;
+use installer::{is_online, print_json, start_install};
+use api::firmware::*;
+use storage::umount_all_target;
 use system::reboot::reboot;
 use system::spawn::*;
-use users::get_current_uid;
-use installer::{ start_install, is_online, print_json };
 use tauri::RunEvent;
+use users::get_current_uid;
 
-fn main()
-{
-    match get_current_uid()
-    {
+fn main() {
+    match get_current_uid() {
         0 => {
             tauri::Builder::default()
                 .invoke_handler(tauri::generate_handler![
@@ -36,6 +38,7 @@ fn main()
                     blueprint_set_partition,
                     blueprint_set_bootloader,
                     blueprint_set_keyboard,
+                    blueprint_set_storage,
                     set_read_json,
                     get_locale_json,
                     get_timezone_json,
@@ -49,16 +52,18 @@ fn main()
                     get_keyboard_json,
                     read_blueprint,
                     spawn_gparted,
-                    spawn_terminal
+                    spawn_terminal,
+                    get_disk_lists_key_val,        // defined in partition api
+                    autogen_partition_select_disk, // defined in auto_partition
+                    get_disk_lists_key_val_with_otheros_check, // defined in partition api
                 ])
                 .build(tauri::generate_context!())
                 .expect("error while running tauri application")
                 .run(|_app_handle, _event| {
-                    match _event {
-                        RunEvent::Exit => {
-                            duct::cmd!("xhost", "-si:localuser:root").run().unwrap();
-                        },
-                        _ => ()
+                    if let RunEvent::Exit = _event
+                    {
+                        let _ = duct::cmd!("xhost", "-si:localuser:root").run();
+                        let _ = umount_all_target("/tealinux-mount");
                     }
                 });
         }

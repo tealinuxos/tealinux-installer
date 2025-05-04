@@ -1,7 +1,9 @@
 use std::io::Error;
+use std::process::Output;
 use duct::cmd;
 use std::fs::File;
 use std::io::BufReader;
+use crate::installer::Partition;
 use crate::read::get_read;
 
 use super::installer::BluePrint;
@@ -103,7 +105,7 @@ pub fn umount_all() -> Result<(), Error>
 
         let mut has_root = false;
 
-        for i in json.disk.as_ref().unwrap().iter()
+        for i in json.storage.as_ref().unwrap().partitions.as_ref().unwrap().iter()
         {
             if let Some(partition) = &i.mountpoint
             {
@@ -117,7 +119,7 @@ pub fn umount_all() -> Result<(), Error>
         has_root
     };
 
-    for partition in json.disk.as_ref().unwrap().iter()
+    for partition in json.storage.as_ref().unwrap().partitions.as_ref().unwrap().iter()
     {
         let mountpoint = &partition.mountpoint;
 
@@ -140,18 +142,37 @@ pub fn umount_all() -> Result<(), Error>
     Ok(())
 }
 
-pub fn format_unallocated(disk_path: &str, start: u64, end: u64, number: u64, filesystem: &str) -> Result<Option<String>, Error>
+pub fn format_unallocated(partitions: &Vec<Partition>, disk_path: &str, start: u64, end: u64, filesystem: &str, label: Option<String>) -> Result<Option<String>, Error>
 {
+    let max_number = partitions.iter().max_by_key(|partition| partition.number);
+    let max_number = max_number.unwrap().number;
+    let max_number = max_number + 1;
+
     let start = format!("{}s", start);
     let end = format!("{}s", end);
 
-    cmd!("parted", disk_path, "mkpart", "primary", start, end).run()?;
+    let label = match label
+    {
+        Some(l) => {
+            l
+        },
+        None => {
+            String::from(r"''")
+        }
+    };
 
-    let path = self::get_path_from_number(disk_path, number as usize)?;
+    cmd!("parted", "--script", "--fix", disk_path, "mkpart", label, filesystem, &start, &end).run()?;
 
-    format(filesystem, &path)?;
+    let path = self::get_path_from_sector(disk_path, &start, &end);
 
-    Ok(Some(path))
+    println!("expected path: {:?}", path);
+
+    if let Some(path) = path.as_ref()
+    {
+        format(filesystem, path)?;
+    }
+
+    Ok(path)
 }
 
 pub fn get_path_from_number(disk_path: &str, number: usize) -> Result<String, Error>
@@ -179,4 +200,109 @@ pub fn get_path_from_number(disk_path: &str, number: usize) -> Result<String, Er
     }
 
     Ok(result)
+}
+
+pub fn get_path_from_sector(disk_path: &str, start: &str, end: &str) -> Option<String>
+{
+    let disk = get_read().disk;
+
+    let mut result: Option<String> = None;
+
+    for i in disk
+    {
+        if i.disk_path.is_some_and(|path| path.eq(disk_path))
+        {
+            if let Some(partitions) = i.partitions
+            {
+                for j in partitions
+                {
+                    if j.start.is_some_and(|s| s.as_str() == start) &&
+                        j.end.is_some_and(|e| e.as_str() == end)
+                    {
+                        result = j.partition_path
+                    }
+                }
+            }
+        }
+    }
+
+    result
+}
+
+pub fn create_new_partition_table(disk_path: &str, partition_table: &str) -> Result<Output, Error>
+{
+    let result = match partition_table
+    {
+        "gpt" => {
+            duct::cmd!("parted", disk_path, "--script", "mklabel", "gpt").run()?
+        },
+        "uefi" => {
+            duct::cmd!("parted", disk_path, "--script", "mklabel", "gpt").run()?
+        },
+        "mbr" => {
+            duct::cmd!("parted", disk_path, "--script", "mklabel", "msdos").run()?
+        },
+        "bios" => {
+            duct::cmd!("parted", disk_path, "--script", "mklabel", "msdos").run()?
+        },
+        "msdos" => {
+            duct::cmd!("parted", disk_path, "--script", "mklabel", "msdos").run()?
+        },
+        _ => {
+            duct::cmd!("parted", disk_path, "--script", "mklabel", "gpt").run()?
+        }
+    };
+
+    Ok(result)
+}
+
+pub fn create_new_partition_table_with_partition(disk_path: &str, partition_table: &str, partitions: Vec<Partition>) -> Result<(), Error>
+{
+    let parted_partition_table = match partition_table
+    {
+        "gpt" => "gpt",
+        _ => "msdos"
+    };
+
+    let args = format!("parted {} mklabel {} --script --fix", disk_path, parted_partition_table);
+
+    duct::cmd!("bash", "-c", &args).run()?;
+
+    match partition_table
+    {
+        "gpt" => {
+
+            for i in partitions.iter().cloned()
+            {
+                let label = if let Some(l) = i.label
+                {
+                    l
+                }
+                else
+                {
+                    String::from(r"\'\'")
+                };
+                    
+                let args = format!("parted {} mkpart {} {} {}s {}s --script --fix", disk_path, label, i.filesystem.unwrap(), i.start, i.end);
+
+                println!("{}", args);
+
+                duct::cmd!("bash", "-c", &args).run()?;
+
+            }
+        }
+        _ => {
+
+            for i in partitions.iter().cloned()
+            {
+                let args = format!("parted {} mkpart primary {} {}s {}s --script --fix", disk_path, i.filesystem.unwrap(), i.start, i.end);
+
+                println!("{}", args);
+
+                duct::cmd!("bash", "-c", &args).run()?;
+            }
+        }
+    }
+
+    Ok(())
 }

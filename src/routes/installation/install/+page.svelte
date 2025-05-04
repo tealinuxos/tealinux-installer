@@ -1,13 +1,13 @@
 <script>
 	import { invoke } from '@tauri-apps/api/core';
 	import { listen } from '@tauri-apps/api/event';
-	import { exit } from '@tauri-apps/plugin-process';
+	// import { exit } from '@tauri-apps/plugin-process';
 	import { onMount } from 'svelte';
-	import Error from '$lib/components/modals/Error.svelte';
+	// import Error from '$lib/components/modals/Error.svelte';
 
-	let percentage = 100;
-	let message = '';
-    let errorMessage = null;
+	let percentage = $state(100);
+	let message = $state('');
+    let errorMessage = $state(null);
 
 	const listenInstall = listen('INSTALL', (event) => {
 		percentage = event.payload.percentage;
@@ -20,20 +20,21 @@
 
 	const startInstall = async () => {
 		await invoke('start_install');
+        // console.log('installing');
 	};
 
-	const exitOk = async () => {
-		await exit(0);
-	};
+	// const exitOk = async () => {
+	// 	await exit(0);
+	// };
 
 	const reboot = async () => {
 		await invoke('reboot');
 	};
 </script>
 
-{#if errorMessage !== null}
-    <Error errorMessage={errorMessage} />
-{/if}
+<!-- {#if errorMessage !== null} -->
+<!--     <Error errorMessage={errorMessage} /> -->
+<!-- {/if} -->
 
 <section class="flex flex-col justify-between h-screen items-center text-center p-8">
 	<h1 class="font-archivo text-3xl font-bold tracking-[-4.5%]">Installing...</h1>
@@ -81,13 +82,13 @@
 				>Installation Completed</span
 			>
 			<div class="flex gap-x-8 justify-center mt-4">
+				<!-- <button -->
+				<!-- 	class="bg-greenTealinux text-white font-poppinmedium font-medium p-2 rounded-md min-w-20" -->
+				<!-- 	on:click={exitOk}>Exit</button -->
+				<!-- > -->
 				<button
 					class="bg-greenTealinux text-white font-poppinmedium font-medium p-2 rounded-md min-w-20"
-					on:click={exitOk}>Exit</button
-				>
-				<button
-					class="bg-greenTealinux text-white font-poppinmedium font-medium p-2 rounded-md min-w-20"
-					on:click={reboot}>Reboot</button
+					onclick={reboot}>Reboot</button
 				>
 			</div>
 		</div>

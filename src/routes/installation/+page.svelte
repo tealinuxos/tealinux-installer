@@ -1,4 +1,6 @@
 <script>
+	import { invoke } from '@tauri-apps/api/core';
+	import { onMount } from 'svelte';
 	import { getRead } from './global.js';
 	import prettyBytes from 'pretty-bytes';
 	import { randomColor } from 'randomcolor';

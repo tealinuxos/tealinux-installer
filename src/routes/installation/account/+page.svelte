@@ -1,13 +1,15 @@
 <script>
+	import { run } from 'svelte/legacy';
+
 	import { onMount } from 'svelte';
 	import { invoke } from '@tauri-apps/api/core';
 	import { getBlueprint } from '../global.js';
 
-	let fullname, username, hostname, password, confirmPassword;
+	let fullname = $state(), username = $state(), hostname = $state(), password = $state(), confirmPassword = $state();
 	let isAdministrator = false;
-	let passwordsMatch = false;
-	let passwordVisible = false;
-	let passwordConfirmVisible = false;
+	let passwordsMatch = $state(false);
+	let passwordVisible = $state(false);
+	let passwordConfirmVisible = $state(false);
 
 	function togglePasswordVisibility() {
 		passwordVisible = !passwordVisible;
@@ -27,11 +29,13 @@
 		await invoke('blueprint_set_account', { fullname, username, hostname, password });
 	};
 
-	$: if (password && confirmPassword && password === confirmPassword) {
-		passwordsMatch = true;
-	} else {
-		passwordsMatch = false;
-	}
+	run(() => {
+		if (password && confirmPassword && password === confirmPassword) {
+			passwordsMatch = true;
+		} else {
+			passwordsMatch = false;
+		}
+	});
 
 	onMount(() => {
 		getBlueprint().then((blueprint) => {
@@ -143,13 +147,13 @@
 							placeholder="Enter your password"
 						/>
 					{/if}
+                    <button onclick={togglePasswordVisibility} aria-label="Password Visibility">
 					<svg
 						class="mr-[16px]"
 						width="24"
 						height="24"
 						viewBox="0 0 24 24"
 						fill="none"
-						on:click={togglePasswordVisibility}
 						xmlns="http://www.w3.org/2000/svg"
 					>
 						<mask
@@ -170,6 +174,7 @@
 							/>
 						</g>
 					</svg>
+                    </button>
 				</div>
 			</div>
 
@@ -198,13 +203,13 @@
 							placeholder="Confirm your password"
 						/>
 					{/if}
+                    <button onclick={togglePasswordConfirmVisibility} aria-label="Password Confirm Visibility">
 					<svg
 						class="mr-[16px]"
 						width="24"
 						height="24"
 						viewBox="0 0 24 24"
 						fill="none"
-						on:click={togglePasswordConfirmVisibility}
 						xmlns="http://www.w3.org/2000/svg"
 					>
 						<mask
@@ -225,6 +230,7 @@
 							/>
 						</g>
 					</svg>
+                    </button>
 				</div>
 				{#if passwordsMatch === false && password}
 					<p class="text-red-500 text-[14px] mt-[5px]">Passwords do not match</p>
@@ -250,13 +256,21 @@
 				>
 				<a
 					href="/installation/partition"
-					on:click={handleSetAccount}
+					onclick={handleSetAccount}
 					class="text-white bg-greenTealinux {passwordsMatch && fullname && username && hostname
 						? ''
 						: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-hidden"
 					>Next</a
 				>
 			</div>
+            <a
+                href="/installation/partitionv2"
+                onclick={handleSetAccount}
+                class="text-white bg-greenTealinux {passwordsMatch && fullname && username && hostname
+                    ? ''
+                    : ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
+                >Next (Beta)</a
+            >
 		</div>
 	</section>
 </div>

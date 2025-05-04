@@ -72,66 +72,65 @@
             </tr>
         </thead>
         <tbody>
-
-        {#each disks[selectedDisk].partitions as partition}
+            {#each disks[selectedDisk].partitions as partition}
             
-            {@const disk = disks[selectedDisk]}
-            {@const partitionSize = partition.size.slice(0, -1) / 2048}
+                {@const disk = disks[selectedDisk]}
+                {@const partitionSize = partition.size.slice(0, -1) / 2048}
 
-            <tr>
-                {#if partition.typePartisi == "free"}
-                    
-                    <td class="px-5 text-center">unallocated</td>
-                    <td class="px-5 text-center"></td>
-                    <td class="px-5 text-center">unallocated</td>
-                    <td class="px-5 text-center"></td>
-                    <td class="px-5 text-center">{Math.floor(partitionSize)}</td>
-                    <td class="px-5 text-center"></td>
-
-                {:else}
-
-                    <td class="px-5 text-center">{partition.partitionPath}</td>
-
-                    {#if partition.name !== null}
-                        <td class="px-5 text-center">{partition.name}</td>
-                    {:else}
+                <tr>
+                    {#if partition.typePartisi == "free"}
+                        
+                        <td class="px-5 text-center">unallocated</td>
                         <td class="px-5 text-center"></td>
-                    {/if}
-
-                    {#if partition.filesystem !== null}
-                        <td class="px-5 text-center">{partition.filesystem}</td>
-                    {:else}
+                        <td class="px-5 text-center">unallocated</td>
                         <td class="px-5 text-center"></td>
-                    {/if}
-
-                    <td class="px-5 text-center">{partition.mountpoint}</td>
-
-                    <td class="px-5 text-center">{Math.floor(partitionSize)}</td>
-
-                    {#if partition.flags !== null}
-
-                        <td class="px-5 text-center">
-
-                        {#each partition.flags as flag, i}
-
-                            {#if i !== partition.flags.length - 1}
-                                <span>{flag}, </span>
-                            {:else}
-                                <span>{flag}</span>
-                            {/if}
-
-                        {/each}
-
-                        </td>
+                        <td class="px-5 text-center">{Math.floor(partitionSize)}</td>
+                        <td class="px-5 text-center"></td>
 
                     {:else}
-                        <td class="px-5 text-center"></td>
+
+                        <td class="px-5 text-center">{partition.partitionPath}</td>
+
+                        {#if partition.name !== null}
+                            <td class="px-5 text-center">{partition.name}</td>
+                        {:else}
+                            <td class="px-5 text-center"></td>
+                        {/if}
+
+                        {#if partition.filesystem !== null}
+                            <td class="px-5 text-center">{partition.filesystem}</td>
+                        {:else}
+                            <td class="px-5 text-center"></td>
+                        {/if}
+
+                        <td class="px-5 text-center">{partition.mountpoint}</td>
+
+                        <td class="px-5 text-center">{Math.floor(partitionSize)}</td>
+
+                        {#if partition.flags !== null}
+
+                            <td class="px-5 text-center">
+
+                            {#each partition.flags as flag, i}
+
+                                {#if i !== partition.flags.length - 1}
+                                    <span>{flag}, </span>
+                                {:else}
+                                    <span>{flag}</span>
+                                {/if}
+
+                            {/each}
+
+                            </td>
+
+                        {:else}
+                            <td class="px-5 text-center"></td>
+                        {/if}
+
                     {/if}
 
-                {/if}
-
-            </tr>
-        {/each}
+                </tr>
+            {/each}
         </tbody>
     </table>
 
