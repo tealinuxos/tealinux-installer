@@ -2,6 +2,7 @@
 	import { invoke } from '@tauri-apps/api/core';
 	import { onMount } from 'svelte';
 	import { getBlueprint } from '../global.js';
+	import { goto } from '$app/navigation';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
 	import GlowingText from '$lib/components/ui/GlowingText.svelte';
 	import SearchButton from './SearchButton.svelte';
@@ -106,9 +107,12 @@
 	};
 
 	const handleSetLocalization = async () => {
+
 		await invoke('blueprint_set_locale', { locale: selectedLocale });
 		await invoke('blueprint_set_timezone', { region: selectedRegion, city: selectedCity });
 		await invoke('blueprint_set_keyboard', { layout: selectedLayout, variant: selectedVariant });
+
+        goto("/installation/partitioning");
 	};
 
 	onMount(async () => {
@@ -258,5 +262,5 @@
 	currentTitle="Localization"
 	prevPath="/installation"
 	nextPath="/installation/partitioning"
-	nextAction={null}
+	nextAction={handleSetLocalization}
 />
