@@ -1,4 +1,6 @@
 <script>
+	import { invoke } from '@tauri-apps/api/core';
+	import { goto } from '$app/navigation';
 	import { getRead, getBlueprint } from './../../global.js';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
@@ -9,8 +11,6 @@
 	import CardTextArea from '../components/CardTextArea.svelte';
 	import PreviewButton from '../components/PreviewButton.svelte';
 	
-    $effect(() => $inspect(diskBefore))
-  
 	const Method = {
 	  SINGLE: 'single',
 	  DUAL: 'dual',
@@ -71,18 +71,28 @@
 
     const handlePartitioning = async () => {
 
+        let partitionTable = await getRead().firmware === "UEFI"
+            ? "gpt"
+            : "mbr";
+
         let blueprint = await getBlueprintJSON();
 
         let diskPath = blueprint.storage.diskPath;
         let installMethod = blueprint.storage.installMethod;
-        let partitionTable = blueprint.storage.partitionTable;
+
+        console.log(diskPath, installMethod, partitionTable)
+
+        console.log("Invoking autogen_partition_select_disk");
 
         await invoke('autogen_partition_select_disk', {
             blkname: diskPath,
-            mode: installMethod,
+            mode: `${installMethod}boot`,
             partitionTable: partitionTable,
             fs: selectedFilesystem
         });
+
+        // goto('/installation/summary')
+        goto('/installation/account')
     }
   
 	onMount(async () => {
@@ -204,14 +214,11 @@
   </TwoSide>
 {/if}
 
-
-  
-  <Navigation
-	totalSteps={5}
-	currentStep={4}
-	currentTitle="Single Boot"
-	prevPath="/installation/partitioning"
-	nextPath="/installation/summary"
-	nextAction={null}
-  />
-  
+<Navigation
+    totalSteps={5}
+    currentStep={4}
+    currentTitle="Single Boot"
+    prevPath="/installation/partitioning"
+    nextPath="/installation/summary"
+    nextAction={handlePartitioning}
+/>
