@@ -14,7 +14,8 @@
 </script>
 
 <div
-    class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] items-center text-[15px] justify-between h-fit w-full"
+    class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] items-center text-[15px] justify-between h-fit w-full cursor-pointer"
+    on:click={() => (show = true)}
 >
     <div>
         <span>{keyword || title}</span>
@@ -28,8 +29,6 @@
                 viewBox="0 0 14 9"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                class="cursor-pointer"
-                onclick={() => (show = true)}
             >
                 <path d="M1 1.5L7 7.5L13 1.5" stroke="#26A768" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>

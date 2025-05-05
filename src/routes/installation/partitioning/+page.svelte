@@ -123,17 +123,40 @@
 	{/snippet}
 
 	{#snippet right()}
+
 		<div
-			class="flex flex-col h-[600px] p-5 space-y-[15px] mb-[15px] bg-black/30 border-[0.5px] border-gray-900 rounded-[10px] font-jakarta"
+			class="flex flex-col h-[600px] p-5 space-y-[15px] mb-[15px] bg-[]  border-[0.5px] border-gray-900 rounded-[10px] font-jakarta"
 		>
+			<GlowingText size="[11]" text="Disk" />
+
 			<!-- Disk selection -->
-			<div class="flex flex-col">
-				<select bind:value={selectedDisk}>
+			<div class="flex flex-col h-[600px] p-5 space-y-[15px] mb-[15px] border-[0.5px]  border-gray-900 rounded-[10px] font-jakarta">
+				<!-- Disk selection -->
+				<div class="flex flex-col relative">
+				  <select 
+					bind:value={selectedDisk}
+					class="w-full h-[41px] px-[15px] py-[9px] rounded-[14px] border-[1.3px] border-[#3C6350] bg-[#080808] text-white font-semibold cursor-pointer
+						   font-jakarta text-[13px] leading-[140%] focus:outline-none focus:ring-1 focus:ring-[#3C6350] appearance-none"
+				  >
 					{#each disks as disk}
-						<option value={disk}>{disk.diskPath}</option>
+					  <option 
+						value={disk}
+						class="bg-[#101010] text-white font-jakarta text-[13px] font-bold hover:bg-[#3C6350]"
+					  >
+						{disk.diskPath} (Disk Size: {disk.size})
+					  </option>
 					{/each}
-				</select>
-			</div>
+				  </select>
+				  <!-- Custom dropdown arrow -->
+				  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+					<svg width="14" height="9" viewBox="0 0 14 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M1 1.5L7 7.5L13 1.5" stroke="#26A768" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>							
+				  </div>
+				</div>
+			  </div>
+			  
+
 			{#if selectedDisk}
 				<div class="p-4">
 					{#key selectedDisk}

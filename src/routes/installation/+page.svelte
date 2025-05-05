@@ -124,7 +124,6 @@
 								<p class="font-[500]">Disk Capacity</p>
 								<p class="font-[200]">{storageGB}</p>
 							</div>
-							sud
 						{/await}
 					</div>
 				</div>
