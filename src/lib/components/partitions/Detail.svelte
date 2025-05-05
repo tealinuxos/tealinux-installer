@@ -2,6 +2,7 @@
 
     import { prettySize } from '$lib/essentials.js';
 	import { onMount } from 'svelte';
+    import SelectComponent from '../SelectComponent.svelte';
 
     let {
         showEdit = $bindable(),
@@ -192,14 +193,17 @@
 
 </script>
 
-<div class="flex flex-col border-4 border-black rounded-lg p-4 space-y-4">
-    <span>{
-        tempModifiedPartition[index].path
-            ? tempModifiedPartition[index].path.includes("#")
-                ? `New Partition ${tempModifiedPartition[index].path}`
-                : tempModifiedPartition[index].path
-            : tempModifiedPartition.path
-    }</span>
+<div class="flex flex-col w-[370px] h-[418px] p-[12px_20px] justify-between items-center flex-shrink-0 rounded-[13px] border-[1.3px] border-[#3C6350] bg-[#101010]">
+    <div>
+        <span>{
+            tempModifiedPartition[index].path
+                ? tempModifiedPartition[index].path.includes("#")
+                    ? `New Partition ${tempModifiedPartition[index].path}`
+                    : tempModifiedPartition[index].path
+                : tempModifiedPartition.path
+        }</span>
+    </div>
+
     <div class="flex flex-row space-x-2 justify-between">
         <div class="border-4 border-black rounded-lg flex items-center p-4 space-x-2">
             {#if newPartition}
