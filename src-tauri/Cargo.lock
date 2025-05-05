@@ -2875,9 +2875,9 @@ dependencies = [
 
 [[package]]
 name = "redox_syscall"
-version = "0.5.11"
+version = "0.5.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d2f103c6d277498fbceb16e84d317e2a400f160f46904d5f5410848c829511a3"
+checksum = "928fca9cf2aa042393a8325b9ead81d2f0df4cb12e1e24cef072922ccd99c5af"
 dependencies = [
  "bitflags 2.9.0",
 ]
@@ -3809,7 +3809,7 @@ dependencies = [
 [[package]]
 name = "tea-arch-chroot-lib"
 version = "0.1.0"
-source = "git+https://github.com/tealinuxos/tea-arch-chroot-lib#c1c13e909840d4ca7a130e28a6ab846eace95b03"
+source = "git+https://github.com/tealinuxos/tea-arch-chroot-lib#f44a7352a87762a30198fd26257dac61cdca9012"
 dependencies = [
  "duct",
  "lazy-regex",
@@ -3833,7 +3833,7 @@ dependencies = [
 [[package]]
 name = "tea_partition_generator"
 version = "0.1.0"
-source = "git+https://github.com/tealinuxos/tea_partition_generator#2a15f2a4b1404bc7de23ee228db8a47d2440ece2"
+source = "git+https://github.com/tealinuxos/tea_partition_generator#f84cf00fb57353f94639efd73e3ce9335a66c7b6"
 dependencies = [
  "async-trait",
  "duct",
