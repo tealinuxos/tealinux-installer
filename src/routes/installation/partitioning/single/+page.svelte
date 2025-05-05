@@ -1,5 +1,5 @@
 <script>
-	import { getRead } from './../../global.js';
+	import { getRead, getBlueprint } from './../../global.js';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
@@ -9,6 +9,7 @@
 	import CardTextArea from '../components/CardTextArea.svelte';
 	import PreviewButton from '../components/PreviewButton.svelte';
 	
+    $effect(() => $inspect(diskBefore))
   
 	const Method = {
 	  SINGLE: 'single',
@@ -21,15 +22,27 @@
 	  AFTER: 'After'
 	};
   
-	const disks = writable([]);
-	const selectedDisk = writable(null);
-	const selectedMethod = writable(null);
-	const diskAfter = writable(null);
-	const selectedPreview = writable(Preview.BEFORE);
+	// const disks = writable([]);
+	// const selectedDisk = writable(null);
+	// const selectedMethod = writable(null);
+	// const diskAfter = writable(null);
+	// const selectedPreview = writable(Preview.BEFORE);
+
+    let blueprint = $state(null);
+    let diskBefore = $state(null);
+    let selectedDisk = $state(null);
+    let selectedFilesystem = $state("ext4");
+    let selectedPreview = $state(Preview.BEFORE);
+    let useSwap = $state(false);
+
+    const getBlueprintJSON = async () => {
+      let blueprint = await getBlueprint();
+      return blueprint;
+    }
   
-	const getStorageJSON = async () => {
+	const getStorageJSON = async (selected) => {
 	  let json = await getRead();
-	  disks.set(json.disk.filter((disk) => disk.partitions !== null));
+	  return json.disk.find(disk => disk.diskPath === selected);
 	};
   
 	function updateDiskPreview(disk) {
@@ -44,99 +57,152 @@
   
 	const selectDisk = (disk) => {
 	  console.log(`Selected Disk: ${disk.name}`);
-	  selectedDisk.set(disk);
+	  selectedDisk = disk;
 	  updateDiskPreview(disk);
 	};
+
+    const decideFilesystem = (filesystem) => {
+        selectedFilesystem = filesystem;
+    };
+
+    const decideSwap = (swap) => {
+        useSwap = swap;
+    };
+
+    const handlePartitioning = async () => {
+
+        let blueprint = await getBlueprintJSON();
+
+        let diskPath = blueprint.storage.diskPath;
+        let installMethod = blueprint.storage.installMethod;
+        let partitionTable = blueprint.storage.partitionTable;
+
+        await invoke('autogen_partition_select_disk', {
+            blkname: diskPath,
+            mode: installMethod,
+            partitionTable: partitionTable,
+            fs: selectedFilesystem
+        });
+    }
   
-	const selectMethod = (method) => {
-	  console.log(`Selected Method: ${method}`);
-	  selectedMethod.set(method);
-	};
-  
-	onMount(() => {
-	  getStorageJSON();
+	onMount(async () => {
+      blueprint = await getBlueprintJSON();
+	  diskBefore = await getStorageJSON(blueprint.storage.diskPath);
 	});
   </script>
   
-  <TwoSide>
-	{#snippet left()}
-	  <div class="mx-[35px] space-y-[15px]">
-		<h1 class="font-jakarta font-[800] text-[28px]">
-			Configure Single Boot<br />
-		  
-		</h1>
-		<p class="font-jakarta text-sm font-[200]">
-		  Qorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum
-		  est a, mattis tellus.
-		</p>
-	  </div>
-	{/snippet}
+    {#if blueprint && diskBefore}
+      <TwoSide>
+        {#snippet left()}
+          <div class="mx-[35px] space-y-[15px]">
+            <h1 class="font-jakarta font-[800] text-[28px]">
+                Configure Single Boot<br />
+              
+            </h1>
+            <p class="font-jakarta text-sm font-[200]">
+              Qorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum
+              est a, mattis tellus.
+            </p>
+          </div>
+        {/snippet}
   
-	{#snippet right()}
-	  <div class="flex flex-col h-[562px] p-3 space-y-[15px] mb-[15px] bg-black/30 border-[0.5px] border-gray-900 rounded-[10px] font-jakarta">
-		<div class="flex flex-col gap-2">
-			<GlowingText size="[11]" text="Selected Disk" />
-  
-			<CardTextArea
-			  initialDevice="/dev/nvme0n1"
-			  initialDescription="WD Black SN850X"
-			  showCaption={false}
-			  showIcon={true}
-			  borderColor="#4CDA95"
-			  backgroundColor="#032B17"
-			  iconColor="#4CDA95"
-			/>
-		</div>
+        {#snippet right()}
+          <div class="flex flex-col h-[562px] p-3 space-y-[15px] mb-[15px] bg-black/30 border-[0.5px] border-gray-900 rounded-[10px] font-jakarta">
+          <div class="flex flex-col gap-2">
+            <GlowingText size="[11]" text="Selected Disk" />
 
-  
-		<GlowingText size="[11]" text="File System" />
-		<div class="flex flex-col gap-2">
-			<CardTextArea initialDevice="BTRFS" caption="Stable and widely used!" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
-			<CardTextArea initialDevice="EXT4" caption="Stable and widely used!" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
-		</div>
+            {#key diskBefore}
+              <CardTextArea
+                initialDevice={blueprint.storage.diskPath}
+                initialDescription={diskBefore ? diskBefore.model : 'Unknown'}
+                showCaption={false}
+                showIcon={true}
+                isSelected={true}
+              />
+            {/key}
+          </div>
 
-  
-		<GlowingText size="[11]" text="Swap Option" />
-		<div class="flex flex-col gap-2">
-			<CardTextArea initialDevice="SWAP" caption="Recommended" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
-			<CardTextArea initialDevice="NO SWAP" caption="Stable and widely used!" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
-	  
-		</div>
+      
+          <GlowingText size="[11]" text="File System" />
+          <div class="flex flex-col gap-2">
+            {#key selectedFilesystem}
+              <CardTextArea
+                initialDevice="EXT4"
+                caption="Stable and widely used!"
+                showCaption={true}
+                showIcon={false}
+                onclick={() => decideFilesystem("ext4")}
+                isSelected={selectedFilesystem === "ext4"}
+              />
+              <CardTextArea
+                initialDevice="BTRFS"
+                caption="Support snapshots (Advanced)"
+                showCaption={true}
+                showIcon={false}
+                onclick={() => decideFilesystem("btrfs")}
+                isSelected={selectedFilesystem === "btrfs"}
+              />
+            {/key}
+          </div>
 
-		<div class="flex flex-col p-[15px] gap-[10px] self-stretch rounded-[10.267px] border border-[#3C6350] bg-[#101010]">
-		  {#if $selectedDisk}
-			<div class="flex flex-row space-x-2">
-			  <PreviewButton
-				title={Preview.BEFORE}
-				selected={$selectedPreview === Preview.BEFORE}
-				onclick={() => selectedPreview.set(Preview.BEFORE)}
-			  />
-			  <PreviewButton
-				title={Preview.AFTER}
-				selected={$selectedPreview === Preview.AFTER}
-				onclick={() => selectedPreview.set(Preview.AFTER)}
-			  />
-			</div>
-			<div class="space-y-[10px] w-full">
-			  {#if $selectedPreview === Preview.BEFORE}
-				<DiskPreview disk={$selectedDisk} />
-			  {:else}
-				<DiskPreview disk={$diskAfter} />
-			  {/if}
-			</div>
-		  {:else}
-			<PreviewButton title="Before" />
-			<div class="text-[#E4E4E4] font-jakarta text-[9.46px] font-[500] leading-[17.659px] text-center py-4">
-			  Select a disk to see preview
-			</div>
-		  {/if}
-		  
-		</div>
+      
+          <GlowingText size="[11]" text="Swap Option" />
+          <div class="flex flex-col gap-2">
+            {#key useSwap}
+              <CardTextArea
+                initialDevice="NO SWAP"
+                caption="No problem"
+                showCaption={true}
+                showIcon={false}
+                onclick={() => decideSwap(false)}
+                isSelected={!useSwap}
+              />
+              <CardTextArea
+                initialDevice="SWAP"
+                caption="Recommended"
+                showCaption={true}
+                showIcon={false}
+                onclick={() => decideSwap(true)}
+                isSelected={useSwap}
+              />
+            {/key}
+          </div>
 
-	  </div>
+          <div class="flex flex-col p-[15px] gap-[10px] self-stretch rounded-[10.267px] border border-[#3C6350] bg-[#101010]">
+            <!-- {#if $selectedDisk} -->
+              <div class="flex flex-row space-x-2">
+                <PreviewButton
+                  title={Preview.BEFORE}
+                  selected={selectedPreview === Preview.BEFORE}
+                  onclick={() => selectedPreview = Preview.BEFORE}
+                />
+                <PreviewButton
+                  title={Preview.AFTER}
+                  selected={selectedPreview === Preview.AFTER}
+                  onclick={() => selectedPreview = Preview.AFTER}
+                />
+              </div>
+              <div class="space-y-[10px] w-full">
+                {#if selectedPreview === Preview.BEFORE}
+                  <DiskPreview disk={diskBefore} />
+                {:else}
+                  <!-- <DiskPreview disk={diskAfter} /> -->
+                {/if}
+              </div>
+              <!-- {:else} -->
+              <!--   <PreviewButton title="Before" /> -->
+              <!--   <div class="text-[#E4E4E4] font-jakarta text-[9.46px] font-[500] leading-[17.659px] text-center py-4"> -->
+              <!--     Select a disk to see preview -->
+              <!--   </div> -->
+              <!-- {/if} -->
+              
+            </div>
 
-	{/snippet}
+          </div>
+
+        {/snippet}
   </TwoSide>
+{/if}
 
 
   
@@ -145,7 +211,7 @@
 	currentStep={4}
 	currentTitle="Single Boot"
 	prevPath="/installation/partitioning"
-	nextPath="/installation"
+	nextPath="/installation/summary"
 	nextAction={null}
   />
   
