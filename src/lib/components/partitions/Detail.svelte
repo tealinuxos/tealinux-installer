@@ -193,55 +193,67 @@
 
 </script>
 
-<div class="flex flex-col w-[370px] h-[418px] p-[12px_20px] justify-between items-center flex-shrink-0 rounded-[13px] border-[1.3px] border-[#3C6350] bg-[#101010]">
-    <div>
-        <span>{
-            tempModifiedPartition[index].path
+<div class="flex flex-col w-[370px] h-[418px] p-[12px_20px] justify-between items-start flex-shrink-0 rounded-[13px] border-[1.3px] border-[#3C6350] bg-[#101010] space-y-2">
+    <!-- Partition Title -->
+    <div class="w-full">
+        <span class="text-[#26A767] font-['Plus_Jakarta_Sans'] text-[16px] font-bold leading-[140%]">
+            {tempModifiedPartition[index].path
                 ? tempModifiedPartition[index].path.includes("#")
                     ? `New Partition ${tempModifiedPartition[index].path}`
                     : tempModifiedPartition[index].path
                 : tempModifiedPartition.path
-        }</span>
+            }
+        </span>
     </div>
 
-    <div class="flex flex-row space-x-2 justify-between">
-        <div class="border-4 border-black rounded-lg flex items-center p-4 space-x-2">
+    <!-- Size and Format Section -->
+    <div class="flex w-full justify-between items-center">
+        <!-- Size Box -->
+        <div class="flex items-center w-[157px] gap-2 p-2 rounded-[14px] border-[1.3px] border-[#3C6350]">
             {#if newPartition}
-                <span>New Size</span>
-                <input type="number" bind:value={inputtedSize} />
-                <span>MB</span>
+                <span class="text-[#FFFEFB]">New Size</span>
+                <input type="number" bind:value={inputtedSize} class="w-16 bg-transparent text-white focus:outline-none" />
+                <span class="text-[#FFFEFB]">MB</span>
             {:else}
-                <span>Size</span>
-                <span>
+                <span class="text-[#FFFEFB]">Size</span>
+                <span class="text-[#FFFEFB]">
                     {prettySize(tempModifiedPartition[index].size)}
                 </span>
             {/if}
         </div>
-        <div class="flex flex-col items-start justify-center">
-            {#if !newPartition}
-                <div class="flex flex-row items-center justify-center space-x-2">
-                    <input type="radio" value={false} bind:group={tempModifiedPartition[index].format} />
-                    <span>Keep data</span>
-                </div>
-                <div class="flex flex-row items-center justify-center space-x-2">
-                    <input type="radio" value={true} bind:group={tempModifiedPartition[index].format} />
-                    <span>Erase data</span>
-                </div>
-            {/if}
+
+        <!-- Format Options -->
+        {#if !newPartition}
+        <div class="flex flex-col space-y-2">
+            <div class="flex items-center space-x-2">
+                <input type="radio" value={false} bind:group={tempModifiedPartition[index].format} 
+                       class="text-[#3C6350] focus:ring-[#3C6350] cursor-pointer" />
+                <span class="text-[#FFFEFB] text-sm">Keep data</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <input type="radio" value={true} bind:group={tempModifiedPartition[index].format} 
+                       class="text-[#3C6350] focus:ring-[#3C6350] cursor-pointer" />
+                <span class="text-[#FFFEFB] text-sm">Erase data</span>
+            </div>
         </div>
+        {/if}
     </div>
-    <div class="flex flex-row space-x-2 justify-between text-black">
+
+    <!-- Filesystem and Mountpoint -->
+    <div class="grid grid-cols-2 w-full gap-4">
         <div class="flex flex-col">
-            <span>Filesystem</span>
-            <select bind:value={tempModifiedPartition[index].filesystem}>
+            <span class="text-[#FFFEFB] mb-1">Filesystem</span>
+            <select bind:value={tempModifiedPartition[index].filesystem}
+                    class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[8px] p-1 focus:outline-none">
                 <option value="btrfs">btrfs</option>
                 <option value="fat32">fat32</option>
                 <option value="ext4">ext4</option>
             </select>
         </div>
         <div class="flex flex-col">
-            <span>Mountpoint</span>
-            <select bind:value={tempModifiedPartition[index].mountpoint}>
+            <span class="text-[#FFFEFB] mb-1">Mountpoint</span>
+            <select bind:value={tempModifiedPartition[index].mountpoint}
+                    class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[8px] p-1 focus:outline-none">
                 <option value={null}>None</option>
                 <option value="/">/</option>
                 <option value="/boot/efi">/boot/efi</option>
@@ -249,44 +261,58 @@
             </select>
         </div>
     </div>
-    <div class="flex flex-col">
-        <span>Label</span>
-        <input type="text" class="border-2" bind:value={tempModifiedPartition[index].label} />
-    </div>
-    <div class="flex flex-col">
-        <span>Flags</span>
-        <div class="flex flex-row justify-start items-center space-x-2">
-            {#each getFlagList(tempModifiedPartition[index].flags) as flag}
-                {@const existFlag = tempModifiedPartition[index].flags}
-                <input
-                    type="checkbox"
-                    id={flag}
-                    checked={tempModifiedPartition[index].flags.includes(flag)}
-                    onchange={(event) => {
-                        let checked = event.target.checked;
 
-                        if (checked) {
-                            if (!existFlag.includes(flag)) {
-                                tempModifiedPartition[index].flags.push(flag)
-                            }
-                        } else {
-                            if (existFlag.includes(flag)) {
-                                tempModifiedPartition[index].flags = existFlag.filter(f => f !== flag);
-                            }
-                        }
-                    }}
-                />
-                <label for={flag}>{flag}</label>
+    <!-- Label -->
+    <div class="w-full">
+        <span class="text-[#FFFEFB] mb-1">Label</span>
+        <input type="text" bind:value={tempModifiedPartition[index].label}
+               class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[8px] p-1 focus:outline-none" />
+    </div>
+
+    <!-- Flags -->
+    <div class="w-full">
+        <span class="text-[#FFFEFB] mb-1">Flags</span>
+        <div class="grid grid-cols-3 gap-2">
+            {#each getFlagList(tempModifiedPartition[index].flags) as flag}
+                <div class="flex items-center space-x-2">
+                    <input type="checkbox" id={flag}
+                           checked={tempModifiedPartition[index].flags.includes(flag)}
+                           onchange={(e) => {
+                               const checked = e.target.checked;
+                               const flags = tempModifiedPartition[index].flags;
+                               tempModifiedPartition[index].flags = checked
+                                   ? [...flags, flag]
+                                   : flags.filter(f => f !== flag);
+                           }}
+                           class="h-4 w-4 text-[#3C6350] focus:ring-[#3C6350] border-[#3C6350] rounded" />
+                    <label for={flag} class="text-[#FFFEFB] text-sm">{flag}</label>
+                </div>
             {/each}
         </div>
     </div>
-    <div class="flex flex-col">
+
+    <!-- Buttons -->
+    <div class="flex w-full justify-end space-x-2 mt-4">
         {#if newPartition}
-            <button onclick={cancelModifiedPartition} disabled={false} class="bg-red-500 p-4 disabled:bg-red-900">Cancel</button>
-            <button onclick={createPartition} disabled={false} class="bg-green-500 p-4 disabled:bg-green-900">Create</button>
+            <button onclick={cancelModifiedPartition} 
+                    class="px-4 py-2 rounded text-[#FF453A] border border-[#3C6350] hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)]">
+                Cancel
+            </button>
+            <button onclick={createPartition} 
+                    class="px-4 py-2 rounded text-[#26A768] border border-[#3C6350] hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)]">
+                Create
+            </button>
         {:else}
-            <button onclick={cancelModifiedPartition} disabled={isArrayIdentical(tempModifiedPartition, modifiedPartition)} class="bg-red-500 p-4 disabled:bg-red-900">Cancel</button>
-            <button onclick={applyModifiedPartition} disabled={isArrayIdentical(tempModifiedPartition, modifiedPartition)} class="bg-green-500 p-4 disabled:bg-green-900">Apply</button>
+            <button onclick={cancelModifiedPartition} 
+                    disabled={isArrayIdentical(tempModifiedPartition, modifiedPartition)}
+                    class="px-4 py-2 rounded text-[#FF453A] border border-[#3C6350] hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)] disabled:opacity-50">
+                Cancel
+            </button>
+            <button onclick={applyModifiedPartition} 
+                    disabled={isArrayIdentical(tempModifiedPartition, modifiedPartition)}
+                    class="px-4 py-2 rounded text-[#26A768] border border-[#3C6350] hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)] disabled:opacity-50">
+                Apply
+            </button>
         {/if}
     </div>
 </div>

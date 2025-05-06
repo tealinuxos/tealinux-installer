@@ -243,7 +243,7 @@ onMount(async () => {
 
 {#await getStorageJSON() then json}
     <div class="flex flex-col p-5 gap-y-4">
-        <div class="flex flex-row  gap-[50px] ">
+        <div class="flex flex-auto  gap-[50px] ">
             <div>
                 <h1 class="text-[#26A768] font-['Plus_Jakarta_Sans'] text-[28px] font-bold leading-[39.2px]">
                     Manual Partition
@@ -309,25 +309,21 @@ onMount(async () => {
         />
         </div>
 
-        <div class="flex flex-row space-x-2 text-white">
-            <div class="flex flex-col">
-                <List
-                    bind:selectedDisk
-                    bind:selectedPartition
-                    bind:modifiedPartition
-                    bind:originalPartition
-                    bind:showEdit
-                    bind:newPartition
-                    bind:newPartitionIndex
-                />
-                <div class="flex flex-row justify-between p-2">
-                    <button class="bg-green-500 disabled:bg-green-900 px-4" onclick={() => { showEdit = true; newPartition = true} } disabled={!isUnallocated(modifiedPartition[selectedPartition])}>+</button>
-                    <div>
-                        <button class="bg-green-500 px-4 disabled:bg-green-900" disabled={isUnallocated(modifiedPartition[selectedPartition])} onclick={() => showEdit = true}>Edit</button>
-                        <button class="bg-red-500 px-4" onclick={removePartition}>Remove</button>
-                    </div>
-                </div>
-            </div>
+        <div class="flex flex-row flex-auto space-x-2 text-white">
+            <List
+                bind:selectedDisk
+                bind:selectedPartition
+                bind:modifiedPartition
+                bind:originalPartition
+                bind:showEdit
+                bind:newPartition
+                bind:newPartitionIndex>
+                
+
+            </List>
+
+
+        
             {#if tempModifiedPartition[selectedPartition]}
                 {#if showEdit}
                     <Detail
@@ -342,15 +338,20 @@ onMount(async () => {
                         bind:newPartitionIndex
                     />
                 {:else}
-                    <div class="flex border-4 border-green-900 px-4 justify-center items-center">
+                    <div class="flex w-[565px] border-4 border-green-900 px-4 justify-center items-center">
                         <span>Select partition to edit!</span>
                     </div>
                 {/if}
             {/if}
         </div>
     </div>
-
-    <!-- <a href="/installation/summary" class="bg-green-500 px-4 py-2 rounded-lg" onclick={handleSetBlueprint}>Apply</a> -->
+    <div class="flex flex-row justify-between p-2">
+        <button class="bg-green-500 disabled:bg-green-900 px-4" onclick={() => { showEdit = true; newPartition = true} } disabled={!isUnallocated(modifiedPartition[selectedPartition])}>+</button>
+        <div>
+            <button class="bg-green-500 px-4 disabled:bg-green-900" disabled={isUnallocated(modifiedPartition[selectedPartition])} onclick={() => showEdit = true}>Edit</button>
+            <button class="bg-red-500 px-4" onclick={removePartition}>Remove</button>
+        </div>
+    </div>
     <button class="text-white bg-green-900" onclick={handleSetStorage}>Apply Without Summary</button>
 {/await}
 
