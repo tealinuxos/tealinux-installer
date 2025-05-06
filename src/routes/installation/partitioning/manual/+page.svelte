@@ -19,6 +19,7 @@ let selectedPartition = $state(0);
 
 let showEdit = $state(false);
 let newPartition = $state(false);
+let disable = $state(false)
 
 let diskSize = $state(0);
 let diskPath = $state('');
@@ -337,10 +338,19 @@ onMount(async () => {
                         bind:diskPath
                         bind:newPartitionIndex
                     />
-                {:else}
-                    <div class="flex w-[565px] border-4 border-green-900 px-4 justify-center items-center">
-                        <span>Select partition to edit!</span>
-                    </div>
+                {:else }
+                        <Detail
+                        readOnly={true}
+                        bind:showEdit
+                        bind:tempModifiedPartition
+                        bind:modifiedPartition
+                        bind:selectedPartition
+                        bind:newPartition
+                        bind:storage
+                        bind:diskSize
+                        bind:diskPath
+                        bind:newPartitionIndex
+                    />
                 {/if}
             {/if}
         </div>
