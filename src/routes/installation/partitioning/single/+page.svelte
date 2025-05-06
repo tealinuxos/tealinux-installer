@@ -10,6 +10,7 @@
 	import DiskPreview from '$lib/components/DiskPreview.svelte';
 	import CardTextArea from '../components/CardTextArea.svelte';
 	import PreviewButton from '../components/PreviewButton.svelte';
+    import { getDiskAfter } from '../utils.js';
 	
 	const Method = {
 	  SINGLE: 'single',
@@ -30,9 +31,11 @@
 
     let blueprint = $state(null);
     let diskBefore = $state(null);
+    let diskAfter = $state(null);
     let selectedDisk = $state(null);
     let selectedFilesystem = $state("ext4");
     let selectedPreview = $state(Preview.BEFORE);
+    let partitionTable = $state(null);
     let useSwap = $state(false);
 
     const getBlueprintJSON = async () => {
@@ -42,7 +45,9 @@
   
 	const getStorageJSON = async (selected) => {
 	  let json = await getRead();
-	  return json.disk.find(disk => disk.diskPath === selected);
+      selectedDisk = json.disk.find(disk => disk.diskPath === selected);
+
+      return selectedDisk;
 	};
   
 	function updateDiskPreview(disk) {
@@ -71,10 +76,6 @@
 
     const handlePartitioning = async () => {
 
-        let partitionTable = await getRead().firmware === "UEFI"
-            ? "gpt"
-            : "mbr";
-
         let blueprint = await getBlueprintJSON();
 
         let diskPath = blueprint.storage.diskPath;
@@ -94,10 +95,23 @@
         // goto('/installation/summary')
         goto('/installation/account')
     }
+
+    $effect(() => {
+      if (diskBefore && selectedFilesystem && partitionTable) {
+        diskAfter = getDiskAfter(diskBefore, selectedFilesystem, partitionTable, 0);
+      }
+      selectedPreview = Preview.AFTER;
+    });
   
 	onMount(async () => {
       blueprint = await getBlueprintJSON();
 	  diskBefore = await getStorageJSON(blueprint.storage.diskPath);
+      let read = await getRead();
+      partitionTable = read.firmware
+        ? "gpt"
+        : "mbr";
+
+      diskAfter = getDiskAfter(diskBefore, selectedFilesystem, partitionTable, 0);
 	});
   </script>
   
@@ -195,8 +209,8 @@
               <div class="space-y-[10px] w-full">
                 {#if selectedPreview === Preview.BEFORE}
                   <DiskPreview disk={diskBefore} />
-                {:else}
-                  <!-- <DiskPreview disk={diskAfter} /> -->
+                {:else if diskAfter}
+                  <DiskPreview disk={diskAfter} />
                 {/if}
               </div>
               <!-- {:else} -->
