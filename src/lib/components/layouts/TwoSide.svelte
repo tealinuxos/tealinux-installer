@@ -3,7 +3,7 @@
 	gap = gap || 'gap-4'; // Default gap if not provided
 </script>
 
-<div class="flex max-h-[630px] flex-1 items-center justify-between p-[15px] py-0 text-white">
+<div class="flex h-full max-h-[630px] flex-1 items-center justify-between p-[15px] py-0 text-white">
 	<div class="flex flex-1 items-center justify-center">
 		<!-- <slot name="left"/> -->
 		{@render left()}
