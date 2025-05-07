@@ -11,7 +11,7 @@
         onclick = () => console.log('clicked')
     } = $props();
 
-</script>
+</script> 
 
 <div
     class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] items-center text-[15px] justify-between h-fit w-full cursor-pointer"

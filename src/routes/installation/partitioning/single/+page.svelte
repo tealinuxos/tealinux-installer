@@ -1,4 +1,5 @@
 <script>
+
 	import { invoke } from '@tauri-apps/api/core';
 	import { goto } from '$app/navigation';
 	import { getRead, getBlueprint } from './../../global.js';
@@ -10,7 +11,7 @@
 	import DiskPreview from '$lib/components/DiskPreview.svelte';
 	import CardTextArea from '../components/CardTextArea.svelte';
 	import PreviewButton from '../components/PreviewButton.svelte';
-    import { getDiskAfter } from '../utils.js';
+  import { getDiskAfter } from '../utils.js';
 	
 	const Method = {
 	  SINGLE: 'single',
@@ -21,7 +22,7 @@
 	const Preview = {
 	  BEFORE: 'Before',
 	  AFTER: 'After'
-	};
+	}
   
 	// const disks = writable([]);
 	// const selectedDisk = writable(null);
