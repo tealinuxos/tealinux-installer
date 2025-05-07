@@ -12,29 +12,28 @@
   } = $props();
 
   let selectedDisk = $state(null);
-  let diskOptions = $state([]); // Menyimpan daftar disk dari API
+  let diskOptions = $state([]); 
   let isLoading = $state(false);
   let error = $state(null);
   
-  // Fungsi untuk mengambil data disk dari API
+  
   const fetchDisks = async () => {
     try {
       isLoading = true;
       error = null;
       
-      // Ambil data dari API
+      
       const response = await getRead();
       
       if (response && response.disk) {
-        // Map data disk ke format yang diharapkan
+        
         diskOptions = response.disk.map(disk => ({
           ...disk,
-          value: disk.diskPath, // Pastikan ada field value untuk identifikasi
-          name: disk.diskName || disk.diskPath, // Gunakan diskName jika ada
-          size: disk.diskSize // Ukuran disk
+          value: disk.diskPath,
+          name: disk.diskName || disk.diskPath, 
+          size: disk.diskSize 
         }));
-        
-        // Jika options kosong, gunakan diskOptions sebagai default
+
         if (options.length === 0) {
           options = diskOptions;
         }
@@ -47,7 +46,7 @@
     }
   };
 
-  // Panggil fetchDisks saat komponen dimount
+  
   $effect(() => {
     fetchDisks();
   });
@@ -84,7 +83,7 @@
     value = option;
     isOpen = false;
     
-    // Jika option adalah disk, panggil selectDisk
+    
     if (option && (option.diskPath || option.value)) {
       selectDisk(option);
     }
