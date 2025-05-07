@@ -10,12 +10,16 @@ import Detail from '$lib/components/partitions/Detail.svelte';
 import Preview from '$lib/components/partitions/Preview.svelte';
 import DiskPreview from '$lib/components/DiskPreview.svelte';
 import Navigation from "$lib/components/Navigation.svelte";
+import SelectComponent from '$lib/components/SelectComponent.svelte';
 
+
+let disks = $state([]);
 let selectedDisk = $state(0);
 let selectedPartition = $state(0);
 
 let showEdit = $state(false);
 let newPartition = $state(false);
+let disable = $state(false)
 
 let diskSize = $state(0);
 let diskPath = $state('');
@@ -235,31 +239,78 @@ onMount(async () => {
     await changeSelectedDisk(0);
 })
 
+
 </script>
 
 {#await getStorageJSON() then json}
-    <div class="flex flex-col">
-        <div class="flex flex-row">
-            <select onchange={async (event) => await changeSelectedDisk(event.target.value)}>
-                {#each json as d, num}
-                    {@const size = prettySize(d.size.slice(0, -1))}
-                        <option value={num}>
-                            {d.diskPath} ({size})
-                        </option>
-                {/each}
-            </select>
-            <div class="text-white">
-                <button onclick={revertChanges}>Revert Changes</button>
-                <button onclick={newPartitionTable}>New Partition Table</button>
+    <div class="flex flex-col p-5 gap-y-4">
+        <div class="flex flex-auto  gap-[50px] ">
+            <div>
+                <h1 class="text-[#26A768] font-['Plus_Jakarta_Sans'] text-[28px] font-bold leading-[39.2px]">
+                    Manual Partition
+                  </h1>            
             </div>
+            <div class="flex gap-2.5">		  
+                <button 
+                    onclick={revertChanges}
+                    class="flex w-[169px] h-[40px] justify-center items-center gap-[7.963px] rounded-[14px] border-[0.239px] border-[#3C6350] bg-[#101010] "
+                >
+                    <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path id="Vector" d="M8.71289 16.2334C6.47956 16.2334 4.58789 15.4584 3.03789 13.9084C1.48789 12.3584 0.712891 10.4667 0.712891 8.2334C0.712891 6.00007 1.48789 4.1084 3.03789 2.5584C4.58789 1.0084 6.47956 0.233402 8.71289 0.233402C9.86289 0.233402 10.9629 0.470735 12.0129 0.945402C13.0629 1.42007 13.9629 2.0994 14.7129 2.9834V1.2334C14.7129 0.950069 14.8089 0.712735 15.0009 0.521402C15.1929 0.330069 15.4302 0.234069 15.7129 0.233402C15.9956 0.232735 16.2332 0.328735 16.4259 0.521402C16.6186 0.714069 16.7142 0.951402 16.7129 1.2334V6.2334C16.7129 6.51674 16.6169 6.7544 16.4249 6.9464C16.2329 7.1384 15.9956 7.23407 15.7129 7.2334H10.7129C10.4296 7.2334 10.1922 7.1374 10.0009 6.9454C9.80956 6.7534 9.71356 6.51607 9.71289 6.2334C9.71222 5.95074 9.80822 5.7134 10.0009 5.5214C10.1936 5.3294 10.4309 5.2334 10.7129 5.2334H13.9129C13.3796 4.30007 12.6506 3.56674 11.7259 3.0334C10.8012 2.50007 9.79689 2.2334 8.71289 2.2334C7.04622 2.2334 5.62956 2.81674 4.46289 3.9834C3.29622 5.15007 2.71289 6.56674 2.71289 8.2334C2.71289 9.90007 3.29622 11.3167 4.46289 12.4834C5.62956 13.6501 7.04622 14.2334 8.71289 14.2334C9.84622 14.2334 10.8839 13.9461 11.8259 13.3714C12.7679 12.7967 13.4969 12.0257 14.0129 11.0584C14.1462 10.8251 14.3339 10.6627 14.5759 10.5714C14.8179 10.4801 15.0636 10.4757 15.3129 10.5584C15.5796 10.6417 15.7712 10.8167 15.8879 11.0834C16.0046 11.3501 15.9962 11.6001 15.8629 11.8334C15.1796 13.1667 14.2046 14.2334 12.9379 15.0334C11.6712 15.8334 10.2629 16.2334 8.71289 16.2334Z" fill="#26A768"/>
+                    </svg>
+                    <span class="text-[#4CDA95] font-['Plus_Jakarta_Sans'] text-[13px] font-bold leading-[140%]">
+                            revert Changes
+                    </span>
+                        
+                </button>
+                <button 
+                    onclick={newPartitionTable}
+                    class="flex w-[169px] h-[40px] justify-center items-center gap-[7.963px] rounded-[14px] border-[0.239px] border-[#3C6350] bg-[#101010] hover:shadow-[0_0_7.167px_rgba(38,167,104,0.8)] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)] transition-all duration-200 "
+                >
+                    <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path id="Vector" d="M8.71289 16.2334C6.47956 16.2334 4.58789 15.4584 3.03789 13.9084C1.48789 12.3584 0.712891 10.4667 0.712891 8.2334C0.712891 6.00007 1.48789 4.1084 3.03789 2.5584C4.58789 1.0084 6.47956 0.233402 8.71289 0.233402C9.86289 0.233402 10.9629 0.470735 12.0129 0.945402C13.0629 1.42007 13.9629 2.0994 14.7129 2.9834V1.2334C14.7129 0.950069 14.8089 0.712735 15.0009 0.521402C15.1929 0.330069 15.4302 0.234069 15.7129 0.233402C15.9956 0.232735 16.2332 0.328735 16.4259 0.521402C16.6186 0.714069 16.7142 0.951402 16.7129 1.2334V6.2334C16.7129 6.51674 16.6169 6.7544 16.4249 6.9464C16.2329 7.1384 15.9956 7.23407 15.7129 7.2334H10.7129C10.4296 7.2334 10.1922 7.1374 10.0009 6.9454C9.80956 6.7534 9.71356 6.51607 9.71289 6.2334C9.71222 5.95074 9.80822 5.7134 10.0009 5.5214C10.1936 5.3294 10.4309 5.2334 10.7129 5.2334H13.9129C13.3796 4.30007 12.6506 3.56674 11.7259 3.0334C10.8012 2.50007 9.79689 2.2334 8.71289 2.2334C7.04622 2.2334 5.62956 2.81674 4.46289 3.9834C3.29622 5.15007 2.71289 6.56674 2.71289 8.2334C2.71289 9.90007 3.29622 11.3167 4.46289 12.4834C5.62956 13.6501 7.04622 14.2334 8.71289 14.2334C9.84622 14.2334 10.8839 13.9461 11.8259 13.3714C12.7679 12.7967 13.4969 12.0257 14.0129 11.0584C14.1462 10.8251 14.3339 10.6627 14.5759 10.5714C14.8179 10.4801 15.0636 10.4757 15.3129 10.5584C15.5796 10.6417 15.7712 10.8167 15.8879 11.0834C16.0046 11.3501 15.9962 11.6001 15.8629 11.8334C15.1796 13.1667 14.2046 14.2334 12.9379 15.0334C11.6712 15.8334 10.2629 16.2334 8.71289 16.2334Z" fill="#26A768"/>
+                    </svg>
+                    <span class="text-[#4CDA95] font-['Plus_Jakarta_Sans'] text-[13px] font-bold leading-[140%] ">
+                            New Partition Table
+                    </span>
+                    
+                </button>
+                <button 
+                    onclick={newPartitionTable}
+                    class="flex w-[169px] h-[40px] justify-center items-center gap-[7.963px] rounded-[14px] border-[0.239px] border-[#3C6350] bg-[#101010] hover:shadow-[0_0_7.167px_rgba(38,167,104,0.8)] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)] transition-all duration-200 "
+                >
+                    <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path id="Vector" d="M8.71289 16.2334C6.47956 16.2334 4.58789 15.4584 3.03789 13.9084C1.48789 12.3584 0.712891 10.4667 0.712891 8.2334C0.712891 6.00007 1.48789 4.1084 3.03789 2.5584C4.58789 1.0084 6.47956 0.233402 8.71289 0.233402C9.86289 0.233402 10.9629 0.470735 12.0129 0.945402C13.0629 1.42007 13.9629 2.0994 14.7129 2.9834V1.2334C14.7129 0.950069 14.8089 0.712735 15.0009 0.521402C15.1929 0.330069 15.4302 0.234069 15.7129 0.233402C15.9956 0.232735 16.2332 0.328735 16.4259 0.521402C16.6186 0.714069 16.7142 0.951402 16.7129 1.2334V6.2334C16.7129 6.51674 16.6169 6.7544 16.4249 6.9464C16.2329 7.1384 15.9956 7.23407 15.7129 7.2334H10.7129C10.4296 7.2334 10.1922 7.1374 10.0009 6.9454C9.80956 6.7534 9.71356 6.51607 9.71289 6.2334C9.71222 5.95074 9.80822 5.7134 10.0009 5.5214C10.1936 5.3294 10.4309 5.2334 10.7129 5.2334H13.9129C13.3796 4.30007 12.6506 3.56674 11.7259 3.0334C10.8012 2.50007 9.79689 2.2334 8.71289 2.2334C7.04622 2.2334 5.62956 2.81674 4.46289 3.9834C3.29622 5.15007 2.71289 6.56674 2.71289 8.2334C2.71289 9.90007 3.29622 11.3167 4.46289 12.4834C5.62956 13.6501 7.04622 14.2334 8.71289 14.2334C9.84622 14.2334 10.8839 13.9461 11.8259 13.3714C12.7679 12.7967 13.4969 12.0257 14.0129 11.0584C14.1462 10.8251 14.3339 10.6627 14.5759 10.5714C14.8179 10.4801 15.0636 10.4757 15.3129 10.5584C15.5796 10.6417 15.7712 10.8167 15.8879 11.0834C16.0046 11.3501 15.9962 11.6001 15.8629 11.8334C15.1796 13.1667 14.2046 14.2334 12.9379 15.0334C11.6712 15.8334 10.2629 16.2334 8.71289 16.2334Z" fill="#26A768"/>
+                    </svg>
+                    <span class="text-[#4CDA95] font-['Plus_Jakarta_Sans'] text-[13px] font-bold leading-[140%] ">
+                            New Partition Table
+                    </span>
+                    
+                </button>
+                <SelectComponent
+                    height="46.66px"
+                    width="216px"
+                    options={disks}
+                    bind:value={selectedDisk}
+                    displayField="diskPath"
+                    sizeField="size"
+                    formatter={prettySize}
+                    on:change={({ detail }) => changeSelectedDisk(detail.value)}
+                    class="w-full max-w-md"
+                />  
+            </div>
+
+
+
         </div>
-        <Preview
+        <div class="">
+            <Preview
             bind:modifiedPartition
             bind:diskSize
         />
-    </div>
-    <div class="flex flex-row space-x-2 text-white">
-        <div class="flex flex-col">
+        </div>
+
+        <div class="flex flex-row flex-auto space-x-2 text-white">
             <List
                 bind:selectedDisk
                 bind:selectedPartition
@@ -267,37 +318,50 @@ onMount(async () => {
                 bind:originalPartition
                 bind:showEdit
                 bind:newPartition
-                bind:newPartitionIndex
-            />
-            <div class="flex flex-row justify-between p-2">
-                <button class="bg-green-500 disabled:bg-green-900 px-4" onclick={() => { showEdit = true; newPartition = true} } disabled={!isUnallocated(modifiedPartition[selectedPartition])}>+</button>
-                <div>
-                    <button class="bg-green-500 px-4 disabled:bg-green-900" disabled={isUnallocated(modifiedPartition[selectedPartition])} onclick={() => showEdit = true}>Edit</button>
-                    <button class="bg-red-500 px-4" onclick={removePartition}>Remove</button>
-                </div>
-            </div>
-        </div>
-        {#if tempModifiedPartition[selectedPartition]}
-            {#if showEdit}
-                <Detail
-                    bind:showEdit
-                    bind:tempModifiedPartition
-                    bind:modifiedPartition
-                    bind:selectedPartition
-                    bind:newPartition
-                    bind:storage
-                    bind:diskSize
-                    bind:diskPath
-                    bind:newPartitionIndex
-                />
-            {:else}
-                <div class="flex border-4 border-green-900 px-4 justify-center items-center">
-                    <span>Select partition to edit!</span>
-                </div>
+                bind:newPartitionIndex>
+                
+
+            </List>
+
+
+        
+            {#if tempModifiedPartition[selectedPartition]}
+                {#if showEdit}
+                    <Detail
+                        bind:showEdit
+                        bind:tempModifiedPartition
+                        bind:modifiedPartition
+                        bind:selectedPartition
+                        bind:newPartition
+                        bind:storage
+                        bind:diskSize
+                        bind:diskPath
+                        bind:newPartitionIndex
+                    />
+                {:else }
+                        <Detail
+                        readOnly={true}
+                        bind:showEdit
+                        bind:tempModifiedPartition
+                        bind:modifiedPartition
+                        bind:selectedPartition
+                        bind:newPartition
+                        bind:storage
+                        bind:diskSize
+                        bind:diskPath
+                        bind:newPartitionIndex
+                    />
+                {/if}
             {/if}
-        {/if}
+        </div>
     </div>
-    <!-- <a href="/installation/summary" class="bg-green-500 px-4 py-2 rounded-lg" onclick={handleSetBlueprint}>Apply</a> -->
+    <div class="flex flex-row justify-between p-2">
+        <button class="bg-green-500 disabled:bg-green-900 px-4" onclick={() => { showEdit = true; newPartition = true} } disabled={!isUnallocated(modifiedPartition[selectedPartition])}>+</button>
+        <div>
+            <button class="bg-green-500 px-4 disabled:bg-green-900" disabled={isUnallocated(modifiedPartition[selectedPartition])} onclick={() => showEdit = true}>Edit</button>
+            <button class="bg-red-500 px-4" onclick={removePartition}>Remove</button>
+        </div>
+    </div>
     <button class="text-white bg-green-900" onclick={handleSetStorage}>Apply Without Summary</button>
 {/await}
 

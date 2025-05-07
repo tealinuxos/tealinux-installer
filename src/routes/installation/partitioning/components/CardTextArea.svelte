@@ -1,10 +1,13 @@
 <script>
 	import { onMount } from "svelte";
-
+  
   let {
     initialDevice = "/dev/sda5",
     initialDescription = "",
     caption = "",
+    borderColor = "#4CDA95",
+    backgroundColor = "#032B17",
+    iconColor = "#4CDA95",
     showIcon = true,
     showCaption = false,
     onclick,
@@ -14,10 +17,7 @@
   // State
   let device = initialDevice;
   let description = initialDescription;
-  let backgroundColor = $state('');
-  let borderColor = $state('');
-  let iconColor = $state('');
-
+  
   onMount(() => {
     backgroundColor = isSelected
       ? "#032B17"
