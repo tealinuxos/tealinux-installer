@@ -19,7 +19,7 @@
 	});
 
 	const startInstall = async () => {
-		await invoke('start_install');
+		// await invoke('start_install');
         // console.log('installing');
 	};
 
