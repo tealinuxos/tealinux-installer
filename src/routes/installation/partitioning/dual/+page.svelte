@@ -101,7 +101,6 @@
 					<span class="text-[#4CDA95] font-['Plus_Jakarta_Sans'] text-[13px] font-bold leading-[140%]">
 							Refresh
 					</span>
-							
 					</button>
 				</div>
 

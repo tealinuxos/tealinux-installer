@@ -1,4 +1,6 @@
 <script>
+	import { onMount } from "svelte";
+  
   let {
     initialDevice = "/dev/sda5",
     initialDescription = "",
@@ -7,18 +9,35 @@
     backgroundColor = "#032B17",
     iconColor = "#4CDA95",
     showIcon = true,
-    showCaption = false
+    showCaption = false,
+    onclick,
+    isSelected
   } = $props();
 
   // State
   let device = initialDevice;
   let description = initialDescription;
+  
+  onMount(() => {
+    backgroundColor = isSelected
+      ? "#032B17"
+      : "#101010";
+
+    borderColor = isSelected
+      ? "#4CDA95"
+      : "#3C6350";
+
+    iconColor = isSelected
+      ? "#4CDA95"
+      : "fffffff";
+  })
 </script>
 
 <!-- UI -->
-<div
+<button
   class="flex items-center justify-between h-[48px] px-3 py-3 rounded-lg w-full"
   style="border: 1.3px solid {borderColor}; background: {backgroundColor};"
+  onclick={onclick}
 >
   <!-- Left Section -->
   <div class="flex flex-col justify-center">
@@ -57,4 +76,4 @@
   >
     {description}
   </div>
-</div>
+</button>
