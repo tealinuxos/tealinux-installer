@@ -2,6 +2,7 @@
 	import { invoke } from '@tauri-apps/api/core';
 	import { onMount } from 'svelte';
 	import { getBlueprint } from '../global.js';
+	import { goto } from '$app/navigation';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
 	import GlowingText from '$lib/components/ui/GlowingText.svelte';
 	import SearchButton from './SearchButton.svelte';
@@ -106,9 +107,12 @@
 	};
 
 	const handleSetLocalization = async () => {
+
 		await invoke('blueprint_set_locale', { locale: selectedLocale });
 		await invoke('blueprint_set_timezone', { region: selectedRegion, city: selectedCity });
 		await invoke('blueprint_set_keyboard', { layout: selectedLayout, variant: selectedVariant });
+
+        goto("/installation/partitioning");
 	};
 
 	onMount(async () => {
@@ -186,7 +190,8 @@
 				<!-- label -->
 				<GlowingText size="[11]" text="Timezone" />
 				<!-- selector? -->
-				<SearchButton
+				 <div class="flex gap-3">
+					<SearchButton
 					title="Select Timezone Region"
 					notFoundMessage="Timezone Region Not Found"
 					bind:show={showRegionModal}
@@ -203,13 +208,16 @@
 					data={filteredCity}
 					onclick={selectTimezoneCity}
 				/>
+				 </div>
+
 			</div>
 			<!-- select Keyboard Layout -->
 			<div class=" space-y-[10px]">
 				<!-- label -->
 				<GlowingText size="[11]" text="Keyboard Layout" />
 				<!-- keyboard name -->
-				<SearchButton
+				 <div class="flex gap-3">
+					<SearchButton
 					title="Select Keyboard Layout"
 					notFoundMessage="Keyboard Layout Not Found"
 					bind:show={showLayoutModal}
@@ -228,6 +236,8 @@
 					data={filteredVariants}
 					onclick={selectKeyboardVariant}
 				/>
+				 </div>
+
 				<!-- keyboard test -->
 				<input
 					type="text"
@@ -252,5 +262,5 @@
 	currentTitle="Localization"
 	prevPath="/installation"
 	nextPath="/installation/partitioning"
-	nextAction={null}
+	nextAction={handleSetLocalization}
 />

@@ -4,6 +4,7 @@
 	import { getRead, getBlueprint } from '../global.js';
 	import prettyBytes from 'pretty-bytes';
 	import { randomColor } from 'randomcolor';
+	import Navigation from '../../../lib/components/Navigation.svelte';
 
 	let timezone;
 	let mainLocale;
@@ -11,6 +12,12 @@
 	let formattedPartitions;
 	let assignedPartitions;
 	let passwordVisible = $state(false);
+    let blueprint = $state(null);
+
+    const getBlueprintJSON = async () => {
+        let blueprint = await getBlueprint();
+        return blueprint;
+    }
 
 	const getDisk = async () => {
 		let blueprint = await getBlueprint();
@@ -73,19 +80,13 @@
 	const printJson = async () => {
 		await invoke('print_json');
 	};
+
+    onMount(async () => {
+        blueprint = await getBlueprintJSON();
+    })
 </script>
 
-<div class="relative w-full">
-	<header
-		class="flex items-center justify-center w-full gap-[10px] py-10 fixed top-0 bg-whiteTealinux z-30"
-	>
-		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
-		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
-		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
-		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
-		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
-		<div class="w-[20px] h-[20px] bg-greenTealinux rounded-full"></div>
-	</header>
+<div class="relative w-full text-white">
 	{#await getBlueprint() then blueprint}
 		{@const keyboard =
 			blueprint.keyboard === null
@@ -332,26 +333,18 @@
 					</div>
 				{/await}
 			</form>
-			<div class="flex justify-between items-center h-[12dvh] w-[80dvw] fixed bottom-0 bg-white">
-				<a
-					href="/installation/partition"
-					class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ml-[100px]"
-					>Back</a
-				>
-				<a
-					href="/installation/partitionv2"
-					class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ml-[100px]"
-					>Back (Beta)</a
-				>
-				<a
-					href="/installation/install"
-					class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mr-[100px]"
-					>Install</a
-				>
-			</div>
 		</section>
 	{/await}
 </div>
+
+<Navigation
+    totalSteps={6}
+    currentStep={5}
+    currentTitle="Summary"
+    prevPath="/installation/partitioning"
+    nextPath="/installation/install"
+    nextAction={null}
+/>
 
 <style>
 	.password-hidden {

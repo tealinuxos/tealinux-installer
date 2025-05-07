@@ -1,15 +1,15 @@
 <script>
-	import { run } from 'svelte/legacy';
-
 	import { onMount } from 'svelte';
 	import { invoke } from '@tauri-apps/api/core';
 	import { getBlueprint } from '../global.js';
+	import { goto } from '$app/navigation';
+	import Navigation from "$lib/components/Navigation.svelte";
 
-	let fullname = $state(), username = $state(), hostname = $state(), password = $state(), confirmPassword = $state();
+	let fullname, username, hostname, password, confirmPassword;
 	let isAdministrator = false;
-	let passwordsMatch = $state(false);
-	let passwordVisible = $state(false);
-	let passwordConfirmVisible = $state(false);
+	let passwordsMatch = false;
+	let passwordVisible = false;
+	let passwordConfirmVisible = false;
 
 	function togglePasswordVisibility() {
 		passwordVisible = !passwordVisible;
@@ -27,15 +27,15 @@
 		passwordsMatch = true;
 
 		await invoke('blueprint_set_account', { fullname, username, hostname, password });
+
+        goto("/installation/summary");
 	};
 
-	run(() => {
-		if (password && confirmPassword && password === confirmPassword) {
-			passwordsMatch = true;
-		} else {
-			passwordsMatch = false;
-		}
-	});
+	$: if (password && confirmPassword && password === confirmPassword) {
+		passwordsMatch = true;
+	} else {
+		passwordsMatch = false;
+	}
 
 	onMount(() => {
 		getBlueprint().then((blueprint) => {
@@ -50,7 +50,7 @@
 	});
 </script>
 
-<div class="relative w-full">
+<div class="relative w-full text-white border-white">
 	<header
 		class="flex items-center justify-center w-full gap-[10px] py-10 fixed top-0 bg-whiteTealinux z-30"
 	>
@@ -73,10 +73,10 @@
 					{/if}
 				</div>
 				<div
-					class="relative flex items-center w-[451px] h-[45px] rounded-lg overflow-hidden border-2 border-black bg-grayTealinux"
+					class="relative flex items-center w-[451px] h-[45px] rounded-lg overflow-hidden border-2 border-white bg-grayTealinux"
 				>
 					<input
-						class="peer h-full w-full outline-hidden text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
+						class="peer h-full w-full outline-hidden text-sm text-white text-opacity-70 placeholder:text-white placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
 						type="text"
 						bind:value={fullname}
 						placeholder="Full name"
@@ -92,10 +92,10 @@
 					{/if}
 				</div>
 				<div
-					class="relative flex items-center w-[451px] h-[45px] rounded-lg overflow-hidden border-2 border-black bg-grayTealinux"
+					class="relative flex items-center w-[451px] h-[45px] rounded-lg overflow-hidden border-2 border-white bg-grayTealinux"
 				>
 					<input
-						class="peer h-full w-full outline-hidden text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
+						class="peer h-full w-full outline-hidden text-sm text-white text-opacity-70 placeholder:text-white placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
 						type="text"
 						bind:value={username}
 						placeholder="Username"
@@ -111,10 +111,10 @@
 					{/if}
 				</div>
 				<div
-					class="relative flex items-center w-[451px] h-[45px] rounded-lg overflow-hidden border-2 border-black bg-grayTealinux"
+					class="relative flex items-center w-[451px] h-[45px] rounded-lg overflow-hidden border-2 border-white bg-grayTealinux"
 				>
 					<input
-						class="peer h-full w-full outline-hidden text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
+						class="peer h-full w-full outline-hidden text-sm text-white text-opacity-70 placeholder:text-white placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
 						type="text"
 						bind:value={hostname}
 						placeholder="Computer name"
@@ -130,30 +130,30 @@
 					{/if}
 				</div>
 				<div
-					class="relative flex items-center w-[451px] h-[45px] rounded-lg overflow-hidden border-2 border-black bg-grayTealinux"
+					class="relative flex items-center w-[451px] h-[45px] rounded-lg overflow-hidden border-2 border-white bg-grayTealinux"
 				>
 					{#if passwordVisible}
 						<input
-							class="peer h-full w-full outline-hidden text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
+							class="peer h-full w-full outline-hidden text-sm text-white text-opacity-70 placeholder:text-white placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
 							type="text"
 							bind:value={password}
 							placeholder="Enter your password"
 						/>
 					{:else}
 						<input
-							class="peer h-full w-full outline-hidden text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
+							class="peer h-full w-full outline-hidden text-sm text-white text-opacity-70 placeholder:text-white placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
 							type="password"
 							bind:value={password}
 							placeholder="Enter your password"
 						/>
 					{/if}
-                    <button onclick={togglePasswordVisibility} aria-label="Password Visibility">
 					<svg
 						class="mr-[16px]"
 						width="24"
 						height="24"
 						viewBox="0 0 24 24"
 						fill="none"
+						on:click={togglePasswordVisibility}
 						xmlns="http://www.w3.org/2000/svg"
 					>
 						<mask
@@ -174,7 +174,6 @@
 							/>
 						</g>
 					</svg>
-                    </button>
 				</div>
 			</div>
 
@@ -186,30 +185,30 @@
 					{/if}
 				</div>
 				<div
-					class="relative flex items-center w-[451px] h-[45px] rounded-lg overflow-hidden border-2 border-black bg-grayTealinux"
+					class="relative flex items-center w-[451px] h-[45px] rounded-lg overflow-hidden border-2 border-white bg-grayTealinux"
 				>
 					{#if passwordConfirmVisible}
 						<input
-							class="peer h-full w-full outline-hidden text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
+							class="peer h-full w-full outline-hidden text-sm text-white text-opacity-70 placeholder:text-white placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
 							type="text"
 							bind:value={confirmPassword}
 							placeholder="Confirm your password"
 						/>
 					{:else}
 						<input
-							class="peer h-full w-full outline-hidden text-sm text-black text-opacity-70 placeholder:text-black placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
+							class="peer h-full w-full outline-hidden text-sm text-white text-opacity-70 placeholder:text-white placeholder:text-opacity-40 pr-2 pl-[12px] bg-transparent"
 							type="password"
 							bind:value={confirmPassword}
 							placeholder="Confirm your password"
 						/>
 					{/if}
-                    <button onclick={togglePasswordConfirmVisibility} aria-label="Password Confirm Visibility">
 					<svg
 						class="mr-[16px]"
 						width="24"
 						height="24"
 						viewBox="0 0 24 24"
 						fill="none"
+						on:click={togglePasswordConfirmVisibility}
 						xmlns="http://www.w3.org/2000/svg"
 					>
 						<mask
@@ -230,7 +229,6 @@
 							/>
 						</g>
 					</svg>
-                    </button>
 				</div>
 				{#if passwordsMatch === false && password}
 					<p class="text-red-500 text-[14px] mt-[5px]">Passwords do not match</p>
@@ -242,35 +240,16 @@
 			<!-- 		type="checkbox" -->
 			<!-- 		class="before:content[''] peer relative h-8 w-8 cursor-pointer appearance-none rounded-full border border-gray-900/20 bg-gray-900/10 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-gray-900 checked:bg-gray-900 checked:before:bg-gray-900 hover:scale-105 hover:before:opacity-0" -->
 			<!-- 	/> -->
-			<!-- 	<h3 class="ml-[10px] text-[16px] text-black">Make this user administrator</h3> -->
+			<!-- 	<h3 class="ml-[10px] text-[16px] text-white">Make this user administrator</h3> -->
 			<!-- </div> -->
 		</form>
-		<div
-			class="max-w-md mx-auto mt-30 mt-[68px] h-[15dvh] fixed bottom-0 bg-whiteTealinux flex items-center"
-		>
-			<div class="grid grid-cols-2 gap-[295px]">
-				<a
-					href="/installation/locale"
-					class="text-white bg-greenTealinux focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
-					>Back</a
-				>
-				<a
-					href="/installation/partition"
-					onclick={handleSetAccount}
-					class="text-white bg-greenTealinux {passwordsMatch && fullname && username && hostname
-						? ''
-						: ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-hidden"
-					>Next</a
-				>
-			</div>
-            <a
-                href="/installation/partitionv2"
-                onclick={handleSetAccount}
-                class="text-white bg-greenTealinux {passwordsMatch && fullname && username && hostname
-                    ? ''
-                    : ' brightness-75 pointer-events-none'}  focus:ring-4 focus:ring-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
-                >Next (Beta)</a
-            >
-		</div>
 	</section>
 </div>
+<Navigation
+    totalSteps={5}
+    currentStep={4}
+    currentTitle="User Creation"
+    prevPath="/installation/partitioning"
+    nextPath="/installation/summary"
+    nextAction={handleSetAccount}
+/>
