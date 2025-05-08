@@ -221,8 +221,8 @@
 			{/if}
 			</div>
 			<!-- Disk selection -->
-			<GlowingText size="[11]" text="Tools" />
-			<!-- Partitioning tools -->
+			<GlowingText size="[11]" text="Methods" />
+			<!-- Partitioning Methods -->
 			<div class="flex flex-start gap-[15px] p-[10px] w-full">
 				<!-- Single Boot Card -->
 				<Card
@@ -410,7 +410,7 @@
 				</Card>
 			</div>
 
-			<GlowingText size="[11]" text="Preview Disk" />
+			<GlowingText size="[11]" text="Disk Preview" />
 
 			<!-- Add this section after the partitioning tools section -->
 			<div
