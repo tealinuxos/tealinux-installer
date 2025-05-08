@@ -46,7 +46,7 @@
 	</div>
 
 	<!-- information -->
-	<div class="flex gap-y-2 flex-wrap mb-4">
+	<div class="grid grid-cols-5 gap-y-2 max-h-[35px] overflow-y-auto mb-4 w-fit">
 		{#each disk.partitions as partition, i}
 			{@const color = colors[i]}
 			{@const prettySize = prettyBytes(parseInt(partition.size) * 512)}
@@ -62,7 +62,7 @@
 				<div style="background-color: {color}" class="w-2 h-2 rounded-full mt-1"></div>
 				<div class="flex flex-col text-[11px] font-jakarta">
 					<span class="pl-1 font-semibold tracking-wide">{path}</span>
-					<span class="pl-1 uppercase">{prettySize} {filesystem}</span>
+					<span class="pl-1 uppercase whitespace-nowrap">{prettySize} {filesystem}</span>
 				</div>
 			</div>
 		{/each}
