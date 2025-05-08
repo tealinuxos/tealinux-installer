@@ -31,7 +31,7 @@
           ...disk,
           value: disk.diskPath,
           name: disk.diskName || disk.diskPath, 
-          size: disk.diskSize 
+          size: disk.size
         }));
 
         if (options.length === 0) {
@@ -55,7 +55,6 @@
     console.log('Selected Disk:', disk);
     selectedDisk = disk;
     value = disk; // Update nilai yang dipilih
-    updateDiskPreview(disk); // Jika ada fungsi ini di tempat lain
   };
 
   let isOpen = $state(false);
@@ -103,8 +102,12 @@
   }
   
   function formatSize(size) {
-    if (!size) return '';
-    return formatter ? formatter(size) : `${(size / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+    if (!size) {
+      return ''
+    } else {
+      let sizeInBytes = Number(size.slice(0, -1)) * 512;
+      return formatter ? formatter(sizeInBytes) : `${(size / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+    }
   }
   
   $effect(() => {

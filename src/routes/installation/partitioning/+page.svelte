@@ -12,6 +12,7 @@
 	import Navigation from '../../../lib/components/Navigation.svelte';
 	import SelectComponent from '$lib/components/SelectComponent.svelte';
 	import { goto } from '$app/navigation';
+    import { getDiskAfter } from './utils.js';
 
 	let Method = {
 		SINGLE: 'single',
@@ -33,6 +34,7 @@
 	let colors = [];
 	let diskAfter = $state(null);
 	let selectedPreview = $state(Preview.BEFORE);
+    let partitionTable = $state("gpt");
 
 	const getStorageJSON = async () => {
 		let json = await getRead();
@@ -144,13 +146,16 @@
 	};
 
 	$effect(() => {
-		diskAfter = selectedDisk;
+        if (selectedDisk && partitionTable) {
+            diskAfter = getDiskAfter(selectedDisk, "ext4", partitionTable, 0);
+        }
 	});
 
 	onMount(async () => {
 		disks = await getStorageJSON();
 
 		selectedDisk = disks.length ? disks[0] : null;
+		partitionTable = disks.length ? disks[0].label : partitionTable;
 
         console.log(selectedDisk)
 		// getDisks();
@@ -197,10 +202,7 @@
 
 			<div class="flex flex-col">
 				<SelectComponent
-				options={[
-				{ diskPath: "sda:", size: 256060514304 },
-				{ diskPath: "sdb:", size: 500107862016 }
-				]}
+				disks={disks}
 				bind:value={selectedDisk}
 				displayField="diskPath"
 				sizeField="size"
@@ -219,31 +221,8 @@
 			{/if}
 			</div>
 			<!-- Disk selection -->
-
-			<!-- <div class="space-y-[10px]"> -->
-			<!-- 	<GlowingText size="[11]" text="Disk" /> -->
-			<!-- 	{#if disks.length > 0} -->
-			<!-- 		<div class="space-y-2"> -->
-			<!-- 			{#each disks as disk} -->
-			<!-- 				<div -->
-			<!-- 					class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] text-[15px] justify-between h-fit w-full cursor-pointer hover:bg-gray-900 transition-colors {selectedDisk?.name === disk.name ? 'border-[#3C6350]' : ''}" -->
-			<!-- 					on:click={() => selectDisk(disk)} -->
-			<!-- 				> -->
-			<!-- 					<div> -->
-			<!-- 						<span>{disk.name}</span> -->
-			<!-- 					</div> -->
-			<!-- 					<div> -->
-			<!-- 						<span>{prettyBytes(disk.size)}</span> -->
-			<!-- 					</div> -->
-			<!-- 				</div> -->
-			<!-- 			{/each} -->
-			<!-- 		</div> -->
-			<!-- 	{:else} -->
-			<!-- 		<div class="text-gray-400">Loading disks...</div> -->
-			<!-- 	{/if} -->
-			<!-- </div> -->
-			<GlowingText size="[11]" text="Tools" />
-			<!-- Partitioning tools -->
+			<GlowingText size="[11]" text="Methods" />
+			<!-- Partitioning Methods -->
 			<div class="flex flex-start gap-[15px] p-[10px] w-full">
 				<!-- Single Boot Card -->
 				<Card
@@ -431,7 +410,7 @@
 				</Card>
 			</div>
 
-			<GlowingText size="[11]" text="Preview Disk" />
+			<GlowingText size="[11]" text="Disk Preview" />
 
 			<!-- Add this section after the partitioning tools section -->
 			<div
@@ -440,50 +419,33 @@
 				<!-- Disk Preview Title -->
 
                 {#if selectedDisk}
-                    {#if selectedMethod}
-                        <div class="flex flex-row space-x-2">
-                            <PreviewButton
-                                title={Preview.BEFORE}
-                                selected={selectedPreview === Preview.BEFORE}
-                                onclick={() => (selectedPreview = Preview.BEFORE)}
-                            />
+                    <div class="flex flex-row space-x-2">
+                        <PreviewButton
+                            title={Preview.BEFORE}
+                            selected={selectedPreview === Preview.BEFORE}
+                            onclick={() => (selectedPreview = Preview.BEFORE)}
+                        />
+                        {#if selectedMethod}
                             <PreviewButton
                                 title={Preview.AFTER}
                                 selected={selectedPreview === Preview.AFTER}
                                 onclick={() => (selectedPreview = Preview.AFTER)}
                             />
-                        </div>
-                        <div class="space-y-[10px] w-full">
-                            <div class="space-y-[10px]">
-                                {#if selectedPreview === Preview.BEFORE}
-                                    {#key selectedDisk}
-                                        <DiskPreview disk={selectedDisk} />
-                                    {/key}
-                                {:else}
+                        {/if}
+                    </div>
+                    <div class="space-y-[10px] w-full">
+                        <div class="space-y-[10px]">
+                            {#if selectedPreview === Preview.BEFORE}
+                                {#key selectedDisk}
+                                    <DiskPreview disk={selectedDisk} />
+                                {/key}
+                            {:else}
+                                {#if diskAfter}
                                     <DiskPreview disk={diskAfter} />
                                 {/if}
-                            </div>
+                            {/if}
                         </div>
-                    {:else}
-                        <div class="flex flex-row space-x-2">
-                            <PreviewButton
-                                title={Preview.BEFORE}
-                                selected={selectedPreview === Preview.BEFORE}
-                                onclick={() => (selectedPreview = Preview.BEFORE)}
-                            />
-                        </div>
-                        <div class="space-y-[10px] w-full">
-                            <div class="space-y-[10px]">
-                                {#if selectedPreview === Preview.BEFORE}
-                                    {#key selectedDisk}
-                                        <DiskPreview disk={selectedDisk} />
-                                    {/key}
-                                {:else}
-                                    <DiskPreview disk={diskAfter} />
-                                {/if}
-                            </div>
-                        </div>
-                    {/if}
+                    </div>
                 {:else}
 					<div
 						class="text-[#E4E4E4] font-jakarta text-[9.46px] font-[500] leading-[17.659px] text-center py-4"
