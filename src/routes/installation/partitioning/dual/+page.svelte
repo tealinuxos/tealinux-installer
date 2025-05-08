@@ -1,6 +1,6 @@
 <script>
 	import CardTextArea from './../components/CardTextArea.svelte';
-	import { getRead } from './../../global.js';
+	import { getRead, getBlueprint } from './../../global.js';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
@@ -27,15 +27,22 @@
 		AFTER: 'After'
 	};
   
-	const disks = writable([]);
+	let blueprint = $state(null);
 	const selectedDisk = writable(null);
 	const selectedMethod = writable(null);
 	const diskAfter = writable(null);
 	const selectedPreview = writable(Preview.BEFORE);
+    const selectedFilesystem = writable("ext4");
+    const useSwap = writable(false);
+
+    const getBlueprintJSON = async () => {
+        let blueprint = await getBlueprint();
+        return blueprint;
+    }
   
-	const getStorageJSON = async () => {
+	const getStorageJSON = async (selected) => {
 		let json = await getRead();
-		disks.set(json.disk.filter((disk) => disk.partitions !== null));
+		return json.disk.find((disk) => disk.diskPath === selected);
 	};
   
 	function updateDiskPreview(disk) {
@@ -58,12 +65,26 @@
 		console.log(`Selected Method: ${method}`);
 		selectedMethod.set(method);
 	};
+
+    const decideFilesystem = (filesystem) => {
+        selectedFilesystem.set(filesystem);
+    };
+
+    const decideSwap = (swap) => {
+        useSwap.set(swap);
+    };
+
+    $effect(() => {
+        $selectedPreview = Preview.AFTER;
+    });
   
-	onMount(() => {
-		getStorageJSON();
+	onMount(async () => {
+        blueprint = await getBlueprintJSON();
+		selectedDisk.set(await getStorageJSON(blueprint.storage.diskPath));
 	});
 </script>
   
+{#if blueprint && $selectedDisk}
 <TwoSide>
 	{#snippet left()}
 		<div class="mx-[35px] space-y-[15px]">
@@ -107,8 +128,8 @@
 				<GlowingText size="[11]" text="Selected Disk" />
   
 				<CardTextArea
-					initialDevice="/dev/nvme0n1"
-					initialDescription="WD Black SN850X"
+					initialDevice={blueprint.storage.diskPath}
+					initialDescription={$selectedDisk ? $selectedDisk.model : 'Unknown'}
 					showCaption={false}
 					showIcon={true}
 					borderColor="#4CDA95"
@@ -119,14 +140,46 @@
 
 			<GlowingText size="[11]" text="File System" />
 			<div class="flex gap-2">
-				<CardTextArea initialDevice="BTRFS" caption="Stable and widely used!" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
-				<CardTextArea initialDevice="EXT4" caption="Stable and widely used!" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
+              {#key $selectedFilesystem}
+                <CardTextArea
+                  initialDevice="EXT4"
+                  caption="Stable and widely used!"
+                  showCaption={true}
+                  showIcon={false}
+                  onclick={() => decideFilesystem("ext4")}
+                  isSelected={$selectedFilesystem === "ext4"}
+                />
+                <CardTextArea
+                  initialDevice="BTRFS"
+                  caption="Support snapshots (Advanced)"
+                  showCaption={true}
+                  showIcon={false}
+                  onclick={() => decideFilesystem("btrfs")}
+                  isSelected={$selectedFilesystem === "btrfs"}
+                />
+              {/key}
 			</div>
 
 			<GlowingText size="[11]" text="Swap Option" />
 			<div class="flex gap-2">
-				<CardTextArea initialDevice="SWAP" caption="Recommended" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
-				<CardTextArea initialDevice="NO SWAP" caption="Stable and widely used!" showCaption={true} showIcon={false} borderColor="#3C6350" backgroundColor="#101010" />
+              {#key $useSwap}
+                <CardTextArea
+                  initialDevice="NO SWAP"
+                  caption="No problem"
+                  showCaption={true}
+                  showIcon={false}
+                  onclick={() => decideSwap(false)}
+                  isSelected={!$useSwap}
+                />
+                <CardTextArea
+                  initialDevice="SWAP"
+                  caption="Recommended"
+                  showCaption={true}
+                  showIcon={false}
+                  onclick={() => decideSwap(true)}
+                  isSelected={$useSwap}
+                />
+              {/key}
 			</div>
 
 			<div class="flex flex-col p-[15px] gap-[10px] self-stretch rounded-[10.267px] border border-[#3C6350] bg-[#101010]">
@@ -147,7 +200,7 @@
 						{#if $selectedPreview === Preview.BEFORE}
 							<DiskPreview disk={$selectedDisk} />
 						{:else}
-							<DiskPreview disk={$diskAfter} />
+							<DiskPreview disk={$selectedDisk} /> <!-- change this to diskAfter later on !!! -->
 						{/if}
 					</div>
 				{:else}
@@ -160,6 +213,7 @@
 		</div>
 	{/snippet}
 </TwoSide>
+{/if}
 
 <Navigation
 	totalSteps={5}
