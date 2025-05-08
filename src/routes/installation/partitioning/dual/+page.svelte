@@ -29,15 +29,14 @@
 
     // State declarations
     let blueprint = $state(null);
-    let diskBefore = $state(null);
     let diskAfter = $state(null);
     let selectedDisk = $state(null);
     let selectedFilesystem = $state("ext4");
-    let selectedPreview = $state(Preview.BEFORE);
+    let selectedPreview = $state(Preview.AFTER);
     let partitionTable = $state(null);
-    let useSwap = $state(false);
-  
-	const getBlueprintJSON = async () => {
+    let swapSize = $state(2048);
+
+    const getBlueprintJSON = async () => {
         let blueprint = await getBlueprint();
         return blueprint;
     }
@@ -45,21 +44,20 @@
 	const getStorageJSON = async (selected) => {
         let json = await getRead();
         selectedDisk = json.disk.find(disk => disk.diskPath === selected);
-        diskBefore = selectedDisk; // Update diskBefore
         return selectedDisk;
 	};
   
 	function updateDiskPreview(disk) {
 		if (!disk) return;
   
-		diskAfter = getDiskAfter(disk, selectedFilesystem, partitionTable, useSwap ? 1 : 0);
+		diskAfter = getDiskAfter(disk, selectedFilesystem, partitionTable, swapSize);
 	}
   
 	const selectDisk = (disk) => {
         selectedDisk = disk;
         updateDiskPreview(disk);
 	};
-
+  
     const decideFilesystem = (filesystem) => {
         selectedFilesystem = filesystem;
         if (selectedDisk) {
@@ -68,7 +66,7 @@
     };
 
     const decideSwap = (swap) => {
-        useSwap = swap;
+        swapSize = swap;
         if (selectedDisk) {
             updateDiskPreview(selectedDisk);
         }
@@ -101,6 +99,7 @@
         console.log("Selected disk changed:", selectedDisk);
         if (selectedDisk) {
             updateDiskPreview(selectedDisk);
+            selectedPreview = Preview.AFTER;
         }
     });
 	
@@ -115,7 +114,7 @@
             partitionTable = read.firmware ? "gpt" : "mbr";
             
             if (selectedDisk) {
-                diskAfter = getDiskAfter(selectedDisk, selectedFilesystem, partitionTable, useSwap ? 1 : 0);
+                diskAfter = getDiskAfter(selectedDisk, selectedFilesystem, partitionTable, swapSize ? 1 : 0);
             }
         } catch (error) {
             console.error("Error in onMount:", error);
@@ -123,6 +122,7 @@
 	});
 </script>
   
+{#if blueprint && selectedDisk}
 <TwoSide>
 	{#snippet left()}
 		<div class="mx-[35px] space-y-[15px]">
@@ -162,7 +162,6 @@
 						</span>
 					</button>
 				</div>
-
 				<div class="flex flex-col gap-2">
 					<GlowingText size="[11]" text="Selected Disk" />
 		
@@ -210,22 +209,22 @@
 
 			<GlowingText size="[11]" text="Swap Option" />
 			<div class="flex gap-2">
-				{#key useSwap}
-				  <CardTextArea
-					initialDevice="NO SWAP"
-					caption="No problem"
-					showCaption={true}
-					showIcon={false}
-					onclick={() => decideSwap(false)}
-					isSelected={!useSwap}
-				  />
+				{#key swapSize}
 				  <CardTextArea
 					initialDevice="SWAP"
 					caption="Recommended"
 					showCaption={true}
 					showIcon={false}
-					onclick={() => decideSwap(true)}
-					isSelected={useSwap}
+					onclick={() => decideSwap(2048)}
+					isSelected={swapSize}
+				  />
+				  <CardTextArea
+					initialDevice="NO SWAP"
+					caption="No problem"
+					showCaption={true}
+					showIcon={false}
+					onclick={() => decideSwap(0)}
+					isSelected={!swapSize}
 				  />
 				{/key}
 			  </div>
@@ -244,10 +243,14 @@
 					/>
 				</div>
 				<div class="space-y-[10px] w-full">
-					{#if selectedPreview === Preview.BEFORE && diskBefore}
-						<DiskPreview disk={diskBefore} />
+					{#if selectedPreview === Preview.BEFORE && selectedDisk}
+                        {#key selectedDisk}
+                            <DiskPreview disk={selectedDisk} />
+                        {/key}
 					{:else if selectedPreview === Preview.AFTER && diskAfter}
-						<DiskPreview disk={diskAfter} />
+                        {#key diskAfter}
+                            <DiskPreview disk={diskAfter} />
+                        {/key}
 					{:else}
 						<div class="text-center py-4 text-gray-400">
 							No disk data available
@@ -255,10 +258,10 @@
 					{/if}
 				</div>
 			</div>
-
 		</div>
 	{/snippet}
 </TwoSide>
+{/if}
 
 <Navigation
 	totalSteps={5}

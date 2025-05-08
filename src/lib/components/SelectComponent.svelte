@@ -3,7 +3,7 @@
   
   let { 
     options = [], 
-    value = null, 
+    value = $bindable(null), 
     displayField = '', 
     sizeField = '', 
     formatter = null,

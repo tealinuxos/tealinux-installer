@@ -214,13 +214,6 @@
                     <DiskPreview disk={diskAfter} />
                   {/if}
                 </div>
-                <!-- {:else} -->
-                <!--   <PreviewButton title="Before" /> -->
-                <!--   <div class="text-[#E4E4E4] font-jakarta text-[9.46px] font-[500] leading-[17.659px] text-center py-4"> -->
-                <!--     Select a disk to see preview -->
-                <!--   </div> -->
-                <!-- {/if} -->
-                
             </div>
 
           </div>
