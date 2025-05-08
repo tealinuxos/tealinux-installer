@@ -13,6 +13,7 @@ import Navigation from "$lib/components/Navigation.svelte";
 import SelectComponent from '$lib/components/SelectComponent.svelte';
 
 
+
 let disks = $state([]);
 let selectedDisk = $state(0);
 let selectedPartition = $state(0);

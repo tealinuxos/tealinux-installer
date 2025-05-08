@@ -116,7 +116,7 @@
 	});
   </script>
   
-    {#if blueprint && diskBefore}
+{#if blueprint && diskBefore}
       <TwoSide>
         {#snippet left()}
           <div class="mx-[35px] space-y-[15px]">
@@ -193,34 +193,27 @@
             {/key}
           </div>
 
-          <div class="flex flex-col p-[15px] gap-[10px] self-stretch rounded-[10.267px] border border-[#3C6350] bg-[#101010]">
-            <!-- {#if $selectedDisk} -->
-              <div class="flex flex-row space-x-2">
-                <PreviewButton
-                  title={Preview.BEFORE}
-                  selected={selectedPreview === Preview.BEFORE}
-                  onclick={() => selectedPreview = Preview.BEFORE}
-                />
-                <PreviewButton
-                  title={Preview.AFTER}
-                  selected={selectedPreview === Preview.AFTER}
-                  onclick={() => selectedPreview = Preview.AFTER}
-                />
-              </div>
-              <div class="space-y-[10px] w-full">
-                {#if selectedPreview === Preview.BEFORE}
-                  <DiskPreview disk={diskBefore} />
-                {:else if diskAfter}
-                  <DiskPreview disk={diskAfter} />
-                {/if}
-              </div>
-              <!-- {:else} -->
-              <!--   <PreviewButton title="Before" /> -->
-              <!--   <div class="text-[#E4E4E4] font-jakarta text-[9.46px] font-[500] leading-[17.659px] text-center py-4"> -->
-              <!--     Select a disk to see preview -->
-              <!--   </div> -->
-              <!-- {/if} -->
-              
+            <div class="flex flex-col p-[15px] gap-[10px] self-stretch rounded-[10.267px] border border-[#3C6350] bg-[#101010]">
+              <!-- {#if $selectedDisk} -->
+                <div class="flex flex-row space-x-2">
+                  <PreviewButton
+                    title={Preview.BEFORE}
+                    selected={selectedPreview === Preview.BEFORE}
+                    onclick={() => selectedPreview = Preview.BEFORE}
+                  />
+                  <PreviewButton
+                    title={Preview.AFTER}
+                    selected={selectedPreview === Preview.AFTER}
+                    onclick={() => selectedPreview = Preview.AFTER}
+                  />
+                </div>
+                <div class="space-y-[10px] w-full">
+                  {#if selectedPreview === Preview.BEFORE}
+                    <DiskPreview disk={diskBefore} />
+                  {:else if diskAfter}
+                    <DiskPreview disk={diskAfter} />
+                  {/if}
+                </div>
             </div>
 
           </div>
