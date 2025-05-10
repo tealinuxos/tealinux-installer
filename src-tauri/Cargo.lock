@@ -81,6 +81,7 @@ dependencies = [
  "duct",
  "online",
  "procfs",
+ "regex",
  "serde",
  "serde_json",
  "sudo",
