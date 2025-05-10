@@ -207,14 +207,6 @@
 					height="41px"
 					on:change={({ detail }) => selectDisk(detail.value)}
 				/>
-
-				<!-- {#if selectedDisk}
-				<div class="p-2">
-					{#key selectedDisk}
-						<DiskPreview bind:disk={selectedDisk} />
-					{/key}
-				</div>
-			{/if} -->
 			</div>
 			<!-- Disk selection -->
 			<GlowingText size="[11]" text="Methods" />
