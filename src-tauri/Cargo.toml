@@ -24,7 +24,7 @@ sysinfo = "0.30.12"
 users = "0.11.0"
 battery = "0.7.8"
 tea-partition-api-lib = { git = "https://github.com/tealinuxos/tea-partition-api-lib", branch = "main" }
-tea-arch-chroot-lib = { git = "https://github.com/tealinuxos/tea-arch-chroot-lib" }
+tea-arch-chroot-lib = { git = "https://github.com/fadhil-riyanto/tea-arch-chroot-lib" }
 tea_partition_generator = { git = "https://github.com/tealinuxos/tea_partition_generator" }
 uname = "0.1.1"
 procfs = "0.17.0"
