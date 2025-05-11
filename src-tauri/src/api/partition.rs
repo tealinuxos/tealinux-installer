@@ -132,7 +132,7 @@ pub async fn get_disk_lists_key_val_with_otheros_check() -> String {
     let mut disk_os: Vec<DiskListsKeyValHasOs> = Vec::new();
 
     let ret = self::_get_disk_lists().await;
-    let other_os_lists = TeaPartitionGenerator::disk_list_other_os().await;
+    let other_os_lists = TeaPartitionGenerator::disk_list_other_os();
 
     let mut mutex = false;
     for ret_i in ret {

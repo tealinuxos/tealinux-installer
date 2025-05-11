@@ -11,6 +11,7 @@ pub async fn autogen_partition_select_disk(
     mode: String,
     partition_table: String,
     fs: String,
+    use_swap: bool,
 ) -> () {
     // Handle singleboot
     if mode == "singleboot" {
@@ -18,7 +19,8 @@ pub async fn autogen_partition_select_disk(
             "generating config {} for {} with fs {} -> {}",
             mode, blkname, fs, partition_table
         );
-        let ctx: Blkstuff = SingleBootBlockdevice::blockdevice(blkname, fs, partition_table);
+        let ctx: Blkstuff =
+            SingleBootBlockdevice::blockdevice(blkname, fs, partition_table, use_swap);
 
         let ret = ctx.getresult();
 

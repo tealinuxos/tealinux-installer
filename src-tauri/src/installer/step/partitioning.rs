@@ -27,7 +27,9 @@ pub fn partitioning(blueprint: &BluePrint) -> Result<(), Error> {
                     let storage_data: tea_partition_generator::blueprint::Storage =
                         storage_val.into();
 
-                    Partgen::do_dangerous_task_on(storage_data.clone());
+                    let method = storage_data.clone();
+
+                    Partgen::do_dangerous_task_on(storage_data.clone(), method.install_method);
                     let mnt = MountPoint::new(storage_data.clone());
                     mnt.mount_all();
                 }

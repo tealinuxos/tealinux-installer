@@ -91,7 +91,8 @@
             blkname: diskPath,
             mode: `${installMethod}boot`,
             partitionTable: partitionTable,
-            fs: selectedFilesystem
+            fs: selectedFilesystem,
+            useSwap: useSwap
         });
 
         // goto('/installation/summary')
