@@ -4,6 +4,7 @@ use std::fs::{ File, create_dir_all, read_to_string };
 use std::io::{ Write, Read, BufReader, BufWriter, Error };
 use super::storage::filesystem::filesystem_list;
 use std::path::Path;
+use os::get_other_os;
 use tea_arch_chroot_lib::chroot::bootloader::get_firmware_type;
 use tea_arch_chroot_lib::resource::Keyboard;
 
@@ -15,6 +16,7 @@ pub mod firmware;
 pub mod storage;
 pub mod partition;
 pub mod auto_partition;
+pub mod os;
 
 #[tauri::command]
 pub async fn get_read_json() -> String
@@ -137,4 +139,18 @@ pub async fn read_blueprint()
     let blueprint = self::get_blueprint().unwrap();
 
     println!("{:#?}", blueprint);
+}
+
+#[tauri::command]
+pub async fn get_other_os_json() -> String
+{
+    let other_os = get_other_os();
+
+    if let Some(o) = other_os
+    {
+        serde_json::to_string_pretty(&o).unwrap()
+    }
+    else {
+        String::from("{}")
+    }
 }

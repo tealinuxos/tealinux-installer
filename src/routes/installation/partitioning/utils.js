@@ -84,3 +84,28 @@ export const getDiskAfter = ( diskBefore, rootFilesystem = "ext4", partitionTabl
 
     return { ...diskBefore, partitions: newPartitions };
 };
+
+export const getIdealSwapSize = async (memory) => {
+
+    let idealSize = 0;
+
+    switch (memory) {
+        case memory < 8192:
+            idealSize = memory * 2;
+            break;
+        case memory < 16384:
+            idealSize =  memory * 1.5;
+            break;
+        case memory < 32768:
+            idealSize = memory;
+            break;
+        case memory >= 32768:
+            idealSize = memory / 2;
+            break;
+        default:
+            idealSize = memory;
+            break;
+    }
+
+    return Math.floor(idealSize);
+}

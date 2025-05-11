@@ -11,7 +11,7 @@
 	import DiskPreview from '$lib/components/DiskPreview.svelte';
 	import CardTextArea from '../components/CardTextArea.svelte';
 	import PreviewButton from '../components/PreviewButton.svelte';
-  import { getDiskAfter } from '../utils.js';
+    import { getDiskAfter, getIdealSwapSize } from '../utils.js';
 	
 	const Method = {
 	  SINGLE: 'single',
@@ -38,6 +38,7 @@
     let selectedPreview = $state(Preview.BEFORE);
     let partitionTable = $state(null);
     let useSwap = $state(false);
+    let memorySize = $state(null);
 
     const getBlueprintJSON = async () => {
       let blueprint = await getBlueprint();
@@ -97,9 +98,10 @@
         goto('/installation/account')
     }
 
-    $effect(() => {
-      if (diskBefore && selectedFilesystem && partitionTable) {
-        diskAfter = getDiskAfter(diskBefore, selectedFilesystem, partitionTable, 0);
+    $effect(async () => {
+      if (diskBefore && selectedFilesystem && partitionTable && memorySize) {
+        let swapSize = useSwap ? await getIdealSwapSize(memorySize) : 0;
+        diskAfter = getDiskAfter(diskBefore, selectedFilesystem, partitionTable, swapSize);
       }
       selectedPreview = Preview.AFTER;
     });
@@ -111,6 +113,8 @@
       partitionTable = read.firmware
         ? "gpt"
         : "mbr";
+
+      memorySize = read.memory.capacity;
 
       diskAfter = getDiskAfter(diskBefore, selectedFilesystem, partitionTable, 0);
 	});
@@ -208,11 +212,13 @@
                   />
                 </div>
                 <div class="space-y-[10px] w-full">
-                  {#if selectedPreview === Preview.BEFORE}
-                    <DiskPreview disk={diskBefore} />
-                  {:else if diskAfter}
-                    <DiskPreview disk={diskAfter} />
-                  {/if}
+                  {#key diskAfter}
+                    {#if selectedPreview === Preview.BEFORE}
+                      <DiskPreview disk={diskBefore} />
+                    {:else if diskAfter}
+                      <DiskPreview disk={diskAfter} />
+                    {/if}
+                  {/key}
                 </div>
             </div>
 

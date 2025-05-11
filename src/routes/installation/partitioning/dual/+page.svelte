@@ -9,11 +9,11 @@
 	import DiskPreview from '$lib/components/DiskPreview.svelte';
 	import PreviewButton from '../components/PreviewButton.svelte';
 	import { getDiskAfter } from '../utils.js';
+    import { invoke } from '@tauri-apps/api/core';
 
 	const {
 		osName = "Another Operating System",
 		osDescription = "windows10 on path /path/path/path",
-		onRefresh = () => console.log('Refresh clicked')
 	} = $props();
   
 	const Method = {
@@ -35,6 +35,8 @@
     let selectedPreview = $state(Preview.AFTER);
     let partitionTable = $state(null);
     let swapSize = $state(2048);
+    let otherOs = $state(null);
+    let isRefreshing = $state(false);
 
     const getBlueprintJSON = async () => {
         let blueprint = await getBlueprint();
@@ -46,7 +48,26 @@
         selectedDisk = json.disk.find(disk => disk.diskPath === selected);
         return selectedDisk;
 	};
-  
+
+    const getOtherOsJSON = async (path) => {
+        let response = await invoke("get_other_os_json");
+        let json = JSON.parse(response);
+
+        let others = json.length
+            ? json.filter(os => os.path.includes(path))
+            : null;
+
+        console.log(others);
+
+        return others;
+    }
+
+    const refreshOtherOs = async (path) => {
+        isRefreshing = true;
+        otherOs = await getOtherOsJSON(path);
+        isRefreshing = false;
+    };
+
 	function updateDiskPreview(disk) {
 		if (!disk) return;
   
@@ -115,6 +136,7 @@
             
             if (selectedDisk) {
                 diskAfter = getDiskAfter(selectedDisk, selectedFilesystem, partitionTable, swapSize ? 1 : 0);
+                await refreshOtherOs(selectedDisk.diskPath);
             }
         } catch (error) {
             console.error("Error in onMount:", error);
@@ -127,7 +149,7 @@
 	{#snippet left()}
 		<div class="mx-[35px] space-y-[15px]">
 			<h1 class="font-jakarta font-[800] text-[28px]">
-				Configure Double Boot<br />
+				Configure Dual Boot<br />
 			</h1>
 			<p class="font-jakarta text-sm font-[200]">
 				Qorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum
@@ -145,13 +167,27 @@
 						<span class="text-[#4CDA95] font-['Plus_Jakarta_Sans'] text-[16px] font-bold leading-[140%]">
 							{osName}
 						</span>
-						<span class="text-white font-['Plus_Jakarta_Sans'] text-[13px] font-normal leading-[140%] mt-1">
-							{osDescription}
-						</span>
+                        {#key otherOs}
+                            {#if !isRefreshing}
+                            {#each otherOs as os}
+                                <span class="text-white font-['Plus_Jakarta_Sans'] text-[13px] font-normal leading-[140%] mt-1">
+                                    {os.name}
+                                </span>
+                            {:else}
+                                <span class="text-white font-['Plus_Jakarta_Sans'] text-[13px] font-normal leading-[140%] mt-1">
+                                    No other operating system found!
+                                </span>
+                            {/each}
+                            {:else}
+                                <span class="text-white font-['Plus_Jakarta_Sans'] text-[13px] font-normal leading-[140%] mt-1">
+                                    Refreshing...
+                                </span>
+                            {/if}
+                        {/key}
 					</div>
 				  
 					<button 
-						on:click={onRefresh}
+						onclick={() => refreshOtherOs(selectedDisk.diskPath)}
 						class="flex w-[131.389px] h-[43px] justify-center items-center gap-[7.963px] rounded-[14px] border-[0.239px] border-[#3C6350] bg-[#101010] "
 					>
 						<svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">

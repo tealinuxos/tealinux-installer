@@ -29,6 +29,7 @@ tea_partition_generator = { git = "https://github.com/tealinuxos/tea_partition_g
 uname = "0.1.1"
 procfs = "0.17.0"
 sudo = "0.6.0"
+regex = "1.9.6"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
