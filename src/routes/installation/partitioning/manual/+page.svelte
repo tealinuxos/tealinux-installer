@@ -244,7 +244,7 @@ onMount(async () => {
 </script>
 
 {#await getStorageJSON() then json}
-    <div class="flex flex-col p-5 gap-y-4">
+    <div class="flex flex-col p-5 gap-y-2">
         <div class="flex flex-  gap-[230px] ">
             <div>
                 <h1 class="text-[#26A768] font-['Plus_Jakarta_Sans'] text-[28px] font-bold leading-[39.2px]">
@@ -317,7 +317,6 @@ onMount(async () => {
             bind:diskSize
         />
         </div>
-
         <div class="flex flex-row flex-auto space-x-2 text-white">
             <List
                 bind:selectedDisk
@@ -328,7 +327,7 @@ onMount(async () => {
                 bind:newPartition
                 bind:newPartitionIndex>
                 
-
+                
             </List>
 
 
@@ -363,14 +362,14 @@ onMount(async () => {
             {/if}
         </div>
     </div>
-    <div class="flex flex-row justify-between p-2">
+    <!-- <div class="flex flex-row justify-between p-2">
         <button class="bg-green-500 disabled:bg-green-900 px-4" onclick={() => { showEdit = true; newPartition = true} } disabled={!isUnallocated(modifiedPartition[selectedPartition])}>+</button>
         <div>
             <button class="bg-green-500 px-4 disabled:bg-green-900" disabled={isUnallocated(modifiedPartition[selectedPartition])} onclick={() => showEdit = true}>Edit</button>
             <button class="bg-red-500 px-4" onclick={removePartition}>Remove</button>
         </div>
-    </div>
-    <button class="text-white bg-green-900" onclick={handleSetStorage}>Apply Without Summary</button>
+    </div> -->
+    <!-- <button class="text-white bg-green-900" onclick={handleSetStorage}>Apply Without Summary</button> -->
 {/await}
 
 <Navigation
