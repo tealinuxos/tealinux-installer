@@ -31,7 +31,7 @@
 		<!-- Display only the current slide -->
 		{@const disk = disks[currentSlide]}
 
-		<div class="mb-2 mt-1 flex justify-between items-center uppercase">
+		<div class="mb-2 mt-1 flex justify-between items-center ">
 			<p>
 				<span class="text-sm font-[500]">{disk.diskPath}</span>
 				{' '}

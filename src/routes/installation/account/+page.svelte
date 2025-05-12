@@ -70,7 +70,7 @@
 			<form class="flex flex-col h-[85dvh]">
 				<div class="max-w-md mx-auto mb-4">
 					<div class="flex mb-2 items-center gap-x-2">
-						<h2 class="font-poppin text-left font-medium">Full name</h2>
+						<h2 class="font-poppin text-[#26A768;] text-left font-medium">Full name</h2>
 						{#if !fullname}
 							<p class="text-red-500 text-[12px]">* Full name is required</p>
 						{/if}
@@ -87,7 +87,7 @@
 			
 				<div class="max-w-md mx-auto mb-4">
 					<div class="flex mb-2 items-center gap-x-2">
-						<h2 class="font-poppin text-left font-medium">Username</h2>
+						<h2 class="font-poppin text-[#26A768;] text-left font-medium">Username</h2>
 						{#if !username}
 							<p class="text-red-500 text-[12px]">* Username is required</p>
 						{/if}
@@ -104,7 +104,7 @@
 			
 				<div class="max-w-md mx-auto mb-4">
 					<div class="flex mb-2 items-center gap-x-2">
-						<h2 class="font-poppin text-left font-medium">Computer Name</h2>
+						<h2 class="font-poppin text-[#26A768;] text-left font-medium">Computer Name</h2>
 						{#if !hostname}
 							<p class="text-red-500 text-[12px]">* Computer Name is required</p>
 						{/if}
@@ -121,7 +121,7 @@
 			
 				<div class="max-w-md mx-auto mb-4">
 					<div class="flex mb-2 items-center gap-x-2">
-						<h2 class="font-poppin text-left font-medium">Password</h2>
+						<h2 class="font-poppin text-left text-[#26A768;] font-medium">Password</h2>
 						{#if !password}
 							<p class="text-red-500 text-[12px]">* Password is required</p>
 						{/if}
@@ -174,7 +174,7 @@
 			
 				<div class="max-w-md mx-auto mb-4">
 					<div class="flex mb-2 items-center gap-x-2">
-						<h2 class="font-poppin text-left font-medium">Confirm Password</h2>
+						<h2 class="font-poppin text-[#26A768;] text-left font-medium">Confirm Password</h2>
 						{#if !password}
 							<p class="text-red-500 text-[12px]">* Confirm your password</p>
 						{/if}
