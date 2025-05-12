@@ -34,7 +34,7 @@
 
 {#key diskSize}
     <div class="bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px]">
-        <h2 class="text-green-500 text-lg font-semibold mb-4">Partition</h2>
+        <!-- <h2 class="text-green-500 text-lg font-semibold mb-4">Partition</h2> -->
             <div class=" flex gap-x-4 items-start">
                 <div class="w-full">
                     <div class="flex mb-4 h-7 w-full overflow-hidden">
