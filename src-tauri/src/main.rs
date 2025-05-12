@@ -56,7 +56,8 @@ fn main() {
                     get_disk_lists_key_val,        // defined in partition api
                     autogen_partition_select_disk, // defined in auto_partition
                     get_disk_lists_key_val_with_otheros_check, // defined in partition api
-                    get_other_os_json
+                    get_other_os_json,
+                    set_cosmic_keymap
                 ])
                 .build(tauri::generate_context!())
                 .expect("error while running tauri application")
