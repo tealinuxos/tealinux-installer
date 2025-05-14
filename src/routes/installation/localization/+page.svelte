@@ -60,7 +60,7 @@
 		return JSON.parse(result);
 	};
 
-	const selectKeyboardLayout = (keyboard) => {
+	const selectKeyboardLayout = async (keyboard) => {
 		selectedKeyboard = keyboard;
 		selectedLayout = selectedKeyboard.code;
 		showLayoutModal = false;
@@ -73,13 +73,23 @@
 		selectedVariant = selectedKeyboard.variant.length ? selectedKeyboard.variant[0].code : null;
 
 		filteredVariants = selectedKeyboard.variant;
+
+        await setPreview(selectedLayout, selectedVariant);
 	};
 
-	const selectKeyboardVariant = (variant) => {
+	const selectKeyboardVariant = async (variant) => {
 		selectedVariant = variant.code;
 		variantSearchTerm = variant.name;
 		showVariantModal = false;
+
+        await setPreview(selectedLayout, selectedVariant);
 	};
+
+    const setPreview = async (layout, variant) => {
+        console.log('invokeing')
+        await invoke("set_cosmic_keymap", { layout, variant });
+    };
+
 
 	const selectTimezoneRegion = (timezone) => {
 		selectedTimezone = timezone;
