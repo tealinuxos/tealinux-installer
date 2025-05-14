@@ -150,7 +150,7 @@
     <!-- Size and Format Section -->
     <div class="flex w-full justify-between items-center">
         <!-- Size Box -->
-        <div class="flex items-center w-[157px] gap-2 p-2 rounded-[14px] border-[1.3px] border-[#3C6350]">
+        <div class="flex items-center w-[200px] gap-2 p-2 rounded-[14px] border-[1.3px] border-[#3C6350]">
             {#if newPartition && !readOnly}
                 <span class="text-[#FFFEFB]">New Size</span>
                 <input type="number" bind:value={inputtedSize} class="w-16 bg-transparent text-white focus:outline-none" />
@@ -186,13 +186,13 @@
             <span class="text-[#FFFEFB] mb-1">Filesystem</span>
             {#if !readOnly}
                 <select bind:value={tempModifiedPartition[index].filesystem}
-                        class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[8px] p-1 focus:outline-none">
+                        class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-1 focus:outline-none">
                     <option value="btrfs">btrfs</option>
                     <option value="fat32">fat32</option>
                     <option value="ext4">ext4</option>
                 </select>
             {:else}
-                <div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[8px] p-1">
+                <div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-1">
                     {tempModifiedPartition[index].filesystem || 'None'}
                 </div>
             {/if}
@@ -201,14 +201,14 @@
             <span class="text-[#FFFEFB] mb-1">Mountpoint</span>
             {#if !readOnly}
                 <select bind:value={tempModifiedPartition[index].mountpoint}
-                        class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[8px] p-1 focus:outline-none">
+                        class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-1 focus:outline-none">
                     <option value={null}>None</option>
                     <option value="/">/</option>
                     <option value="/boot/efi">/boot/efi</option>
                     <option value="/home">/home</option>
                 </select>
             {:else}
-                <div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[8px] p-1">
+                <div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-1">
                     {tempModifiedPartition[index].mountpoint || 'None'}
                 </div>
             {/if}
@@ -220,9 +220,9 @@
         <span class="text-[#FFFEFB] mb-1">Label</span>
         {#if !readOnly}
             <input type="text" bind:value={tempModifiedPartition[index].label}
-                   class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[8px] p-1 focus:outline-none" />
+                   class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-1 focus:outline-none" />
         {:else}
-            <div class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[8px] p-1">
+            <div class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-1">
                 {tempModifiedPartition[index].label || 'None'}
             </div>
         {/if}
