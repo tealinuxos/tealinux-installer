@@ -135,19 +135,27 @@
 					<div class="space-y-4 text-[15px]">
 						<div class="leading-none space-y-[10px]">
 							<p class="font-[500]">Operating System</p>
-							<p class="font-[200]">Arch Linux</p>
+							<p class="font-[200]">{json.operatingSystem.name}</p>
 						</div>
 						<div class="leading-none space-y-[10px]">
 							<p class="font-[500]">Operating System Architecture</p>
-							<p class="font-[200]">x86_64</p>
+							<p class="font-[200]">{json.operatingSystem.architecture}</p>
+						</div>
+						<div class="leading-none space-y-[10px]">
+							<p class="font-[500]">Kernel</p>
+							<p class="font-[200]">{json.kernel.name} {json.kernel.version}</p>
+						</div>
+						<div class="leading-none space-y-[10px]">
+							<p class="font-[500]">Boot Mode</p>
+							<p class="font-[200]">{checkUnknown(json.firmware)}</p>
 						</div>
 						<div class="leading-none space-y-[10px]">
 							<p class="font-[500]">Desktop Environment</p>
-							<p class="font-[200]">COSMIC</p>
+							<p class="font-[200]">{json.desktopEnvironment.name}</p>
 						</div>
 						<div class="leading-none space-y-[10px]">
-							<p class="font-[500]">Windowing System</p>
-							<p class="font-[200]">Wayland</p>
+							<p class="font-[500]">Display Server</p>
+							<p class="font-[200]">{json.displayServer.name}</p>
 						</div>
 					</div>
 				</div>

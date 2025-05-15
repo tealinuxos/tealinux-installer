@@ -21,24 +21,27 @@
     let inputtedSize = $state(0);
     let actualSize = $state(0);
 
+    let flagList = $state([
+        'hidden',
+        'boot',
+        'efi',
+        'esp',
+        'bios_grub'
+    ]);
+
     const getSectorFromMB = (size) => {
         return Math.floor(( Number(size) * 1024 * 1024 ) / 512);
     }
 
     const getFlagList = (existFlags) => {
+
         let flags = existFlags ? existFlags : [];
         
-        let flagList = [
-            'hidden',
-            'boot',
-            'efi',
-            'esp',
-            'bios_grub'
-        ];
+        let newList = flagList.concat(flags);
 
-        flagList = flagList.filter(list => !flags.includes(list));
+        let s = new Set(newList);
 
-        return flags.concat(flagList);
+        flagList = [...s];
     }
 
     const isArrayIdentical = (a, b) => {
@@ -131,6 +134,8 @@
             actualSize = modifiedPartition[index].size;
             inputtedSize = ( actualSize * 512 ) / ( 1024 * 1024 );
         }
+
+        getFlagList(modifiedPartition[index].flags);
     })
 </script>
 
@@ -232,10 +237,11 @@
     <div class="w-full">
         <span class="text-[#FFFEFB] mb-1">Flags</span>
         <div class="grid grid-cols-3 gap-2">
-            {#each getFlagList(tempModifiedPartition[index].flags) as flag}
+            {#each flagList as flag}
                 <div class="flex items-center space-x-2">
                     {#if !readOnly}
-                        <input type="checkbox" id={flag}
+                        {#key tempModifiedPartition[index].flags}
+                            <input type="checkbox" id={flag}
                                checked={tempModifiedPartition[index].flags.includes(flag)}
                                onchange={(e) => {
                                    const checked = e.target.checked;
@@ -243,8 +249,10 @@
                                    tempModifiedPartition[index].flags = checked
                                        ? [...flags, flag]
                                        : flags.filter(f => f !== flag);
+                                    getFlagList(tempModifiedPartition[index].flags)
                                }}
                                class="h-4 w-4 text-[#3C6350] focus:ring-[#3C6350] border-[#3C6350] rounded" />
+                        {/key}
                     {:else}
                         <div class="h-4 w-4 border border-[#3C6350] rounded flex items-center justify-center">
                             {#if tempModifiedPartition[index].flags.includes(flag)}
