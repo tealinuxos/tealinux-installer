@@ -86,8 +86,7 @@
 	};
 
     const setPreview = async (layout, variant) => {
-        console.log('invokeing')
-        await invoke("set_cosmic_keymap", { layout, variant });
+        await invoke("set_cosmic_keymap", { live: false, layout, variant });
     };
 
 
