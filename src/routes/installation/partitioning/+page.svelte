@@ -192,7 +192,7 @@
 				options={disks}
 				selectedValue={selectedDisk}
 				on:select={(e) => {
-					selectedDisk = e.detail; // Terima seluruh object disk
+					selectedDisk = e.detail; 
 					updateDiskPreview(e.detail);
 				}}
 				displayField="diskPath"

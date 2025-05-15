@@ -2,7 +2,7 @@
     import { prettySize } from '$lib/essentials.js';
     import { onMount } from 'svelte';
     import SelectComponent from '../SelectComponent.svelte';
-    import { invoke } from '@tauri-apps/api/core';
+	import ComponentSelect from './ComponentSelect.svelte';
 
     let {
         showEdit = $bindable(),
@@ -17,10 +17,6 @@
         readOnly = false
     } = $props();
 
-    let selectedFilesystem = $state(null);
-    let filesystemOptions = $state([]);
-    let isLoadingFilesystems = $state(false);
-    let filesystemError = $state(null);
     let index = selectedPartition;
 
     let inputtedSize = $state(0);
@@ -33,7 +29,6 @@
         'esp',
         'bios_grub'
     ]);
-
 
     const getSectorFromMB = (size) => {
         return Math.floor(( Number(size) * 1024 * 1024 ) / 512);
@@ -115,7 +110,7 @@
         showEdit = false;
     }
 
-    onMount(async () => {
+    onMount(() => {
         tempModifiedPartition = JSON.parse(JSON.stringify(modifiedPartition));
 
         if (newPartition && !readOnly) {
@@ -161,7 +156,7 @@
     <!-- Size and Format Section -->
     <div class="flex w-full justify-between items-center">
         <!-- Size Box -->
-        <div class="flex items-center w-[200px] gap-2 p-2 rounded-[14px] border-[1.3px] border-[#3C6350]">
+        <div class="flex items-center w-[157px] gap-2 p-2 rounded-[14px] border-[1.3px] border-[#3C6350]">
             {#if newPartition && !readOnly}
                 <span class="text-[#FFFEFB]">New Size</span>
                 <input type="number" bind:value={inputtedSize} class="w-16 bg-transparent text-white focus:outline-none" />
@@ -196,22 +191,16 @@
         <div class="flex flex-col">
             <span class="text-[#FFFEFB] mb-1">Filesystem</span>
             {#if !readOnly}
-                    <SelectComponent
-                        options={filesystemOptions}
-                        selectedValue={selectedFilesystem}
-                        on:select={(e) => {
-                            selectedFilesystem = e.detail.value;
-                            tempModifiedPartition[index].filesystem || 'None';
-                        }}
-                        displayField="name"
-                        simpleMode={true}
-                        {isLoadingFilesystems}
-                        loadingText="Loading filesystems..."
-                        errorText="Error loading filesystems"
-                        defaultText="Select"
-                        width="100%"
-                        height="50px"
-                    />
+                <ComponentSelect
+                    options={[
+                        { value: 'btrfs', name: 'btrfs' },
+                        { value: 'fat32', name: 'fat32' },
+                        { value: 'ext4', name: 'ext4' }
+                    ]}
+                    bind:selectedValue={tempModifiedPartition[index].filesystem}
+                    displayField="name"
+                    width="100%"
+                />
             {:else}
                 <div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2">
                     {tempModifiedPartition[index].filesystem || 'None'}
@@ -221,13 +210,18 @@
         <div class="flex flex-col">
             <span class="text-[#FFFEFB] mb-1">Mountpoint</span>
             {#if !readOnly}
-                <select bind:value={tempModifiedPartition[index].mountpoint}
-                        class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2 focus:outline-none">
-                    <option value={null}>None</option>
-                    <option value="/">/</option>
-                    <option value="/boot/efi">/boot/efi</option>
-                    <option value="/home">/home</option>
-                </select>
+                <ComponentSelect
+                    options={[
+                        { value: null, name: 'None' },
+                        { value: '/', name: '/' },
+                        { value: '/boot/efi', name: '/boot/efi' },
+                        { value: '/home', name: '/home' }
+                    ]}
+                    bind:value={tempModifiedPartition[index].mountpoint}
+                    displayField="name"
+                    width="100%"
+                    selectedValue={tempModifiedPartition[index].mountpoint}
+                />
             {:else}
                 <div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2">
                     {tempModifiedPartition[index].mountpoint || 'None'}
@@ -235,6 +229,8 @@
             {/if}
         </div>
     </div>
+
+
 
     <!-- Label -->
     <div class="w-full">
