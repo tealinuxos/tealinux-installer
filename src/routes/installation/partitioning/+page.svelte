@@ -178,7 +178,7 @@
 			<GlowingText size="[11]" text="Disk" />
 
 			<div class="flex flex-col">
-				<SelectComponent
+				<!-- <SelectComponent
 					{disks}
 					bind:value={selectedDisk}
 					displayField="diskPath"
@@ -187,8 +187,21 @@
 					width="100%"
 					height="41px"
 					on:change={({ detail }) => selectDisk(detail.value)}
+				/> -->
+				<SelectComponent
+				options={disks}
+				selectedValue={selectedDisk}
+				on:select={(e) => {
+					selectedDisk = e.detail; // Terima seluruh object disk
+					updateDiskPreview(e.detail);
+				}}
+				displayField="diskPath"
+				sizeField="size"
+				formatter={prettySize}
+				width="100%"
+				height="41px"
 				/>
-			</div>
+			</div> 
 			<!-- Disk selection -->
 			<GlowingText size="[11]" text="Methods" />
 			<!-- Partitioning Methods -->

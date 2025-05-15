@@ -2,6 +2,7 @@
     import { prettySize } from '$lib/essentials.js';
     import { onMount } from 'svelte';
     import SelectComponent from '../SelectComponent.svelte';
+    import { invoke } from '@tauri-apps/api/core';
 
     let {
         showEdit = $bindable(),
@@ -16,6 +17,10 @@
         readOnly = false
     } = $props();
 
+    let selectedFilesystem = $state(null);
+    let filesystemOptions = $state([]);
+    let isLoadingFilesystems = $state(false);
+    let filesystemError = $state(null);
     let index = selectedPartition;
 
     let inputtedSize = $state(0);
@@ -28,6 +33,7 @@
         'esp',
         'bios_grub'
     ]);
+
 
     const getSectorFromMB = (size) => {
         return Math.floor(( Number(size) * 1024 * 1024 ) / 512);
@@ -109,7 +115,7 @@
         showEdit = false;
     }
 
-    onMount(() => {
+    onMount(async () => {
         tempModifiedPartition = JSON.parse(JSON.stringify(modifiedPartition));
 
         if (newPartition && !readOnly) {
@@ -190,14 +196,24 @@
         <div class="flex flex-col">
             <span class="text-[#FFFEFB] mb-1">Filesystem</span>
             {#if !readOnly}
-                <select bind:value={tempModifiedPartition[index].filesystem}
-                        class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-1 focus:outline-none">
-                    <option value="btrfs">btrfs</option>
-                    <option value="fat32">fat32</option>
-                    <option value="ext4">ext4</option>
-                </select>
+                    <SelectComponent
+                        options={filesystemOptions}
+                        selectedValue={selectedFilesystem}
+                        on:select={(e) => {
+                            selectedFilesystem = e.detail.value;
+                            tempModifiedPartition[index].filesystem || 'None';
+                        }}
+                        displayField="name"
+                        simpleMode={true}
+                        {isLoadingFilesystems}
+                        loadingText="Loading filesystems..."
+                        errorText="Error loading filesystems"
+                        defaultText="Select"
+                        width="100%"
+                        height="50px"
+                    />
             {:else}
-                <div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-1">
+                <div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2">
                     {tempModifiedPartition[index].filesystem || 'None'}
                 </div>
             {/if}
@@ -206,14 +222,14 @@
             <span class="text-[#FFFEFB] mb-1">Mountpoint</span>
             {#if !readOnly}
                 <select bind:value={tempModifiedPartition[index].mountpoint}
-                        class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-1 focus:outline-none">
+                        class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2 focus:outline-none">
                     <option value={null}>None</option>
                     <option value="/">/</option>
                     <option value="/boot/efi">/boot/efi</option>
                     <option value="/home">/home</option>
                 </select>
             {:else}
-                <div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-1">
+                <div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2">
                     {tempModifiedPartition[index].mountpoint || 'None'}
                 </div>
             {/if}
@@ -225,9 +241,9 @@
         <span class="text-[#FFFEFB] mb-1">Label</span>
         {#if !readOnly}
             <input type="text" bind:value={tempModifiedPartition[index].label}
-                   class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-1 focus:outline-none" />
+                   class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2 focus:outline-none" />
         {:else}
-            <div class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-1">
+            <div class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2">
                 {tempModifiedPartition[index].label || 'None'}
             </div>
         {/if}

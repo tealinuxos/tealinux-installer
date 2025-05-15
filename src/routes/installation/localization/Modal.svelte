@@ -34,22 +34,24 @@
 			onclick={() => (show = false)}
 		></div>
 		<div
-			class="flex flex-col min-w-[434px] max-h-full justify-center items-center p-4 bg-black rounded-lg border border-[#3C6350] shadow-[0_0_10px_rgba(38,167,104,0.25)] overflow-auto z-90"
+			class="flex flex-col min-w-[434px] max-h-full justify-center items-center p-4 bg-black rounded-[4px] border border-[#3C6350] shadow-[0_0_10px_rgba(38,167,104,0.25)] overflow-auto z-90"
 		>
 			<div class="w-full p-6 z-10">
 				<!-- <h2 class="text-xl font-bold mb-4 text-white">{title}</h2> -->
 				<div class="relative flex items-center w-full">
 				<!-- Search icon (left) -->
-				<div class="absolute left-3 text-[#26A768]">
-					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-					<circle cx="11" cy="11" r="8"></circle>
-					<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-					</svg>
-				</div>
+					<div class="absolute left-3 text-[#26A768]">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<circle cx="11" cy="11" r="8"></circle>
+						<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+						</svg>
+					</div>
+
 
 				<!-- Input field -->
 				<input
 					type="text"
+					bind:value={keyword} 
 					class="flex items-center justify-between w-full h-[35px] pl-9 pr-8 bg-[#122C1F] text-white rounded-[4px] border border-[#26A768] border-opacity-100 focus:outline-none focus:ring-1 focus:ring-[#26A768]"
 					style="border-width: 1.3px"
 				/>

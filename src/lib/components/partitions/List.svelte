@@ -146,8 +146,18 @@
         </table>
     </div>
 
-    <div class="flex justify-end space-x-3 mt-4">
+    <div class="flex justify-between  space-x-3 mt-4">
+
+
         <button 
+            class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#633C3C] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#FF453A] active:shadow-[0_0_9px_#FF453A] disabled:opacity-50 disabled:hover:shadow-none"
+            on:click={removePartition}
+            disabled={selectedPartition === null || !modifiedPartition?.[selectedPartition]}
+        >
+            Delete
+        </button>
+        <div class="flex gap-3">
+                    <button 
             class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
             on:click={newPartitionTable}
         >
@@ -160,12 +170,6 @@
         >
             Edit
         </button>
-        <button 
-            class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#633C3C] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#FF453A] active:shadow-[0_0_9px_#FF453A] disabled:opacity-50 disabled:hover:shadow-none"
-            on:click={removePartition}
-            disabled={selectedPartition === null || !modifiedPartition?.[selectedPartition]}
-        >
-            Delete
-        </button>
+        </div>
     </div>
 </div>

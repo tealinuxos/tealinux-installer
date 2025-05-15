@@ -1,69 +1,35 @@
 <script>
-  import { getRead, getBlueprint } from '/src/routes/installation/global.js';
-  
-  let { 
-    options = [], 
-    value = $bindable(), 
-    displayField = '', 
-    sizeField = '', 
+  import { createEventDispatcher } from 'svelte';
+
+  let {
+    options = [],
+    selectedValue = null,
+    displayField = 'name',
+    sizeField = '',
     formatter = null,
     width = '100%',
-    height = '46.656px'
+    height = '46.656px',
+    loadingText = "Loading...",
+    // errorText = "Error loading options",
+    defaultText = "Select an option",
+    simpleMode = false,
+    isLoading = false,
+    error = null
   } = $props();
 
-  let selectedDisk = $state(null);
-  let diskOptions = $state([]); 
-  let isLoading = $state(false);
-  let error = $state(null);
-  
-  
-  const fetchDisks = async () => {
-    try {
-      isLoading = true;
-      error = null;
-      
-      
-      const response = await getRead();
-      
-      if (response && response.disk) {
-        
-        diskOptions = response.disk.map(disk => ({
-          ...disk,
-          value: disk.diskPath,
-          name: disk.diskName || disk.diskPath, 
-          size: disk.size
-        }));
-
-        if (options.length === 0) {
-          options = diskOptions;
-        }
-      }
-    } catch (err) {
-      error = err.message || 'Failed to fetch disks';
-      console.error('Error fetching disks:', err);
-    } finally {
-      isLoading = false;
-    }
-  };
-
-  
-  $effect(() => {
-    fetchDisks();
-  });
-
-  const selectDisk = (disk) => {
-    console.log('Selected Disk:', disk);
-    selectedDisk = disk;
-    value = disk; // Update nilai yang dipilih
-  };
-
+  const dispatch = createEventDispatcher();
   let isOpen = $state(false);
   let selectElement = $state(null);
-  
+
+  // Perbaikan: Handle null selectedValue
   let selectedOption = $derived(
-    options.find(opt => {
-      return typeof opt === 'object' ? opt === value : opt === value;
-    }) || diskOptions.find(opt => opt === value)
+    selectedValue 
+      ? options.find(opt => {
+          const optValue = typeof opt === 'object' ? opt.value : opt;
+          const compareValue = typeof selectedValue === 'object' ? selectedValue.value : selectedValue;
+          return optValue === compareValue;
+        })
+      : null
   );
 
   function handleClickOutside(event) {
@@ -71,45 +37,43 @@
       isOpen = false;
     }
   }
-  
+
   function toggleDropdown() {
     if (!isLoading && !error) {
       isOpen = !isOpen;
     }
   }
-  
+
   function selectOption(option) {
-    value = option;
+    const value = typeof option === 'object' ? option.value : option;
+    dispatch('select', option); // Kirim seluruh object option
     isOpen = false;
-    
-    
-    if (option && (option.diskPath || option.value)) {
-      selectDisk(option);
-    }
   }
-  
+
   function getDisplayText(option) {
-    if (isLoading) return "Loading disks...";
-    if (error) return "Error loading disks";
-    if (!option) return "Select a disk";
+    if (isLoading) return loadingText;
+    if (error) return errorText;
+    if (!option) return defaultText;
     
     if (typeof option === 'object') {
       const display = displayField ? option[displayField] : option.name || option.value;
+      if (simpleMode) return display;
       const size = sizeField && option[sizeField] ? ` (${formatSize(option[sizeField])})` : '';
       return `${display}${size}`;
     }
     return option;
   }
-  
+
   function formatSize(size) {
-    if (!size) {
-      return ''
-    } else {
-      let sizeInBytes = Number(size.slice(0, -1)) * 512;
-      return formatter ? formatter(sizeInBytes) : `${(size / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+    if (!size || typeof size !== 'string') return '';
+    try {
+      const sizeInBytes = Number(size.slice(0, -1)) * 512;
+      return formatter ? formatter(sizeInBytes) : `${(sizeInBytes / (1024 ** 3)).toFixed(2)} GB`;
+    } catch {
+      return '';
     }
   }
-  
+
   $effect(() => {
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
@@ -124,7 +88,7 @@
     class:disabled={isLoading || error}
   >
     <div class="selected-text">
-      {getDisplayText(selectedOption || value)}
+      {getDisplayText(selectedOption)}
     </div>
     
     {#if !isLoading && !error}
@@ -140,9 +104,9 @@
   
   {#if isOpen && !isLoading && !error}
     <div class="dropdown-options">
-      {#each diskOptions.length ? diskOptions : options as option (option.value || option)}
+      {#each options as option (option.value || option)}
         <div 
-          class="option {value === option ? 'selected' : ''}"
+          class="option {selectedValue === option ? 'selected' : ''}"
           on:click={() => selectOption(option)}
         >
           {getDisplayText(option)}
@@ -151,6 +115,9 @@
     </div>
   {/if}
 </div>
+
+
+
 
 <style>
   .custom-select {
@@ -164,10 +131,8 @@
   .selected-value {
     display: flex;
     padding: 9px 15px;
-    flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    align-self: stretch;
     border-radius: 14px;
     border: 1.3px solid #3C6350;
     background: #101010;
