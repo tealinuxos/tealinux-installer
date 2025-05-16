@@ -21,7 +21,6 @@
         newPartition = false;
     }
 
-    // Helper function to check if a partition is unallocated
     const isUnallocated = (partition) => {
         return !partition?.path && !partition?.filesystem;
     };
@@ -107,7 +106,7 @@
         newPartition = false;
     }
 </script>
-<div class="w-[1050px] rounded-[13px] border-[1.3px] border-[#3C6350] bg-[#101010] p-4">
+<div class="flex flex-col justify-between w-[1050px] rounded-[13px] border-[1.3px] border-[#3C6350] bg-[#101010] p-4 ">
     <div>
         <table class="w-full">
             <thead class="text-[#FFFEFB] font-['Poppins'] text-[14px]">
@@ -147,21 +146,8 @@
         </table>
     </div>
 
-    <div class="flex justify-end space-x-3 mt-4">
-        <button 
-            class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
-            on:click={newPartitionTable}
-            disabled={!selectedDisk}
-        >
-            + Add
-        </button>
-        <button 
-            class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
-            on:click={editPartition}
-            disabled={selectedPartition === null || isUnallocated(modifiedPartition?.[selectedPartition])}
-        >
-            Edit
-        </button>
+    <div class="flex justify-between mt-4">
+
         <button 
             class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#633C3C] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#FF453A] active:shadow-[0_0_9px_#FF453A] disabled:opacity-50 disabled:hover:shadow-none"
             on:click={removePartition}
@@ -169,5 +155,21 @@
         >
             Delete
         </button>
+                <div class="flex gap-3">
+            <button 
+            class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
+            on:click={newPartitionTable}
+            >
+                + Add
+            </button>
+            <button 
+                class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
+                on:click={editPartition}
+                disabled={selectedPartition === null || isUnallocated(modifiedPartition?.[selectedPartition])}
+            >
+                Edit
+            </button>
+        </div>
+
     </div>
 </div>

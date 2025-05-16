@@ -4,15 +4,11 @@
   let {
     options = [],
     selectedValue = null,
-    value= null,
     displayField = 'name',
-    sizeField = '',
-    formatter = null,
     width = '100%',
     height = '46.656px',
     loadingText = "Loading...",
     defaultText = "Select an option",
-    simpleMode = false,
     isLoading = false,
     error = null
   } = $props();
@@ -21,11 +17,12 @@
   let isOpen = $state(false);
   let selectElement = $state(null);
 
-  $effect(() =>{
-    if(selectedValue !== undefined && selectedValue !== null){
-      value =selectedValue
+  $effect(() => {
+    // Reaksi ketika selectedValue berubah dari parent
+    if (selectedValue !== undefined && selectedValue !== null) {
+      // Tidak perlu melakukan apa-else khusus di sini
     }
-  })
+  });
 
   let selectedOption = $derived(
     selectedValue 
@@ -51,32 +48,21 @@
 
   function selectOption(option) {
     const value = typeof option === 'object' ? option.value : option;
-    dispatch('select', option); 
+    dispatch('select', option);
+    // Perbarui selectedValue langsung
+    selectedValue = option;
     isOpen = false;
   }
 
   function getDisplayText(option) {
     if (isLoading) return loadingText;
-    if (error) return errorText;
+    if (error) return error;
     if (!option) return defaultText;
     
     if (typeof option === 'object') {
-      const display = displayField ? option[displayField] : option.name || option.value;
-      if (simpleMode) return display;
-      const size = sizeField && option[sizeField] ? ` (${formatSize(option[sizeField])})` : '';
-      return `${display}${size}`;
+      return displayField ? option[displayField] : option.name || option.value;
     }
     return option;
-  }
-
-  function formatSize(size) {
-    if (!size || typeof size !== 'string') return '';
-    try {
-      const sizeInBytes = Number(size.slice(0, -1)) * 512;
-      return formatter ? formatter(sizeInBytes) : `${(sizeInBytes / (1024 ** 3)).toFixed(2)} GB`;
-    } catch {
-      return '';
-    }
   }
 
   $effect(() => {
@@ -111,7 +97,7 @@
     <div class="dropdown-options">
       {#each options as option (option.value || option)}
         <div 
-          class="option {selectedValue === option ? 'selected' : ''}"
+          class="option {selectedValue && (typeof selectedValue === 'object' ? selectedValue.value : selectedValue) === (typeof option === 'object' ? option.value : option) ? 'selected' : ''}"
           on:click={() => selectOption(option)}
         >
           {getDisplayText(option)}
@@ -121,9 +107,6 @@
   {/if}
 </div>
 
-
-
-
 <style>
   .custom-select {
     position: relative;
@@ -131,6 +114,7 @@
     flex-direction: column;
     gap: 10px;
     align-self: stretch;
+    font-family: 'Plus Jakarta Sans', sans-serif;
   }
   
   .selected-value {
@@ -143,10 +127,11 @@
     background: #101010;
     cursor: pointer;
     transition: border-color 0.2s ease;
-    color: #26A768;
-    font-family: 'Jakarta', sans-serif;
+    color: #FFFEFB;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 500;
+    height: 100%;
+    box-sizing: border-box;
   }
   
   .selected-value.disabled {
@@ -156,34 +141,33 @@
   
   .dropdown-options {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 5px);
     left: 0;
     right: 0;
     max-height: 200px;
     overflow-y: auto;
     background: #101010;
-    border: 1px solid #3C6350;
+    border: 1.3px solid #3C6350;
     border-radius: 14px;
     z-index: 1000;
-    margin-top: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
   
   .option {
     padding: 10px 15px;
     cursor: pointer;
-    transition: background-color 0.2s;
-    color: white;
-    font-family: 'Jakarta', sans-serif;
+    transition: all 0.2s;
+    color: #FFFEFB;
     font-size: 13px;
   }
   
   .option:hover {
-    background-color: #032B17;
+    background-color: rgba(60, 99, 80, 0.2);
   }
   
   .option.selected {
-    background-color: #032B17;
-    color: #4CDA95;
+    background-color: rgba(38, 167, 104, 0.1);
+    color: #26A768;
   }
   
   .icon {

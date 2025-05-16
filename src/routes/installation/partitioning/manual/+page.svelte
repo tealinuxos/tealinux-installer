@@ -254,7 +254,7 @@ onMount(async () => {
 
 {#await getStorageJSON() then json}
     <div class="flex flex-col p-5 gap-y-2">
-        <div class="flex flex-  gap-[230px] ">
+        <div class="flex flex-  justify-between ">
             <div>
                 <h1 class="text-[#26A768] font-['Plus_Jakarta_Sans'] text-[28px] font-bold leading-[39.2px]">
                     Manual Partition
@@ -304,17 +304,7 @@ onMount(async () => {
                     </span>
                     
                 </button>
-                <SelectComponent
-                    height="46.66px"
-                    width="216px"
-                    options={disks}
-                    bind:value={selectedDisk}
-                    displayField="diskPath"
-                    sizeField="size"
-                    formatter={prettySize}
-                    on:change={({ detail }) => changeSelectedDisk(detail.value)}
-                    class="w-full max-w-md"
-                />  
+
             </div>
 
 

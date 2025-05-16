@@ -2,6 +2,7 @@
     import { prettySize } from '$lib/essentials.js';
     import { onMount } from 'svelte';
     import SelectComponent from '../SelectComponent.svelte';
+	import ComponentSelect from './ComponentSelect.svelte';
 
     let {
         showEdit = $bindable(),
@@ -190,14 +191,18 @@
         <div class="flex flex-col">
             <span class="text-[#FFFEFB] mb-1">Filesystem</span>
             {#if !readOnly}
-                <select bind:value={tempModifiedPartition[index].filesystem}
-                        class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[8px] p-1 focus:outline-none">
-                    <option value="btrfs">btrfs</option>
-                    <option value="fat32">fat32</option>
-                    <option value="ext4">ext4</option>
-                </select>
+                <ComponentSelect
+                    options={[
+                        { value: 'btrfs', name: 'btrfs' },
+                        { value: 'fat32', name: 'fat32' },
+                        { value: 'ext4', name: 'ext4' }
+                    ]}
+                    bind:selectedValue={tempModifiedPartition[index].filesystem}
+                    displayField="name"
+                    width="100%"
+                />
             {:else}
-                <div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[8px] p-1">
+                <div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2">
                     {tempModifiedPartition[index].filesystem || 'None'}
                 </div>
             {/if}
@@ -205,29 +210,36 @@
         <div class="flex flex-col">
             <span class="text-[#FFFEFB] mb-1">Mountpoint</span>
             {#if !readOnly}
-                <select bind:value={tempModifiedPartition[index].mountpoint}
-                        class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[8px] p-1 focus:outline-none">
-                    <option value={null}>None</option>
-                    <option value="/">/</option>
-                    <option value="/boot/efi">/boot/efi</option>
-                    <option value="/home">/home</option>
-                </select>
+                <ComponentSelect
+                    options={[
+                        { value: null, name: 'None' },
+                        { value: '/', name: '/' },
+                        { value: '/boot/efi', name: '/boot/efi' },
+                        { value: '/home', name: '/home' }
+                    ]}
+                    bind:value={tempModifiedPartition[index].mountpoint}
+                    displayField="name"
+                    width="100%"
+                    selectedValue={tempModifiedPartition[index].mountpoint}
+                />
             {:else}
-                <div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[8px] p-1">
+                <div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2">
                     {tempModifiedPartition[index].mountpoint || 'None'}
                 </div>
             {/if}
         </div>
     </div>
 
+
+
     <!-- Label -->
     <div class="w-full">
         <span class="text-[#FFFEFB] mb-1">Label</span>
         {#if !readOnly}
             <input type="text" bind:value={tempModifiedPartition[index].label}
-                   class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[8px] p-1 focus:outline-none" />
+                   class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2 focus:outline-none" />
         {:else}
-            <div class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[8px] p-1">
+            <div class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2">
                 {tempModifiedPartition[index].label || 'None'}
             </div>
         {/if}
