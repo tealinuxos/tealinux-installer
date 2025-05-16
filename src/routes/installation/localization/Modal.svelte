@@ -51,6 +51,12 @@
     }
 
     const onKeyDown = (event) => {
+
+        if (!tempSelected) {
+            selectedIndex = data.findIndex(d => field ? d[field] === selected : d === selected);
+            tempSelected = data[selectedIndex];
+        }
+
         if (data.length) {
             switch(event.keyCode) {
                 case 40:
