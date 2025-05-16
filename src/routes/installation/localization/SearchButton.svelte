@@ -2,13 +2,13 @@
 	import Modal from "./Modal.svelte";
 
     let {
-        keyword = $bindable(),
         show = $bindable(),
         data = $bindable(),
         field = null,
         title = "This is a title",
         notFoundMessage = "Message not found",
-        onclick = () => console.log('clicked')
+        onclick = () => console.log('clicked'),
+        selected
     } = $props();
 
 </script> 
@@ -18,7 +18,7 @@
     on:click={() => (show = true)}
 >
     <div>
-        <span>{keyword || title}</span>
+        <span>{selected}</span>
     </div>
   
     <div>
@@ -36,12 +36,14 @@
     </div>
 </div>
 
-<Modal
-    bind:show
-    bind:keyword
-    { data }
-    { onclick }
-    { field }
-    { title }
-    { notFoundMessage }
-/>
+{#if show}
+    <Modal
+        bind:show
+        { data }
+        { onclick }
+        { field }
+        { title }
+        { notFoundMessage }
+        { selected }
+    />
+{/if}
