@@ -14,6 +14,7 @@
 	let filteredData = $state(data);
 	let tempSelected = $state(null);
 	let keyword = $state('');
+    let selectedIndex = $state(0);
 
 	function filter(term) {
 		term = term.toLowerCase();
@@ -25,8 +26,9 @@
 		}
 	}
 
-	function handleSelect(item) {
+	function handleSelect(item, index) {
 		tempSelected = item;
+        selectedIndex = index;
 	}
 
 	function confirmSelection() {
@@ -45,6 +47,25 @@
             el.scrollIntoView({
                 behavior: "smooth"
             })
+        }
+    }
+
+    const onKeyDown = (event) => {
+        if (data.length) {
+            switch(event.keyCode) {
+                case 40:
+                    if (selectedIndex < data.length) {
+                        tempSelected = data[selectedIndex + 1];
+                        selectedIndex += 1;
+                    }
+                    break;
+                case 38:
+                    if (selectedIndex > 0) {
+                        tempSelected = data[selectedIndex - 1];
+                        selectedIndex -= 1;
+                    }
+                    break;
+            }
         }
     }
 
@@ -97,21 +118,32 @@
             <!-- Daftar item -->
             <div class="max-h-60 overflow-auto space-y-2">
                 {#if data.length > 0}
-                    {#each filteredData as data}
-                        {@const item = field ? data[field] : data}
-                        {@const selectedItem = tempSelected ? tempSelected : selected}
-                        <div 
-                            class={`flex items-center justify-between p-[3px_16px] h-[40px] rounded-[8px] cursor-pointer 
-                                ${selectedItem === item ? 
-                                    'bg-[#122C1F] text-white' : 
-                                    'bg-[rgba(29,33,31,0.7)] text-white hover:bg-[#122C1F]'}`}
-                            on:click={() => handleSelect(data)}
-                            id={item}
-                        >
-                            <span>{item}</span>
-                            <span class="text-sm text-gray-400">{item.description || ''}</span>
-                        </div>
-                    {/each}
+                    {#key tempSelected}
+                        {#each filteredData as data, index}
+                            {@const item = field ? data[field] : data}
+                            {@const selectedItem = tempSelected
+                                ? field
+                                    ? tempSelected[field]
+                                        ? tempSelected[field]
+                                        : selected
+                                    : tempSelected
+                                        ? tempSelected
+                                        : selected
+                                : selected
+                            }
+                            <div 
+                                class={`flex items-center justify-between p-[3px_16px] h-[40px] rounded-[8px] cursor-pointer 
+                                    ${selectedItem === item ? 
+                                        'bg-[#122C1F] text-white' : 
+                                        'bg-[rgba(29,33,31,0.7)] text-white hover:bg-[#122C1F]'}`}
+                                on:click={() => handleSelect(data, index)}
+                                id={item}
+                            >
+                                <span>{item}</span>
+                                <span class="text-sm text-gray-400">{item.description || ''}</span>
+                            </div>
+                        {/each}
+                    {/key}
                 {:else}
                     <div class="text-white">{notFoundMessage}</div>
                 {/if}
@@ -134,3 +166,5 @@
         </div>
     </div>
 </div>
+
+<svelte:window on:keydown|preventDefault={onKeyDown} />
