@@ -3,7 +3,7 @@
 	import Button from './ui/Button.svelte';
 	import GlowingText from './ui/GlowingText.svelte';
 
-	export let totalSteps = 5;
+	export let totalSteps = 7;
 	export let currentStep = 1;
 	export let currentTitle = 'Installation';
 	export let prevPath = '';

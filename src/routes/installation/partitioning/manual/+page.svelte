@@ -372,7 +372,6 @@ onMount(async () => {
 {/await}
 
 <Navigation
-	totalSteps={5}
 	currentStep={4}
 	currentTitle="Manual Partitioning"
 	prevPath="/installation/partitioning"

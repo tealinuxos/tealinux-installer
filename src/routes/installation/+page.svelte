@@ -171,7 +171,6 @@
 {/await}
 
 <Navigation
-	totalSteps={5}
 	currentStep={1}
 	currentTitle="System Information"
 	prevPath="/installation"

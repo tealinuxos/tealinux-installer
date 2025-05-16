@@ -338,8 +338,7 @@
 </div>
 
 <Navigation
-    totalSteps={6}
-    currentStep={5}
+    currentStep={6}
     currentTitle="Summary"
     prevPath="/installation/partitioning"
     nextPath="/installation/install"
