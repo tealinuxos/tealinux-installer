@@ -7,7 +7,7 @@
 
 	let percentage = $state(100);
 	let message = $state('');
-    let errorMessage = $state(null);
+	let errorMessage = $state(null);
 
 	const listenInstall = listen('INSTALL', (event) => {
 		percentage = event.payload.percentage;
@@ -19,8 +19,8 @@
 	});
 
 	const startInstall = async () => {
-		// await invoke('start_install'); // remove on production
-        console.log('installing');
+		await invoke('start_install'); // remove on production
+		console.log('installing');
 	};
 
 	// const exitOk = async () => {
