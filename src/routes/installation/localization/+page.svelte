@@ -9,8 +9,6 @@
 	import Preview from './Preview.svelte';
 	import Navigation from '../../../lib/components/Navigation.svelte';
 
-	let json = $state([]);
-
 	// Locale
 	let locales = $state([]);
 	let filteredLocales = $state([]);
@@ -31,6 +29,7 @@
 	let selectedCity = $state(null);
 
 	// Keyboard Layout
+	let keyboards = $state([]);
 	let filteredLayouts = $state([]);
 	let filteredVariants = $state([]);
 	let selectedKeyboard = $state(null);
@@ -62,15 +61,12 @@
 
 	const selectKeyboardLayout = async (keyboard) => {
 		selectedKeyboard = keyboard;
-		selectedLayout = selectedKeyboard.code;
+		selectedLayout = selectedKeyboard;
 		showLayoutModal = false;
 
 		layoutSearchTerm = selectedKeyboard.name;
 
-		// Set variant selection when changing keyboard to the first entry
-		variantSearchTerm = selectedKeyboard.variant.length ? selectedKeyboard.variant[0].name : null;
-
-		selectedVariant = selectedKeyboard.variant.length ? selectedKeyboard.variant[0].code : null;
+		selectedVariant = selectedKeyboard.variant.length ? selectedKeyboard.variant[0] : null;
 
 		filteredVariants = selectedKeyboard.variant;
 
@@ -78,15 +74,20 @@
 	};
 
 	const selectKeyboardVariant = async (variant) => {
-		selectedVariant = variant.code;
-		variantSearchTerm = variant.name;
+		selectedVariant = variant;
 		showVariantModal = false;
 
         await setPreview(selectedLayout, selectedVariant);
 	};
 
     const setPreview = async (layout, variant) => {
-        await invoke("set_cosmic_keymap", { live: false, layout, variant });
+        if (layout && variant) {
+            await invoke("set_cosmic_keymap", {
+                live: false,
+                layout: layout.code,
+                variant: variant.code
+            });
+        }
     };
 
 
@@ -95,12 +96,10 @@
 		selectedRegion = selectedTimezone.region;
 		showRegionModal = false;
 
-		regionSearchTerm = selectedRegion;
-
 		// Set city selection when changing timezone to the first entry
-		citySearchTerm = selectedCity = selectedTimezone.city.length ? selectedTimezone.city[0] : null;
+		selectedCity = selectedTimezone.city.length ? selectedTimezone.city[0] : null;
 
-		filteredCity = selectedTimezone.city;
+		filteredCity = selectedTimezone.city.length ? selectedTimezone.city : null;
 	};
 
 	const selectTimezoneCity = (city) => {
@@ -119,14 +118,36 @@
 
 		await invoke('blueprint_set_locale', { locale: selectedLocale });
 		await invoke('blueprint_set_timezone', { region: selectedRegion, city: selectedCity });
-		await invoke('blueprint_set_keyboard', { layout: selectedLayout, variant: selectedVariant });
+		await invoke('blueprint_set_keyboard', {
+            layout: selectedLayout.code,
+            variant: selectedVariant.code
+        });
 
         goto("/installation/partitioning");
 	};
 
+    const getDefault = async () => {
+        
+		getBlueprint().then((blueprint) => {
+            if (blueprint.locale) {
+                selectedLocale = blueprint.locale.main;
+            }
+			if (blueprint.keyboard) {
+				selectedLayout = keyboards.find(layout => layout.code === blueprint.keyboard.layout);
+				selectedVariant = selectedLayout.variant.find(variant => variant.code === blueprint.keyboard.variant);
+			}
+            if (blueprint.timezone) {
+				selectedTimezone = timezones.find(zone => zone.region === blueprint.timezone.region);
+                selectedRegion = selectedTimezone.region;
+                selectedCity = selectedTimezone.city.find(city => city === blueprint.timezone.city)
+            }
+		});
+
+    }
+
 	onMount(async () => {
-		json = await getKeyboard();
-		filteredLayouts = json;
+		keyboards = await getKeyboard();
+		filteredLayouts = keyboards;
 
 		timezones = await getTimezone();
 		filteredRegion = timezones;
@@ -134,32 +155,31 @@
 		locales = await getLocale();
 		filteredLocales = locales;
 
-		let defaultKeyboard = json.length ? json[0] : null;
-		let defaultTimezone = timezones.length
+		let defaultKeyboardLayout = keyboards.length
+            ? keyboards.find(keyb => keyb.code === "us")
+            : null;
+		let defaultKeyboardVariant = defaultKeyboardLayout.variant.length
+            ? defaultKeyboardLayout.variant.find(variant => variant.code === "intl")
+            : null;
+		let defaultRegion = timezones.length
 			? timezones.find((zone) => zone.region === 'Asia')
+			: null;
+		let defaultCity = timezones.length
+			? defaultRegion.city.find((zone) => zone === 'Jakarta')
 			: null;
 		let defaultLocale = locales.length
 			? locales.find((locale) => locale.name === 'en_US.UTF-8 UTF-8')
 			: null;
 
-		getBlueprint().then((blueprint) => {
-			if (blueprint.locale !== null) {
-				selectedLayout = blueprint.keyboard.layout;
-				selectedVariant = blueprint.keyboard.variant;
-				layoutSearchTerm = '';
-				variantSearchTerm = '';
-			}
-		});
+        await getDefault();
 
 		selectLocale(defaultLocale);
-		selectTimezoneRegion(defaultTimezone);
-		selectKeyboardLayout(defaultKeyboard);
+		selectTimezoneRegion(defaultRegion);
+        selectTimezoneCity(defaultCity);
+		selectKeyboardLayout(defaultKeyboardLayout);
+		selectKeyboardVariant(defaultKeyboardVariant);
 	});
 
-	// debugging purpose; remove this later
-	$effect(() => {
-		$inspect(`Selected Keyboard: ${selectedLayout} - ${selectedVariant}`);
-	});
 </script>
 
 <TwoSide>
@@ -185,13 +205,14 @@
 				<GlowingText size="[11]" text="Locale" />
 				<!-- selector? -->
 				<SearchButton
-					title="Select Locale"
+					title={selectedLocale || "Select Locale"}
 					notFoundMessage="Locale Not Found"
 					bind:show={showLocaleModal}
 					bind:keyword={localeSearchTerm}
 					data={filteredLocales}
 					field="name"
 					onclick={selectLocale}
+                    selected={selectedLocale}
 				/>
 			</div>
 			<!-- select Timezone -->
@@ -208,6 +229,7 @@
 					data={filteredRegion}
 					field="region"
 					onclick={selectTimezoneRegion}
+                    selected={selectedRegion}
 				/>
 				<SearchButton
 					title="Select Timezone City"
@@ -216,6 +238,7 @@
 					bind:keyword={citySearchTerm}
 					data={filteredCity}
 					onclick={selectTimezoneCity}
+                    selected={selectedCity}
 				/>
 				 </div>
 
@@ -234,6 +257,7 @@
 					data={filteredLayouts}
 					field="name"
 					onclick={selectKeyboardLayout}
+                    selected={selectedLayout ? selectedLayout.name : ''}
 				/>
 				<!-- keyboard varian -->
 				<SearchButton
@@ -244,6 +268,7 @@
 					field="name"
 					data={filteredVariants}
 					onclick={selectKeyboardVariant}
+                    selected={selectedVariant ? selectedVariant.name : ''}
 				/>
 				 </div>
 
