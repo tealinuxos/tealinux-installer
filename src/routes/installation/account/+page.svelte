@@ -243,10 +243,9 @@
 </TwoSide>
 
 <Navigation
-	totalSteps={5}
-	currentStep={2}
-	currentTitle="Localization"
-	prevPath="/installation"
+	currentStep={5}
+	currentTitle="User"
+	prevPath="/installation/partitioning"
 	nextPath="/installation/summary"
 	nextAction={handleSetAccount}
 />

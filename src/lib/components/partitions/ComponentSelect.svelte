@@ -3,7 +3,7 @@
 
   let {
     options = [],
-    selectedValue = null,
+    selectedValue = $bindable(),
     displayField = 'name',
     width = '100%',
     height = '46.656px',
@@ -50,14 +50,15 @@
     const value = typeof option === 'object' ? option.value : option;
     dispatch('select', option);
     // Perbarui selectedValue langsung
-    selectedValue = option;
+    selectedValue = value;
     isOpen = false;
   }
 
   function getDisplayText(option) {
+    let nullValue = options.find(opt => typeof opt === 'object' ? opt.value === null : opt === null);
     if (isLoading) return loadingText;
     if (error) return error;
-    if (!option) return defaultText;
+    if (!option) return displayField ? nullValue[displayField] : nullValue || defaultText;
     
     if (typeof option === 'object') {
       return displayField ? option[displayField] : option.name || option.value;

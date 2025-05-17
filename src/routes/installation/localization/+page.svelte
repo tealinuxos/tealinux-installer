@@ -291,7 +291,6 @@
 </TwoSide>
 
 <Navigation
-	totalSteps={5}
 	currentStep={2}
 	currentTitle="Localization"
 	prevPath="/installation"

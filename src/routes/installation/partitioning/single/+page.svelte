@@ -225,7 +225,6 @@
 {/if}
 
 <Navigation
-	totalSteps={5}
 	currentStep={4}
 	currentTitle="Single Boot"
 	prevPath="/installation/partitioning"

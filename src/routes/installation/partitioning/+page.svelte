@@ -454,7 +454,6 @@
 </TwoSide>
 
 <Navigation
-	totalSteps={5}
 	currentStep={3}
 	currentTitle="Partitioning"
 	prevPath="/installation/localization"
