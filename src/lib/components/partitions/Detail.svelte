@@ -110,6 +110,10 @@
         showEdit = false;
     }
 
+    $effect(() => {
+        // $inspect(tempModifiedPartition[index])
+    })
+
     onMount(() => {
         tempModifiedPartition = JSON.parse(JSON.stringify(modifiedPartition));
 
@@ -217,14 +221,13 @@
                         { value: '/boot/efi', name: '/boot/efi' },
                         { value: '/home', name: '/home' }
                     ]}
-                    bind:value={tempModifiedPartition[index].mountpoint}
+                    bind:selectedValue={tempModifiedPartition[index].mountpoint}
                     displayField="name"
                     width="100%"
-                    selectedValue={tempModifiedPartition[index].mountpoint}
                 />
             {:else}
                 <div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2">
-                    {tempModifiedPartition[index].mountpoint || 'None'}
+                    {tempModifiedPartition[index].mountpoint || null }
                 </div>
             {/if}
         </div>
@@ -237,6 +240,7 @@
         <span class="text-[#FFFEFB] mb-1">Label</span>
         {#if !readOnly}
             <input type="text" bind:value={tempModifiedPartition[index].label}
+                    oninput={e => {if (!e.target.value.length) tempModifiedPartition[index].label = null}}
                    class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2 focus:outline-none" />
         {:else}
             <div class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2">
@@ -292,7 +296,6 @@
                 </button>
             {:else}
                 <button onclick={cancelModifiedPartition} 
-                        disabled={isArrayIdentical(tempModifiedPartition, modifiedPartition)}
                         class="px-4 py-2 rounded text-[#FF453A] border border-[#3C6350] hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)] disabled:opacity-50">
                     Cancel
                 </button>
