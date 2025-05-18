@@ -227,7 +227,7 @@
                 />
             {:else}
                 <div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2">
-                    {tempModifiedPartition[index].mountpoint || null }
+                    {tempModifiedPartition[index].mountpoint || 'None' }
                 </div>
             {/if}
         </div>
@@ -283,28 +283,26 @@
     </div>
 
     <!-- Buttons -->
-    {#if !readOnly}
-        <div class="flex w-full justify-end space-x-2 mt-4">
-            {#if newPartition}
-                <button onclick={cancelModifiedPartition} 
-                        class="px-4 py-2 rounded text-[#FF453A] border border-[#3C6350] hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)]">
-                    Cancel
-                </button>
-                <button onclick={createPartition} 
-                        class="px-4 py-2 rounded text-[#26A768] border border-[#3C6350] hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)]">
-                    Create
-                </button>
-            {:else}
-                <button onclick={cancelModifiedPartition} 
-                        class="px-4 py-2 rounded text-[#FF453A] border border-[#3C6350] hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)] disabled:opacity-50">
-                    Cancel
-                </button>
-                <button onclick={applyModifiedPartition} 
-                        disabled={isArrayIdentical(tempModifiedPartition, modifiedPartition)}
-                        class="px-4 py-2 rounded text-[#26A768] border border-[#3C6350] hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)] disabled:opacity-50">
-                    Apply
-                </button>
-            {/if}
-        </div>
-    {/if}
+    <div class="flex w-full justify-end space-x-2 mt-4 { readOnly ? 'opacity-0' : '' }">
+        {#if newPartition}
+            <button onclick={cancelModifiedPartition} 
+                    class="px-4 py-2 rounded text-[#FF453A] border border-[#3C6350] hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)]">
+                Cancel
+            </button>
+            <button onclick={createPartition} 
+                    class="px-4 py-2 rounded text-[#26A768] border border-[#3C6350] hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)]">
+                Create
+            </button>
+        {:else}
+            <button onclick={cancelModifiedPartition} 
+                    class="px-4 py-2 rounded text-[#FF453A] border border-[#3C6350] hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)] disabled:opacity-50">
+                Cancel
+            </button>
+            <button onclick={applyModifiedPartition} 
+                    disabled={isArrayIdentical(tempModifiedPartition, modifiedPartition)}
+                    class="px-4 py-2 rounded text-[#26A768] border border-[#3C6350] hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)] disabled:opacity-50">
+                Apply
+            </button>
+        {/if}
+    </div>
 </div>

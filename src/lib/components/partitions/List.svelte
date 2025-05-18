@@ -97,7 +97,6 @@
         tempModifiedPartition = modifiedPartition;
         showEdit = false;
         newPartition = false;
-        selectedPartition = null;
     }
 
     const editPartition = () => {

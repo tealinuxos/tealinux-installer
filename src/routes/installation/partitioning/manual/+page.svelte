@@ -118,6 +118,7 @@ const changeSelectedDisk = async (selected) => {
 const revertChanges = () => {
     modifiedPartition = JSON.parse(JSON.stringify(originalPartition));
     tempModifiedPartition = JSON.parse(JSON.stringify(originalPartition));
+    showEdit = false;
 }
 
 const isUnallocated = (partition) => {
@@ -332,32 +333,34 @@ onMount(async () => {
 
         
             {#if tempModifiedPartition[selectedPartition]}
-                {#if showEdit}
-                    <Detail
-                        bind:showEdit
-                        bind:tempModifiedPartition
-                        bind:modifiedPartition
-                        bind:selectedPartition
-                        bind:newPartition
-                        bind:storage
-                        bind:diskSize
-                        bind:diskPath
-                        bind:newPartitionIndex
-                    />
-                {:else }
+                {#key selectedPartition}
+                    {#if showEdit}
                         <Detail
-                        readOnly={true}
-                        bind:showEdit
-                        bind:tempModifiedPartition
-                        bind:modifiedPartition
-                        bind:selectedPartition
-                        bind:newPartition
-                        bind:storage
-                        bind:diskSize
-                        bind:diskPath
-                        bind:newPartitionIndex
-                    />
-                {/if}
+                            bind:showEdit
+                            bind:tempModifiedPartition
+                            bind:modifiedPartition
+                            bind:selectedPartition
+                            bind:newPartition
+                            bind:storage
+                            bind:diskSize
+                            bind:diskPath
+                            bind:newPartitionIndex
+                        />
+                    {:else }
+                            <Detail
+                            readOnly={true}
+                            bind:showEdit
+                            bind:tempModifiedPartition
+                            bind:modifiedPartition
+                            bind:selectedPartition
+                            bind:newPartition
+                            bind:storage
+                            bind:diskSize
+                            bind:diskPath
+                            bind:newPartitionIndex
+                        />
+                    {/if}
+                {/key}
             {/if}
         </div>
     </div>
