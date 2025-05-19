@@ -243,6 +243,11 @@ pub async fn start_install(window: Window) {
 
     // Bootloader
 
+    if blueprint.storage.clone().unwrap().install_method == MethodKind::DUAL {
+        // Os::append_swap_fstab(&blueprint.storage.clone().unwrap().into());
+        Os::patch_grub_config_disable_os_probe(false);
+    }
+
     let _ = window.emit(
         "INSTALL",
         Payload {

@@ -5,8 +5,8 @@ use std::vec::Vec;
 use std::{clone, str::FromStr};
 use tea_partition_generator::single_boot_blockdev::{Blkstuff, SingleBootBlockdevice};
 
-use tea_partition_generator::dual_boot_blockdev::{DualBootBlockdevice, DualbootBlkstuff};
 use tea_partition_generator::core::{PartitionGenerator, TeaPartitionGenerator};
+use tea_partition_generator::dual_boot_blockdev::{DualBootBlockdevice, DualbootBlkstuff};
 
 #[tauri::command]
 pub async fn autogen_partition_select_disk(
@@ -48,9 +48,10 @@ pub async fn autogen_partition_select_disk(
             blkname, fs, use_swap
         );
 
-        let mut ctx: DualbootBlkstuff = DualBootBlockdevice::blockdevice(blkname, fs, use_swap);
+        let mut ctx: DualbootBlkstuff =
+            DualBootBlockdevice::blockdevice(blkname.clone(), fs, use_swap);
 
-        let partition_generator_ctx = TeaPartitionGenerator::new("/dev/sdb".to_string());
+        let partition_generator_ctx = TeaPartitionGenerator::new(blkname.clone());
         let (start, end) = partition_generator_ctx.find_empty_space_sector_area();
 
         if start == 0 && end == 0 {
