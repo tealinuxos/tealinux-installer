@@ -30,6 +30,7 @@
 		showEdit = true;
 		newPartition = true;
 
+
 		let maxNumber = 0;
 		if (modifiedPartition && modifiedPartition.length > 0) {
 			modifiedPartition.forEach((p) => {
@@ -149,7 +150,8 @@
 											: p.path
 										: 'Unallocated'}</td
 								>
-								<td class="p-3">{prettySize(p.size)}</td>
+								<!-- <td class="p-3">{prettySize(p.size)}</td> -->
+								<td class="p-3">{p?.size ? prettySize(p.size) : ''}</td>
 								<td class="p-3">{p.format ? 'Yes' : 'No'}</td>
 								<td class="p-3"
 									>{p.filesystem ? p.filesystem : p.path ? 'Unknown' : 'Unallocated'}</td

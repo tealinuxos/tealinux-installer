@@ -280,16 +280,16 @@
 		</div>
 
 		<div class="flex flex-col">
-			<span class="text-[#FFFEFB] mb-1">Mountpoint</span>
+			<span class="text-[#FFFEFB] mb-1"> use swap</span>
 			{#if !readOnly}
 				<ComponentSelect
 					options={[
 						{ value: null, name: 'None' },
-						{ value: 'gpt', name: 'gpt' },
-						{ value: 'mbr', name: 'mbr' },
+						{ value: 'swap1', name: 'swap1' },
+						{ value: 'swap2', name: 'swap2' },
 						
 					]}
-					bind:selectedValue={tempModifiedPartition[index].mountpoint}
+					bind:selectedValue={tempModifiedPartition[index].swap}
 					displayField="name"
 					width="100%"
 				/>
