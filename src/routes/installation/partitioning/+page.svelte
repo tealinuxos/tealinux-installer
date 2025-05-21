@@ -35,6 +35,7 @@
 	let diskAfter = $state(null);
 	let selectedPreview = $state(Preview.BEFORE);
 	let partitionTable = $state('gpt');
+    let showAfter = $state(false);
 
 	const getStorageJSON = async () => {
 		let json = await getRead();
@@ -53,9 +54,14 @@
 	};
 
 	const selectMethod = (method) => {
+        showAfter = false;
 		console.log(`Selected Method: ${method}`);
 		selectedMethod = method;
-		selectedPreview = Preview.AFTER;
+
+        if (method !== Method.MANUAL) {
+            showAfter = true;
+            selectedPreview = Preview.AFTER;
+        }
 	};
 
 	const updateDiskPreview = (disk) => {
@@ -408,7 +414,7 @@
                                 selected={selectedPreview === Preview.BEFORE}
                                 onclick={() => (selectedPreview = Preview.BEFORE)}
                             />
-                            {#if selectedMethod}
+                            {#if selectedMethod && showAfter}
                                 <PreviewButton
                                     title={Preview.AFTER}
                                     selected={selectedPreview === Preview.AFTER}

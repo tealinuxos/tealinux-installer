@@ -63,7 +63,7 @@
 				<div class="flex flex-col text-[11px] font-jakarta">
 					<span class="pl-1 font-semibold tracking-wide"
 						>{path}
-						{isShowMountPoint & (partition.mountpoint.length !== 0)
+						{isShowMountPoint && (partition.mountpoint)
 							? `- ${partition.mountpoint}`
 							: ''}</span
 					>
