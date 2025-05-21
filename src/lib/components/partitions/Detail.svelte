@@ -176,24 +176,35 @@
 		</div>
 
 		<!-- Format Options -->
+		<!-- Format Options -->
 		{#if !newPartition && !readOnly}
 			<div class="flex flex-col space-y-2">
 				<div class="flex items-center space-x-2">
-					<input
-						type="radio"
-						value={false}
-						bind:group={tempModifiedPartition[index].format}
-						class="text-[#3C6350] focus:ring-[#3C6350] cursor-pointer"
-					/>
+					<div class="h-4 w-4 border border-[#3C6350] rounded-full flex items-center justify-center">
+						<input
+							type="radio"
+							value={false}
+							bind:group={tempModifiedPartition[index].format}
+							class="absolute opacity-0 h-4 w-4 cursor-pointer"
+						/>
+						{#if tempModifiedPartition[index].format === false}
+							<div class="h-2 w-2 bg-[#3C6350] rounded-full"></div>
+						{/if}
+					</div>
 					<span class="text-[#FFFEFB] text-sm">Keep data</span>
 				</div>
 				<div class="flex items-center space-x-2">
-					<input
-						type="radio"
-						value={true}
-						bind:group={tempModifiedPartition[index].format}
-						class="text-[#3C6350] focus:ring-[#3C6350] cursor-pointer"
-					/>
+					<div class="h-4 w-4 border border-[#3C6350] rounded-full flex items-center justify-center">
+						<input
+							type="radio"
+							value={true}
+							bind:group={tempModifiedPartition[index].format}
+							class="absolute opacity-0 h-4 w-4 cursor-pointer"
+						/>
+						{#if tempModifiedPartition[index].format === true}
+							<div class="h-2 w-2 bg-[#3C6350] rounded-full"></div>
+						{/if}
+					</div>
 					<span class="text-[#FFFEFB] text-sm">Erase data</span>
 				</div>
 			</div>
@@ -207,6 +218,7 @@
 			{#if !readOnly}
 				<ComponentSelect
 					options={[
+						
 						{ value: 'btrfs', name: 'btrfs' },
 						{ value: 'fat32', name: 'fat32' },
 						{ value: 'ext4', name: 'ext4' }
@@ -246,61 +258,92 @@
 	</div>
 
 	<!-- Label -->
-	<div class="w-full">
-		<span class="text-[#FFFEFB] mb-1">Label</span>
-		{#if !readOnly}
-			<input
-				type="text"
-				bind:value={tempModifiedPartition[index].label}
-				oninput={(e) => {
-					if (!e.target.value.length) tempModifiedPartition[index].label = null;
-				}}
-				class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2 focus:outline-none"
-			/>
-		{:else}
-			<div
-				class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2"
-			>
-				{tempModifiedPartition[index].label || 'None'}
-			</div>
-		{/if}
-	</div>
-
-	<!-- Flags -->
-	<div class="w-full">
-		<span class="text-[#FFFEFB] mb-1">Flags</span>
-		<div class="grid grid-cols-3 gap-2">
-			{#each flagList as flag}
-				<div class="flex items-center space-x-2">
-					{#if !readOnly}
-						{#key tempModifiedPartition[index].flags}
-							<input
-								type="checkbox"
-								id={flag}
-								checked={tempModifiedPartition[index].flags.includes(flag)}
-								onchange={(e) => {
-									const checked = e.target.checked;
-									const flags = tempModifiedPartition[index].flags;
-									tempModifiedPartition[index].flags = checked
-										? [...flags, flag]
-										: flags.filter((f) => f !== flag);
-									getFlagList(tempModifiedPartition[index].flags);
-								}}
-								class="h-4 w-4 text-[#3C6350] focus:ring-[#3C6350] border-[#3C6350] rounded"
-							/>
-						{/key}
-					{:else}
-						<div class="h-4 w-4 border border-[#3C6350] rounded flex items-center justify-center">
-							{#if tempModifiedPartition[index].flags.includes(flag)}
-								<div class="h-2 w-2 bg-[#3C6350] rounded-sm"></div>
-							{/if}
-						</div>
-					{/if}
-					<label for={flag} class="text-[#FFFEFB] text-sm">{flag}</label>
+	 <div class="grid grid-cols-2  w-full gap-4">
+		<div class="flex flex-col">
+			<span class="text-[#FFFEFB] mb-1">Label</span>
+			{#if !readOnly}
+				<input
+					type="text"
+					bind:value={tempModifiedPartition[index].label}
+					oninput={(e) => {
+						if (!e.target.value.length) tempModifiedPartition[index].label = null;
+					}}
+					class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2 focus:outline-none"
+				/>
+			{:else}
+				<div
+					class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2"
+				>
+					{tempModifiedPartition[index].label || 'None'}
 				</div>
-			{/each}
+			{/if}
 		</div>
-	</div>
+
+		<div class="flex flex-col">
+			<span class="text-[#FFFEFB] mb-1">Mountpoint</span>
+			{#if !readOnly}
+				<ComponentSelect
+					options={[
+						{ value: null, name: 'None' },
+						{ value: 'gpt', name: 'gpt' },
+						{ value: 'mbr', name: 'mbr' },
+						
+					]}
+					bind:selectedValue={tempModifiedPartition[index].mountpoint}
+					displayField="name"
+					width="100%"
+				/>
+			{:else}
+				<div
+					class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2 min-h-[46px]"
+				>
+					{tempModifiedPartition[index].mountpoint || null}
+				</div>
+			{/if}
+		</div>
+	 </div>
+
+
+    <!-- Flags ini kang -->
+    <div class="w-full">
+        <span class="text-[#FFFEFB] mb-1">Flags</span>
+        <div class="grid grid-cols-3 gap-2">
+            {#each flagList as flag}
+                <div class="flex items-center space-x-2">
+                    {#if !readOnly}
+                        {#key tempModifiedPartition[index].flags}
+                            <div class="h-4 w-4 border border-[#3C6350] rounded flex items-center justify-center">
+                                <input 
+                                    type="checkbox" 
+                                    id={flag}
+                                    checked={tempModifiedPartition[index].flags.includes(flag)}
+                                    onchange={(e) => {
+                                        const checked = e.target.checked;
+                                        const flags = tempModifiedPartition[index].flags;
+                                        tempModifiedPartition[index].flags = checked
+                                            ? [...flags, flag]
+                                            : flags.filter(f => f !== flag);
+                                        getFlagList(tempModifiedPartition[index].flags)
+                                    }}
+                                    class="absolute opacity-0 h-4 w-4 cursor-pointer"
+                                />
+                                {#if tempModifiedPartition[index].flags.includes(flag)}
+                                    <div class="h-2 w-2 bg-[#3C6350] rounded-sm"></div>
+                                {/if}
+                            </div>
+                        {/key}
+                    {:else}
+                        <div class="h-4 w-4 border border-[#3C6350] rounded flex items-center justify-center">
+                            {#if tempModifiedPartition[index].flags.includes(flag)}
+                                <div class="h-2 w-2 bg-[#3C6350] rounded-sm"></div>
+                            {/if}
+                        </div>
+                    {/if}
+                    <label for={flag} class="text-[#FFFEFB] text-sm cursor-pointer">{flag}</label>
+                </div>
+            {/each}
+        </div>
+    </div>
 
 	<!-- Buttons -->
 	{#if !readOnly}
