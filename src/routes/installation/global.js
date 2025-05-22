@@ -23,3 +23,9 @@ export const getShortLocale = (locale) => {
 
     return shortLocale;
 }
+
+export const refreshDisk = async () => {
+    await invoke("read_refresh_disk");
+
+};
+

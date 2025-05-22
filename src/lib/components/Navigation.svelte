@@ -9,19 +9,46 @@
 	export let prevPath = '';
 	export let nextPath = '';
 	export let nextAction = null;
+    export let prevAction = null;
+
+    let isLoadingNext = false;
+    let isLoadingBack = false;
 
 	function handleNext() {
+
+        isLoadingNext = true;
+        
 		if (nextAction) {
-			nextAction();
-		} else if (nextPath) {
-			goto(nextPath);
-		}
+			Promise.resolve(nextAction()).then(() => {
+
+                isLoadingNext = false
+
+                if (nextPath) {
+                    goto(nextPath);
+                }
+            });
+		} else {
+            goto(nextPath);
+        }
+
 	}
 
 	function handlePrev() {
-		if (prevPath) {
-			goto(prevPath);
-		}
+        
+        isLoadingBack = true;
+
+        if (prevAction) {
+            Promise.resolve(prevAction()).then(() => {
+
+                isLoadingBack = false
+
+                if (prevPath) {
+                    goto(prevPath);
+                }
+            })
+        } else {
+            goto(prevPath);
+        }
 	}
 </script>
 
@@ -29,7 +56,11 @@
 	<div class="flex items-center justify-between w-full bg-black/30 px-4 p-1">
 		<!-- Tombol Kembali -->
 		<div class="flex items-center gap-6">
-			<Button isDisabled={currentStep === 1 || !prevPath} onclick={handlePrev} btnText="Back" />
+			<Button
+                isDisabled={isLoadingNext || isLoadingBack || currentStep === 1 || !prevPath}
+                onclick={handlePrev}
+                btnText={isLoadingBack ? "...." : "Back"}
+            />
 			<div class="flex items-center gap-1">
 				{#each Array(totalSteps).fill() as _, index}
 					<div
@@ -49,9 +80,9 @@
 
 		<!-- Tombol Selanjutnya -->
 		<Button
-			isDisabled={currentStep === totalSteps || (!nextPath && !nextAction)}
+			isDisabled={isLoadingNext || isLoadingBack || currentStep === totalSteps || (!nextPath && !nextAction)}
 			onclick={handleNext}
-			btnText="Next"
+			btnText={isLoadingNext ? "...." : "Next"}
 		/>
 	</div>
 </div>

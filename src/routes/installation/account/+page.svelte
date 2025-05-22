@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { invoke } from '@tauri-apps/api/core';
-	import { getBlueprint } from '../global.js';
+	import { getBlueprint, refreshDisk } from '../global.js';
 	import { goto } from '$app/navigation';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
@@ -29,8 +29,6 @@
 		passwordsMatch = true;
 
 		await invoke('blueprint_set_account', { fullname, username, hostname, password });
-
-        goto("/installation/summary");
 	};
 
 	$: if (password && confirmPassword && password === confirmPassword) {
@@ -248,4 +246,5 @@
 	prevPath="/installation/partitioning"
 	nextPath="/installation/summary"
 	nextAction={handleSetAccount}
+    prevAction={refreshDisk}
 />

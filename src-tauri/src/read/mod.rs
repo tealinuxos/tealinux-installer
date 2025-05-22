@@ -8,7 +8,7 @@ pub mod operating_system;
 pub mod kernel;
 pub mod display_server;
 
-use serde::Serialize;
+use serde::{ Serialize, Deserialize };
 use model::Model;
 use memory::Memory;
 use battery::Battery;
@@ -23,7 +23,7 @@ use tea_partition_api_lib::read::get_partition;
 use tea_arch_chroot_lib::resource::FirmwareKind;
 use tea_arch_chroot_lib::chroot::bootloader::get_firmware_type;
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 #[serde(rename_all="camelCase")]
 pub struct Read
 {

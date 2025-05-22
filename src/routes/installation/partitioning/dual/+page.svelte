@@ -112,8 +112,6 @@
             partitionTable: partitionTable,
             fs: selectedFilesystem
         });
-
-        goto('/installation/account');
     }
 
 	$effect(() => {
@@ -303,6 +301,6 @@
 	currentStep={4}
 	currentTitle="Dual Boot"
 	prevPath="/installation/partitioning"
-	nextPath="/installation"
+	nextPath="/installation/account"
     nextAction={handlePartitioning}
 />

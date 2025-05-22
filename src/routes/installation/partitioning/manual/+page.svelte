@@ -312,6 +312,6 @@
 	currentStep={4}
 	currentTitle="Manual Partitioning"
 	prevPath="/installation/partitioning"
-	nextPath="/installation"
+	nextPath="/installation/account"
 	nextAction={handleSetStorage}
 />
