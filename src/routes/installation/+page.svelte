@@ -165,7 +165,7 @@
 				Loading...
 			{:then disks}
 				<DiskSlider {disks} colors={getColors(disks, 0)} />
-			{/await}
+			{/await} 
 		{/snippet}
 	</TwoSide>
 {/await}
