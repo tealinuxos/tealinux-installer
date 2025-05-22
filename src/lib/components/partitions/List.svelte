@@ -57,6 +57,9 @@
 			flags: []
 		};
 
+        tempModifiedPartition = modifiedPartition;
+        showEdit = false;
+        newPartition = false;
 		modifiedPartition = modifiedPartition ? [...modifiedPartition, partition] : [partition];
 		tempModifiedPartition = [...(tempModifiedPartition || []), partition];
 		selectedPartition = modifiedPartition.length - 1;
@@ -184,7 +187,7 @@
 			<button
 				class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#633C3C] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#FF453A] active:shadow-[0_0_9px_#FF453A] disabled:opacity-50 disabled:hover:shadow-none"
 				on:click={removePartition}
-				disabled={selectedPartition === null || !modifiedPartition?.[selectedPartition]}
+				disabled={selectedPartition === null || !modifiedPartition?.[selectedPartition] || !modifiedPartition?.[selectedPartition].path}
 			>
 				Delete
 			</button>

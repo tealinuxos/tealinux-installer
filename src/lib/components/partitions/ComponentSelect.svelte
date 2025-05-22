@@ -4,7 +4,7 @@
   let {
     options = [],
     selectedValue = $bindable(),
-    displayField = 'name',
+    displayField,
     width = '100%',
     height = '40',
     loadingText = "Loading...",
@@ -58,7 +58,7 @@
     let nullValue = options.find(opt => typeof opt === 'object' ? opt.value === null : opt === null);
     if (isLoading) return loadingText;
     if (error) return error;
-    if (!option) return displayField ? nullValue[displayField] : nullValue || defaultText;
+    if (!option) return displayField ? nullValue ? nullValue[displayField] : defaultText : nullValue || defaultText;
     
     if (typeof option === 'object') {
       return displayField ? option[displayField] : option.name || option.value;

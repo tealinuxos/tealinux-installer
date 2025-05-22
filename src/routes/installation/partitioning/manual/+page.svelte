@@ -1,4 +1,5 @@
 <script>
+
 	import { onMount } from 'svelte';
 	import { getRead } from '/src/routes/installation/global.js';
 	import { invoke } from '@tauri-apps/api/core';
@@ -219,6 +220,7 @@
 	onMount(async () => {
 		await changeSelectedDisk(0);
 	});
+
 </script>
 
 {#await getStorageJSON() then json}
@@ -253,6 +255,7 @@
 		<div class="">
 			<Preview bind:modifiedPartition bind:diskSize />
 		</div>
+
 		
 		<div class="flex flex-row flex-auto space-x-2 text-white">
 			<List

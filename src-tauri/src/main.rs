@@ -70,8 +70,8 @@ fn main() {
                 });
         }
         _ => {
+            karen::pkexec_with_env(&["WAYLAND_DISPLAY", "XDG_RUNTIME_DIR"]).unwrap();
             duct::cmd!("xhost", "si:localuser:root").run().unwrap();
-            sudo::escalate_if_needed().unwrap();
         }
     }
 }
