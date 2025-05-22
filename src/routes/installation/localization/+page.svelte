@@ -124,16 +124,12 @@
 
 	const handleSetLocalization = async () => {
 
-        console.log("locale")
 		await invoke('blueprint_set_locale', { locale: selectedLocale });
-        console.log("timezone")
 		await invoke('blueprint_set_timezone', { region: selectedRegion, city: selectedCity });
-        console.log("keyboard")
 		await invoke('blueprint_set_keyboard', {
             layout: selectedLayout.code,
             variant: selectedVariant.code
         });
-        console.log("disk")
 
         await refreshDisk();
 	};
