@@ -6,7 +6,7 @@
     selectedValue = $bindable(),
     displayField,
     width = '100%',
-    height = '46.656px',
+    height = '40',
     loadingText = "Loading...",
     defaultText = "Select an option",
     isLoading = false,

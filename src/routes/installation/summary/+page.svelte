@@ -1,10 +1,12 @@
 <script>
+	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
 	import { invoke } from '@tauri-apps/api/core';
 	import { onMount } from 'svelte';
 	import { getRead, getBlueprint } from '../global.js';
 	import prettyBytes from 'pretty-bytes';
 	import { randomColor } from 'randomcolor';
 	import Navigation from '../../../lib/components/Navigation.svelte';
+	import GlowingText from '../../../lib/components/ui/GlowingText.svelte';
 
 	let timezone;
 	let mainLocale;
@@ -86,269 +88,87 @@
     })
 </script>
 
-<div class="relative w-full text-white">
-	{#await getBlueprint() then blueprint}
-		{@const keyboard =
-			blueprint.keyboard === null
-				? 'To be filled'
-				: blueprint.keyboard.layout + ' - ' + blueprint.keyboard.variant}
-		{@const timezoneRegion =
-			blueprint.timezone === null ? 'To be filled' : blueprint.timezone.region}
-		{@const timezoneCity = blueprint.timezone === null ? 'To be filled' : blueprint.timezone.city}
-		{@const locale = blueprint.locale === null ? 'To be filled' : blueprint.locale.main}
-		{@const userFullname = blueprint.account === null ? 'To be filled' : blueprint.account.fullname}
-		{@const userUsername = blueprint.account === null ? 'To be filled' : blueprint.account.username}
-		{@const userHostname = blueprint.account === null ? 'To be filled' : blueprint.account.hostname}
-		{@const userPassword = blueprint.account === null ? 'To be filled' : blueprint.account.password}
+<TwoSide>
+	{#snippet left()}
+		<div class="w-[288px] space-y-[15px]">
+			<div class="flex space-x-[14px]">
+				<h1 class="font-archivo font-[600] text-[30px] tracking-[-1.8px]">Review your choices</h1>
+			</div>
+			<p class="font-jakarta text-sm font-[200] tracking-[-0.56px] text-center">
+				Review your choices carefully to ensure everything 
+				is ready before proceeding with the installation.
+			</p>
+		</div>
+	{/snippet}
 
-		<section class="flex flex-col items-center justify-center h-auto mt-32">
-			<form class=" text-center w-[50dvw] p-8 rounded-md min-h-[50dvh] pb-[12dvh]">
-				<h1 class="text-center mb-6 font-bold text-[32px] font-archivo">Summary</h1>
-				<div class="mb-4">
-					<div class="flex justify-between">
-						<h2 class="font-poppin mb-2 font-semibold">Keyboard layout</h2>
-						<img
-							onclick={() => (window.location.href = '/installation/keyboard')}
-							src="/green-pencil.svg"
-							alt=""
-							class="text-left mb-2"
-						/>
-					</div>
-					<div
-						class="relative flex items-center w-full h-[45px] rounded-[10px] bg-grayTealinux border-2 border-black overflow-hidden mb-2 font-poppin text-[14px] mx-auto shadow-2xl"
-					>
-						<span class="ml-[12px] font-poppin text-gray-500 text-[14px]">{keyboard}</span>
-					</div>
-				</div>
+	{#snippet right()}
+			{#await getBlueprint() then blueprint}
+				{@const keyboard =
+					blueprint.keyboard === null
+						? 'To be filled'
+						: blueprint.keyboard.layout + ' - ' + blueprint.keyboard.variant}
+				{@const timezoneRegion =
+					blueprint.timezone === null ? 'To be filled' : blueprint.timezone.region}
+				{@const timezoneCity = blueprint.timezone === null ? 'To be filled' : blueprint.timezone.city}
+				{@const locale = blueprint.locale === null ? 'To be filled' : blueprint.locale.main}
+				{@const userFullname = blueprint.account === null ? 'To be filled' : blueprint.account.fullname}
+				{@const userUsername = blueprint.account === null ? 'To be filled' : blueprint.account.username}
+				{@const userHostname = blueprint.account === null ? 'To be filled' : blueprint.account.hostname}
+				{@const userPassword = blueprint.account === null ? 'To be filled' : blueprint.account.password}
 
-				<div class="mx-auto mb-4">
-					<div class="flex justify-between">
-						<h2 class="font-poppin text-left mb-2 font-semibold">Timezone</h2>
-						<img
-							onclick={() => (window.location.href = '/installation/timezone')}
-							src="/green-pencil.svg"
-							alt=""
-							class="text-left mb-2"
-						/>
-					</div>
-					<div
-						class="relative flex items-center w-full h-[45px] rounded-[10px] overflow-hidden bg-grayTealinux border-2 border-black mb-2 font-poppin text-[14px] mx-auto shadow-2xl"
-					>
-						<h2 class="flex whitespace-nowrap font-poppin font-medium text-[14px] ml-[12px]">
-							Region:
-						</h2>
-						<span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{timezoneRegion}</span>
-					</div>
-					<div
-						class="relative flex items-center w-full h-[45px] rounded-[10px] overflow-hidden bg-grayTealinux border-2 border-black mb-2 font-poppin text-[14px] mx-auto shadow-2xl"
-					>
-						<h2 class="flex whitespace-nowrap font-poppin font-medium text-[14px] ml-[12px]">
-							City:
-						</h2>
-						<span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{timezoneCity}</span>
-					</div>
-				</div>
-
-				<div class="mx-auto mb-4">
-					<div class="flex justify-between">
-						<h2 class="font-poppin text-left mb-2 font-semibold">Locale</h2>
-						<img
-							onclick={() => (window.location.href = '/installation/locale')}
-							src="/green-pencil.svg"
-							alt=""
-							class="text-left mb-2"
-						/>
-					</div>
-					<div
-						class="relative flex items-center w-full h-[45px] rounded-[10px] overflow-hidden bg-grayTealinux border-2 border-black mb-2 font-poppin text-[14px] mx-auto shadow-2xl"
-					>
-						<h2 class="flex whitespace-nowrap font-poppin font-medium text-[14px] ml-[12px]">
-							Main locale:
-						</h2>
-						<span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{locale}</span>
-					</div>
-				</div>
-
-				<div class="mx-auto mb-4">
-					<div class="flex justify-between">
-						<h2 class="font-poppin text-left mb-2 font-semibold">User</h2>
-						<img
-							onclick={() => (window.location.href = '/installation/account')}
-							src="/green-pencil.svg"
-							alt=""
-							class="text-left mb-2"
-						/>
-					</div>
-					<div
-						class="relative flex items-center w-full h-[45px] rounded-[10px] overflow-hidden bg-grayTealinux border-2 border-black mb-2 font-poppin text-[14px] mx-auto shadow-2xl"
-					>
-						<h2 class="flex whitespace-nowrap font-poppin font-medium text-[14px] ml-[12px]">
-							Computer name:
-						</h2>
-						<span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{userFullname}</span>
-					</div>
-					<div
-						class="relative flex items-center w-full h-[45px] rounded-[10px] overflow-hidden bg-grayTealinux border-2 border-black mb-2 font-poppin text-[14px] mx-auto shadow-2xl"
-					>
-						<h2 class="flex whitespace-nowrap font-poppin font-medium text-[14px] ml-[12px]">
-							Username:
-						</h2>
-						<span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{userHostname}</span>
-					</div>
-					<div
-						class="relative flex items-center w-full h-[45px] rounded-[10px] overflow-hidden bg-grayTealinux border-2 border-black mb-2 font-poppin text-[14px] mx-auto shadow-2xl"
-					>
-						<h2 class="flex whitespace-nowrap font-poppin font-medium text-[14px] ml-[12px]">
-							Password:
-						</h2>
-						<span
-							class="ml-[4px] font-poppin text-gray-500 text-[14px] {passwordVisible
-								? ''
-								: 'password-hidden'}"
-						>
-							{userPassword}
-						</span>
-						<img
-							src="/eyeSlash.svg"
-							alt="Toggle Visibility"
-							class="mr-[17.18px] ml-auto cursor-pointer"
-							onclick={togglePasswordVisibility}
-						/>
-					</div>
-				</div>
-
-				{#await getDisk() then disks}
-					<div class="w-full mx-auto mb-4">
-						<div class="flex relative items-center justify-between">
-							<h2 class="font-poppin font-semibold text-[15px]">Partition installation</h2>
-							<img
-								onclick={() => (window.location.href = '/installation/partition')}
-								src="/green-pencil.svg"
-								alt=""
-								class="text-left mb-2"
-							/>
-						</div>
-						{#if disks !== null}
-							<h1 class="p-4 text-[18px] font-bold">After</h1>
-						{/if}
-
-						{#if disks !== null}
-							{@const colors = getColors(disks)}
-							{#await getDiskSize() then diskSize}
-								<div class="w-full">
-									<div class="flex mb-4 h-8 w-full overflow-hidden rounded-full">
-										<div class="h-full flex rounded-full overflow-hidden w-full">
-											{#each disks as partition, i}
-												{@const partitionSize = partition.size}
-												{@const percentage = (partitionSize / diskSize) * 100}
-
-												{@const color = colors[i]}
-
-												<div
-													style="width: {percentage}%; background-color: {color}"
-													class="h-full"
-												></div>
-											{/each}
-										</div>
-									</div>
-									<div class="flex gap-y-4 flex-wrap mb-4">
-										{#each disks as partition, i}
-											{@const color = colors[i]}
-											{@const size = partition.size * 512}
-											{@const path =
-												partition.path == null ? 'Unallocated' : partition.path.slice(5)}
-											{@const filesystem =
-												partition.filesystem == null
-													? path == 'Unallocated'
-														? 'Unallocated'
-														: 'Unknown'
-													: partition.filesystem}
-											{@const prettySize = prettyBytes(size)}
-											<div class="flex pr-2 gap-x-2">
-												<div style="background-color: {color}" class="w-4 h-4 rounded-xs"></div>
-												<div class="flex flex-col text-sm font-poppinmedium font-medium">
-													<span class="pl-1">{path}</span>
-													<span class="pl-1">{prettySize} {filesystem}</span>
-												</div>
-											</div>
-										{/each}
-									</div>
-								</div>
-							{/await}
-						{:else}
-							To be filled
-						{/if}
-
-						{#if disks !== null}
-							<div class="mt-[8px]">
-								<div
-									class="relative flex items-center w-full h-[50px] rounded-tl-lg rounded-tr-lg bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto"
-								>
-									<div class="grid grid-cols-4 text-center w-full">
-										<h2>Partition</h2>
-										<h2>File system</h2>
-										<h2>Used as</h2>
-										<h2>Format</h2>
-									</div>
-								</div>
-								{#each disks as partition}
-									{@const mountpoint =
-										partition.mountpoint === null ? 'No mountpoint' : partition.mountpoint}
-									{@const path = partition.path === null ? 'Unallocated' : partition.path}
-									{@const filesystem =
-										path === 'Unallocated'
-											? 'Unallocated'
-											: partition.filesystem === null
-												? 'Unknown'
-												: partition.filesystem}
-									{@const format = partition.format ? 'Yes' : 'No'}
-									{@const size = prettyBytes(partition.size * 512)}
-
-									<div
-										class="relative grid grid-cols-4 gap-x-1 md:flex-row items-center w-full h-[65px] bg-white overflow-hidden border border-greyBorder font-poppin text-[14px] mx-auto"
-									>
-										<div class="pl-[10px] text-left">
-											<h2>{path}</h2>
-											<h2 class="text-black">{size}</h2>
-										</div>
-										<div
-											class="bg-[#E7EDED] w-full h-[42px] rounded-xl flex justify-center items-center flex-wrap"
-										>
-											<span class="text-black">{filesystem}</span>
-										</div>
-										<div
-											class="bg-[#E7EDED] w-full h-[42px] rounded-xl flex justify-center items-center flex-wrap"
-										>
-											<span class="text-black">{mountpoint}</span>
-										</div>
-										<div
-											class="bg-[#E7EDED] w-full h-[42px] rounded-xl flex justify-center items-center flex-wrap"
-										>
-											<span class="text-black">{format}</span>
-										</div>
-									</div>
-								{/each}
+				<div class="flex space-x-5 mb-[10px]">
+					<div class="w-1/2 bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px] space-y-5">
+						<GlowingText size="[15]" text="User account" />
+						<div class="space-y-4 text-[15px]">
+							<div class="leading-none space-y-[10px]">
+								<p class="font-[500]">Full name</p>
+								<span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{userFullname}</span>
 							</div>
-						{/if}
+
+							<div class="leading-none space-y-[10px]">
+								<p class="font-[500]">Computer name</p>
+								<span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{userHostname}</span>
+							</div>
+
+							<div class="leading-none space-y-[10px]">
+								<p class="font-[500]">Username</p>
+								<span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{userUsername}</span>
+							</div>
+						</div>
 					</div>
-				{/await}
-			</form>
-		</section>
-	{/await}
-</div>
+					
+					<!-- Localization -->
+					<div class="w-1/2 bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px] space-y-5">
+						<GlowingText size="[15]" text="Localization" />
+						<div class="space-y-4 text-[15px]">
+							<div class="leading-none space-y-[10px]">
+								<p class="font-[500]">Locale</p>
+								<span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{locale}</span>
+							</div>
+							<div class="leading-none space-y-[10px]">
+								<p class="font-[500]">Time Zone</p>
+								<span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{timezoneRegion}/{timezoneCity}</span>
+							</div>
+							<div class="leading-none space-y-[10px]">
+								<p class="font-[500]">Keyboard</p>
+								<span class="ml-[12px] font-poppin text-gray-500 text-[14px]">{keyboard}</span>
+							</div>
+						</div>
+					</div>
+				</div>
+							
+
+				
+			{/await}
+
+		
+	{/snippet}
+</TwoSide>
 
 <Navigation
-    currentStep={6}
-    currentTitle="Summary"
-    prevPath="/installation/partitioning"
-    nextPath="/installation/install"
-    nextAction={null}
-/>
-
-<style>
-	.password-hidden {
-		-webkit-text-security: disc;
-		-moz-text-security: disc;
-		text-security: disc;
-	}
-</style>
+	currentStep={5}
+	currentTitle="Summary"
+	prevPath="/installation"
+	nextPath="/installation/localization"
+	nextAction={null}
+/> 
