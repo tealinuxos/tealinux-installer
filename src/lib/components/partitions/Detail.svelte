@@ -103,9 +103,9 @@
 		showEdit = false;
 	};
 
-	$effect(() => {
-		// $inspect(tempModifiedPartition[index])
-	});
+	// $effect(() => {
+	// 	// $inspect(tempModifiedPartition[index])
+	// });
 
 	onMount(() => {
 		tempModifiedPartition = JSON.parse(JSON.stringify(modifiedPartition));
@@ -211,7 +211,10 @@
 		{/if}
 	</div>
 
-	<!-- Filesystem and Mountpoint -->
+	<!-- Filesystem and Mountpoin
+	 
+	
+	t -->
 	<div class="grid grid-cols-2 w-full gap-4">
 		<div class="flex flex-col">
 			<span class="text-[#FFFEFB] mb-1">Filesystem</span>
@@ -221,7 +224,8 @@
 						
 						{ value: 'btrfs', name: 'btrfs' },
 						{ value: 'fat32', name: 'fat32' },
-						{ value: 'ext4', name: 'ext4' }
+						{ value: 'ext4', name: 'ext4' },
+						{ value: 'swap', name: 'swap' }
 					]}
 					bind:selectedValue={tempModifiedPartition[index].filesystem}
 					displayField="name"
@@ -258,8 +262,8 @@
 	</div>
 
 	<!-- Label -->
-	 <div class="grid grid-cols-2  w-full gap-4">
-		<div class="flex flex-col">
+	 
+	<div class="flex flex-col w-full">
 			<span class="text-[#FFFEFB] mb-1">Label</span>
 			{#if !readOnly}
 				<input
@@ -277,31 +281,8 @@
 					{tempModifiedPartition[index].label || 'None'}
 				</div>
 			{/if}
-		</div>
-
-		<div class="flex flex-col">
-			<span class="text-[#FFFEFB] mb-1"> use swap</span>
-			{#if !readOnly}
-				<ComponentSelect
-					options={[
-						{ value: null, name: 'None' },
-						{ value: 'swap1', name: 'swap1' },
-						{ value: 'swap2', name: 'swap2' },
-						
-					]}
-					bind:selectedValue={tempModifiedPartition[index].swap}
-					displayField="name"
-					width="100%"
-				/>
-			{:else}
-				<div
-					class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2 min-h-[46px]"
-				>
-					{tempModifiedPartition[index].mountpoint || null}
-				</div>
-			{/if}
-		</div>
-	 </div>
+	</div>
+	 
 
 
     <!-- Flags ini kang -->
