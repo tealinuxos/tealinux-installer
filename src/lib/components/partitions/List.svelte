@@ -26,43 +26,9 @@
 		return !partition?.path && !partition?.filesystem;
 	};
 
-	const createPartition = () => {
-		showEdit = true;
+	const showCreateDetail = () => {
 		newPartition = true;
-
-
-		let maxNumber = 0;
-		if (modifiedPartition && modifiedPartition.length > 0) {
-			modifiedPartition.forEach((p) => {
-				if (p.path && p.path.includes('#')) {
-					const num = parseInt(p.path.replace('#', ''));
-					if (num > maxNumber) maxNumber = num;
-				}
-			});
-		}
-
-		const newNumber = maxNumber + 1;
-
-		let partition = {
-			number: newNumber,
-			diskPath,
-			path: `#${newNumber}`,
-			size: Number(diskSize.slice(0, -1)) - 2048,
-			start: 2048,
-			end: Number(diskSize.slice(0, -1)) - 1,
-			filesystem: null,
-			format: false,
-			mountpoint: null,
-			label: null,
-			flags: []
-		};
-
-        tempModifiedPartition = modifiedPartition;
-        showEdit = false;
-        newPartition = false;
-		modifiedPartition = modifiedPartition ? [...modifiedPartition, partition] : [partition];
-		tempModifiedPartition = [...(tempModifiedPartition || []), partition];
-		selectedPartition = modifiedPartition.length - 1;
+		showEdit = true;
 	};
 
 	const removePartition = () => {
@@ -106,7 +72,8 @@
 		tempModifiedPartition = modifiedPartition;
 		showEdit = false;
 		newPartition = false;
-		selectedPartition = null;
+
+        if (selectedPartition === tempModifiedPartition.length) selectedPartition -= 1;
 	};
 
 	const editPartition = () => {
@@ -171,7 +138,7 @@
 	<div class="flex justify-between mt-4">
 		<button
 			class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
-			on:click={createPartition}
+			on:click={showCreateDetail}
 		>
 			+ Add
 		</button>
