@@ -1,11 +1,10 @@
 <script>
 	import { invoke } from '@tauri-apps/api/core';
 	import { onMount } from 'svelte';
-	import { getBlueprint } from '../global.js';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
 	import GlowingText from '$lib/components/ui/GlowingText.svelte';
 	import prettyBytes from 'pretty-bytes';
-	import { getRead } from '../global.js';
+	import { getRead, refreshDisk } from '../global.js';
 	import DiskPreview from '$lib/components/DiskPreview.svelte';
 	import PreviewButton from './components/PreviewButton.svelte';
 	import Card from './components/Card.svelte';
@@ -120,8 +119,6 @@
 			await invoke('blueprint_set_storage', {
 				storage: JSON.stringify(storage_skel)
 			});
-
-			goto(`/installation/partitioning/${selectedMethod}`);
 		}
 	};
 
@@ -140,7 +137,7 @@
 			diskName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length;
 		return colors[index];
 	};
-
+    
 	$effect(() => {
 		if (selectedDisk && partitionTable) {
 			diskAfter = getDiskAfter(selectedDisk, 'ext4', partitionTable, 0);
