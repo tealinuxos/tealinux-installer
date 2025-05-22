@@ -2,7 +2,9 @@
     let { 
         title = "Warning", 
         message = "This configure will reset all your data. Please backup your data before run.",
-        showCancel = true
+        showCancel = true,
+        onConfirm = null,
+        onCancel = null
     } = $props();
 
     let showModal = $state(true);
@@ -42,14 +44,14 @@
             <div class="flex gap-4 mt-6">
                 {#if showCancel}
                     <button 
-                        on:click={cancel}
+                        onclick={onCancel}
                         class="text-[#A72626] font-['Poppins'] text-[20px] font-light leading-none lowercase px-4 py-2"
                     >
                         cancel
                     </button>
                 {/if}
                 <button 
-                    on:click={confirm}
+                    onclick={onConfirm}
                     class="text-[#A72626] font-['Poppins'] text-[20px] font-light leading-none lowercase px-4 py-2"
                 >
                     confirm
