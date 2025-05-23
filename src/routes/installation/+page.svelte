@@ -165,13 +165,12 @@
 				Loading...
 			{:then disks}
 				<DiskSlider {disks} colors={getColors(disks, 0)} />
-			{/await}
+			{/await} 
 		{/snippet}
 	</TwoSide>
 {/await}
 
 <Navigation
-	totalSteps={5}
 	currentStep={1}
 	currentTitle="System Information"
 	prevPath="/installation"

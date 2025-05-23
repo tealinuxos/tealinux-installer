@@ -1,7 +1,7 @@
-use crate::read::get_read;
+use crate::read::{get_read, Read};
 use crate::installer::BluePrint;
 use std::fs::{ File, create_dir_all, read_to_string };
-use std::io::{ Write, Read, BufReader, BufWriter, Error };
+use std::io::{ Write, BufReader, BufWriter, Error };
 use super::storage::filesystem::filesystem_list;
 use std::path::Path;
 use os::get_other_os;
@@ -121,6 +121,18 @@ pub fn write_blueprint(blueprint: BluePrint) -> Result<(), Error>
     let mut writer = BufWriter::new(file);
 
     let _ = writer.write_fmt(format_args!("{}", blueprint));
+
+    Ok(())
+}
+
+pub fn write_read(read: Read) -> Result<(), Error>
+{
+    let read = serde_json::to_string_pretty(&read)?;
+    
+    let file = File::create("/opt/tea-installer/read.json")?;
+    let mut writer = BufWriter::new(file);
+
+    let _ = writer.write_fmt(format_args!("{}", read));
 
     Ok(())
 }

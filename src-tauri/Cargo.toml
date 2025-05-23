@@ -28,9 +28,9 @@ tea-arch-chroot-lib = { git = "https://github.com/tealinuxos/tea-arch-chroot-lib
 tea_partition_generator = { git = "https://github.com/tealinuxos/tea_partition_generator", branch = "fadhil-riyanto/dualboot-wip" }
 uname = "0.1.1"
 procfs = "0.17.0"
-sudo = "0.6.0"
 regex = "1.9.6"
 os_info = "3.11.0"
+karen = { git = "https://github.com/gagahsyuja/karen.git" }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

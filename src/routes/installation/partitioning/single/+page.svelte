@@ -92,9 +92,6 @@
 			fs: selectedFilesystem,
 			useSwap: useSwap
 		});
-
-		// goto('/installation/summary')
-		goto('/installation/account');
 	};
 
 	$effect(async () => {
@@ -225,10 +222,9 @@
 {/if}
 
 <Navigation
-	totalSteps={5}
 	currentStep={4}
 	currentTitle="Single Boot"
 	prevPath="/installation/partitioning"
-	nextPath="/installation/summary"
+	nextPath="/installation/account"
 	nextAction={handlePartitioning}
 />

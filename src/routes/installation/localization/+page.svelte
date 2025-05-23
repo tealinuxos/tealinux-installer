@@ -1,7 +1,7 @@
 <script>
 	import { invoke } from '@tauri-apps/api/core';
 	import { onMount } from 'svelte';
-	import { getBlueprint } from '../global.js';
+	import { getBlueprint, refreshDisk } from '../global.js';
 	import { goto } from '$app/navigation';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
 	import GlowingText from '$lib/components/ui/GlowingText.svelte';
@@ -32,7 +32,6 @@
 	let keyboards = $state([]);
 	let filteredLayouts = $state([]);
 	let filteredVariants = $state([]);
-	let selectedKeyboard = $state(null);
 	let selectedLayout = $state(null);
 	let selectedVariant = $state(null);
 	let showLayoutModal = $state(false);
@@ -60,17 +59,21 @@
 	};
 
 	const selectKeyboardLayout = async (keyboard) => {
-		selectedKeyboard = keyboard;
-		selectedLayout = selectedKeyboard;
-		showLayoutModal = false;
+        if (keyboard) {
+            selectedLayout = keyboard;
+            showLayoutModal = false;
 
-		layoutSearchTerm = selectedKeyboard.name;
+            let defaultVariant = { code: null, name: selectedLayout.name };
 
-		selectedVariant = selectedKeyboard.variant.length ? selectedKeyboard.variant[0] : null;
+            selectedVariant = defaultVariant;
 
-		filteredVariants = selectedKeyboard.variant;
+            filteredVariants = [defaultVariant];
 
-        await setPreview(selectedLayout, selectedVariant);
+            filteredVariants = filteredVariants.concat(selectedLayout.variant);
+
+
+            await setPreview(selectedLayout, selectedVariant);
+        }
 	};
 
 	const selectKeyboardVariant = async (variant) => {
@@ -92,14 +95,17 @@
 
 
 	const selectTimezoneRegion = (timezone) => {
-		selectedTimezone = timezone;
-		selectedRegion = selectedTimezone.region;
-		showRegionModal = false;
+        if (timezone) {
+            selectedTimezone = timezone;
+            selectedRegion = selectedTimezone.region;
+            showRegionModal = false;
 
-		// Set city selection when changing timezone to the first entry
-		selectedCity = selectedTimezone.city.length ? selectedTimezone.city[0] : null;
 
-		filteredCity = selectedTimezone.city.length ? selectedTimezone.city : null;
+            // Set city selection when changing timezone to the first entry
+            selectedCity = selectedTimezone.city.length ? selectedTimezone.city[0] : null;
+
+            filteredCity = selectedTimezone.city.length ? selectedTimezone.city : null;
+        }
 	};
 
 	const selectTimezoneCity = (city) => {
@@ -109,9 +115,11 @@
 	};
 
 	const selectLocale = (locale) => {
-		selectedLocale = locale.name;
-		localeSearchTerm = locale.name;
-		showLocaleModal = false;
+        if (locale) {
+            selectedLocale = locale.name;
+            localeSearchTerm = locale.name;
+            showLocaleModal = false;
+        }
 	};
 
 	const handleSetLocalization = async () => {
@@ -123,29 +131,11 @@
             variant: selectedVariant.code
         });
 
-        goto("/installation/partitioning");
+        await refreshDisk();
 	};
 
     const getDefault = async () => {
-        
-		getBlueprint().then((blueprint) => {
-            if (blueprint.locale) {
-                selectedLocale = blueprint.locale.main;
-            }
-			if (blueprint.keyboard) {
-				selectedLayout = keyboards.find(layout => layout.code === blueprint.keyboard.layout);
-				selectedVariant = selectedLayout.variant.find(variant => variant.code === blueprint.keyboard.variant);
-			}
-            if (blueprint.timezone) {
-				selectedTimezone = timezones.find(zone => zone.region === blueprint.timezone.region);
-                selectedRegion = selectedTimezone.region;
-                selectedCity = selectedTimezone.city.find(city => city === blueprint.timezone.city)
-            }
-		});
 
-    }
-
-	onMount(async () => {
 		keyboards = await getKeyboard();
 		filteredLayouts = keyboards;
 
@@ -154,30 +144,86 @@
 
 		locales = await getLocale();
 		filteredLocales = locales;
+        
+		getBlueprint().then((blueprint) => {
+            if (blueprint.locale) {
+                selectedLocale = blueprint.locale.main;
+            } else {
+                let temp = locales.length
+                    ? locales.find((locale) => locale.name === 'en_US.UTF-8 UTF-8')
+                    : null;
 
-		let defaultKeyboardLayout = keyboards.length
-            ? keyboards.find(keyb => keyb.code === "us")
-            : null;
-		let defaultKeyboardVariant = defaultKeyboardLayout.variant.length
-            ? defaultKeyboardLayout.variant.find(variant => variant.code === "intl")
-            : null;
-		let defaultRegion = timezones.length
-			? timezones.find((zone) => zone.region === 'Asia')
-			: null;
-		let defaultCity = timezones.length
-			? defaultRegion.city.find((zone) => zone === 'Jakarta')
-			: null;
-		let defaultLocale = locales.length
-			? locales.find((locale) => locale.name === 'en_US.UTF-8 UTF-8')
-			: null;
+                selectedLocale = temp
+                    ? temp.name
+                    : null;
+            }
+
+            if (blueprint.timezone) {
+				selectedTimezone = timezones.find(zone => zone.region === blueprint.timezone.region);
+                selectedRegion = selectedTimezone.region;
+
+                filteredCity = selectedTimezone
+                    ? selectedTimezone.city
+                    : null;
+
+                selectedCity = selectedTimezone.city.find(city => city === blueprint.timezone.city)
+            } else {
+                selectedTimezone = timezones.length
+                    ? timezones.find((zone) => zone.region === 'Asia')
+                    : null;
+
+                selectedRegion = selectedTimezone
+                    ? selectedTimezone.region
+                    : 'Asia';
+
+                filteredCity = selectedTimezone
+                    ? selectedTimezone.city
+                    : null;
+
+                selectedCity = selectedTimezone
+                    ? selectedTimezone.city.find((city) => city === 'Jakarta')
+                    : 'Jakarta';
+            }
+
+			if (blueprint.keyboard) {
+				selectedLayout = keyboards.find(layout => layout.code === blueprint.keyboard.layout);
+
+                let defaultVariant = { code: null, name: selectedLayout?.name };
+
+                if (blueprint.keyboard.variant) {
+                    selectedVariant = selectedLayout.variant.find(variant => variant.code === blueprint.keyboard.variant);
+                } else {
+                    selectedVariant = defaultVariant;
+                }
+
+                filteredVariants = selectedLayout
+                    ? [defaultVariant].concat(selectedLayout.variant)
+                    : null;
+
+			} else {
+                selectedLayout = keyboards.length
+                    ? keyboards.find(keyb => keyb.code === "us")
+                    : null;
+
+                selectedVariant = { code: null, name: selectedLayout?.name }
+
+                filteredVariants = selectedLayout ?
+                    [selectedVariant].concat(selectedLayout.variant) :
+                    null;
+            }
+		});
+
+    }
+
+	onMount(async () => {
 
         await getDefault();
 
-		selectLocale(defaultLocale);
-		selectTimezoneRegion(defaultRegion);
-        selectTimezoneCity(defaultCity);
-		selectKeyboardLayout(defaultKeyboardLayout);
-		selectKeyboardVariant(defaultKeyboardVariant);
+		selectLocale(selectedLocale);
+		selectTimezoneRegion(selectedRegion);
+        selectTimezoneCity(selectedCity);
+		selectKeyboardLayout(selectedLayout);
+		selectKeyboardVariant(selectedVariant);
 	});
 
 </script>
@@ -291,7 +337,6 @@
 </TwoSide>
 
 <Navigation
-	totalSteps={5}
 	currentStep={2}
 	currentTitle="Localization"
 	prevPath="/installation"
