@@ -34,7 +34,7 @@
 	let diskAfter = $state(null);
 	let selectedPreview = $state(Preview.BEFORE);
 	let partitionTable = $state('gpt');
-    let showAfter = $state(false);
+	let showAfter = $state(false);
 
 	const getStorageJSON = async () => {
 		let json = await getRead();
@@ -53,16 +53,16 @@
 	};
 
 	const selectMethod = (method) => {
-        showAfter = false;
+		showAfter = false;
 		console.log(`Selected Method: ${method}`);
 		selectedMethod = method;
 
-        if (method !== Method.MANUAL) {
-            showAfter = true;
-            selectedPreview = Preview.AFTER;
-        } else {
-            selectedPreview = Preview.BEFORE;
-        }
+		if (method !== Method.MANUAL) {
+			showAfter = true;
+			selectedPreview = Preview.AFTER;
+		} else {
+			selectedPreview = Preview.BEFORE;
+		}
 	};
 
 	const updateDiskPreview = (disk) => {
@@ -139,7 +139,7 @@
 			diskName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length;
 		return colors[index];
 	};
-    
+
 	$effect(() => {
 		if (selectedDisk && partitionTable) {
 			diskAfter = getDiskAfter(selectedDisk, 'ext4', partitionTable, 0);
@@ -194,25 +194,26 @@
 					on:change={({ detail }) => selectDisk(detail.value)}
 				/> -->
 				<SelectComponent
-				options={disks}
-				selectedValue={selectedDisk}
-				on:select={(e) => {
-					selectedDisk = e.detail; 
-					updateDiskPreview(e.detail);
-				}}
-				displayField="diskPath"
-				sizeField="size"
-				formatter={prettySize}
-				width="100%"
-				height="41px"
+					options={disks}
+					selectedValue={selectedDisk}
+					on:select={(e) => {
+						selectedDisk = e.detail;
+						updateDiskPreview(e.detail);
+					}}
+					displayField="diskPath"
+					sizeField="size"
+					formatter={prettySize}
+					width="100%"
+					height="41px"
 				/>
-			</div> 
+			</div>
 			<!-- Disk selection -->
 			<GlowingText size="[11]" text="Methods" />
 			<!-- Partitioning Methods -->
 			<div class="flex flex-start gap-[15px] p-[10px] w-full">
 				<!-- Single Boot Card -->
 				<Card
+					disable={selectedDisk === null}
 					method={Method.SINGLE}
 					onclick={() => selectMethod(Method.SINGLE)}
 					onmouseenter={showWarning}
@@ -288,6 +289,7 @@
 
 				<!-- Double Boot Card -->
 				<Card
+					disable={selectedDisk === null}
 					method={Method.DUAL}
 					onclick={() => selectMethod(Method.DUAL)}
 					title="Dual Boot"
@@ -355,6 +357,7 @@
 
 				<!-- Manual Partition Card -->
 				<Card
+					disable={selectedDisk === null}
 					method={Method.MANUAL}
 					onclick={() => selectMethod(Method.MANUAL)}
 					title="Manual Partitioning"
@@ -401,45 +404,46 @@
 
 			<!-- Add this section after the partitioning tools section -->
 			<div
-				class="flex flex-col p-[15px] gap-[10px] self-stretch rounded-[10.267px] border border-[#3C6350] bg-[#101010]"
+				class="grayscale flex flex-col p-[15px] gap-[10px] self-stretch rounded-[10.267px] border border-[#3C6350] bg-[#101010]"
 			>
 				<!-- Disk Preview Title -->
 
-                {#key selectedDisk}
-                    {#if selectedDisk}
-                        <div class="flex flex-row space-x-2">
-                            <PreviewButton
-                                title={Preview.BEFORE}
-                                selected={selectedPreview === Preview.BEFORE}
-                                onclick={() => (selectedPreview = Preview.BEFORE)}
-                            />
-                            {#if selectedMethod && showAfter}
-                                <PreviewButton
-                                    title={Preview.AFTER}
-                                    selected={selectedPreview === Preview.AFTER}
-                                    onclick={() => (selectedPreview = Preview.AFTER)}
-                                />
-                            {/if}
-                        </div>
-                        <div class="space-y-[10px] w-full">
-                            <div class="space-y-[10px]">
-                                {#if selectedPreview === Preview.BEFORE}
-                                    {#key selectedDisk}
-                                        <DiskPreview disk={selectedDisk} />
-                                    {/key}
-                                {:else if diskAfter}
-                                    <DiskPreview disk={diskAfter} />
-                                {/if}
-                            </div>
-                        </div>
-                    {:else}
-                        <div
-                            class="text-[#E4E4E4] font-jakarta text-[9.46px] font-[500] leading-[17.659px] text-center py-4"
-                        >
-                            Select a disk to see preview
-                        </div>
-                    {/if}
-                {/key}
+				{#key selectedDisk}
+					{#if selectedDisk}
+						<div class="flex flex-row space-x-2">
+							<PreviewButton
+								title={Preview.BEFORE}
+								selected={selectedPreview === Preview.BEFORE}
+								onclick={() => (selectedPreview = Preview.BEFORE)}
+							/>
+							{#if selectedMethod && showAfter}
+								<PreviewButton
+									title={Preview.AFTER}
+									selected={selectedPreview === Preview.AFTER}
+									onclick={() => (selectedPreview = Preview.AFTER)}
+								/>
+							{/if}
+						</div>
+						<div class="space-y-[10px] w-full">
+							<div class="space-y-[10px]">
+								{#if selectedPreview === Preview.BEFORE}
+									{#key selectedDisk}
+										<DiskPreview disk={selectedDisk} />
+									{/key}
+								{:else if diskAfter}
+									<DiskPreview disk={diskAfter} />
+								{/if}
+							</div>
+						</div>
+					{:else}
+						<div
+							class="{selectedDisk === null ??
+								'grayscale'} text-[#E4E4E4] font-jakarta text-[9.46px] font-[500] leading-[17.659px] text-center py-4"
+						>
+							Select a disk to see preview
+						</div>
+					{/if}
+				{/key}
 			</div>
 
 			<!-- Warning tooltip -->
