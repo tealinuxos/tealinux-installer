@@ -60,6 +60,8 @@
         if (method !== Method.MANUAL) {
             showAfter = true;
             selectedPreview = Preview.AFTER;
+        } else {
+            selectedPreview = Preview.BEFORE;
         }
 	};
 
