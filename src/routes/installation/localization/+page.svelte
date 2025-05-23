@@ -124,16 +124,12 @@
 
 	const handleSetLocalization = async () => {
 
-        console.log("locale")
 		await invoke('blueprint_set_locale', { locale: selectedLocale });
-        console.log("timezone")
 		await invoke('blueprint_set_timezone', { region: selectedRegion, city: selectedCity });
-        console.log("keyboard")
 		await invoke('blueprint_set_keyboard', {
             layout: selectedLayout.code,
             variant: selectedVariant.code
         });
-        console.log("disk")
 
         await refreshDisk();
 	};
@@ -191,13 +187,19 @@
 
 			if (blueprint.keyboard) {
 				selectedLayout = keyboards.find(layout => layout.code === blueprint.keyboard.layout);
+
                 let defaultVariant = { code: null, name: selectedLayout?.name };
+
+                if (blueprint.keyboard.variant) {
+                    selectedVariant = selectedLayout.variant.find(variant => variant.code === blueprint.keyboard.variant);
+                } else {
+                    selectedVariant = defaultVariant;
+                }
 
                 filteredVariants = selectedLayout
                     ? [defaultVariant].concat(selectedLayout.variant)
                     : null;
 
-				selectedVariant = selectedLayout.variant.find(variant => variant.code === blueprint.keyboard.variant);
 			} else {
                 selectedLayout = keyboards.length
                     ? keyboards.find(keyb => keyb.code === "us")

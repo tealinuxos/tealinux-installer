@@ -1,26 +1,19 @@
 <script>
 
-	import { onMount } from 'svelte';
-	import { getRead } from '/src/routes/installation/global.js';
+	import { getRead, getBlueprint } from '/src/routes/installation/global.js';
 	import { invoke } from '@tauri-apps/api/core';
-	import { prettySize } from '$lib/essentials.js';
-	import prettyBytes from 'pretty-bytes';
 	import List from '$lib/components/partitions/List.svelte';
 	import Detail from '$lib/components/partitions/Detail.svelte';
 	import Preview from '$lib/components/partitions/Preview.svelte';
-	import DiskPreview from '$lib/components/DiskPreview.svelte';
 	import Navigation from '$lib/components/Navigation.svelte';
-	import ComponentSelect from '$lib/components/partitions/ComponentSelect.svelte';
 	import GlowingText from '$lib/components/ui/GlowingText.svelte';
 	import Error from '$lib/components/modals/Error.svelte';
 
-	let disks = $state([]);
 	let selectedDisk = $state(0);
 	let selectedPartition = $state(0);
 
 	let showEdit = $state(false);
 	let newPartition = $state(false);
-	let disable = $state(false);
 
 	let diskSize = $state(0);
 	let diskPath = $state('');
@@ -30,10 +23,12 @@
 	let originalPartition = $state([]);
 	let modifiedPartition = $state([]);
 	let tempModifiedPartition = $state([]);
-
+    
 	let newPartitionIndex = $state(0);
 	let showWarningModal = $state(false);
 	let warningMessage = $state("This action will reset all your data. Please backup your data before proceeding.");
+
+    let espPartitionIndex = $state(null);
 
 	let storage = $state({
 		diskPath: null,
@@ -46,26 +41,29 @@
 		partitions: null,
 	});
 
-	const getStorageJSON = async () => {
-		let json = await getRead();
-		firmwareType = json.firmware;
-		json = json.disk.filter((disk) => disk.partitions !== null);
-		return json;
-	};
+	const setup = async () => {
 
-	const changeSelectedDisk = async (selected) => {
+        let read = await getRead();
+        let blueprint = await getBlueprint();
+
+        firmwareType = read.firmware;
+
+        let selectedDiskPath = blueprint.storage.diskPath || null;
+
+        selectedDisk = read.disk.find(disk => disk.diskPath === selectedDiskPath) || null;
+
+        espPartitionIndex = selectedDisk.partitions.findIndex(p => p.flags.includes("esp"));
+
 		modifiedPartition = [];
 		tempModifiedPartition = [];
 		originalPartition = [];
 
-		let disks = await getStorageJSON();
+		storage.diskPath = selectedDiskPath;
+		storage.partitions = selectedDisk.partitions || null;
 
-		storage.diskPath = disks[selectedDisk].diskPath;
-		storage.partitionTable = disks[selectedDisk].label;
-
-		let partitions = disks[selectedDisk].partitions;
-		diskSize = disks[selectedDisk].size;
-		diskPath = disks[selectedDisk].diskPath;
+		let partitions = selectedDisk.partitions;
+		diskSize = selectedDisk.size;
+		diskPath = selectedDisk.diskPath;
 
 		for (let i of partitions.keys()) {
 			let p = {
@@ -81,7 +79,7 @@
 				mountpoint: null,
 				label: partitions[i].name,
 				flags: partitions[i].flags ? partitions[i].flags : [],
-				schemas: disks[selectedDisk].label.toLowerCase() === 'gpt' ? 'gpt' : 'mbr'
+				schemas: selectedDisk.label.toLowerCase() === 'gpt' ? 'gpt' : 'mbr'
 			};
 
 			modifiedPartition = [...modifiedPartition, p];
@@ -89,9 +87,6 @@
 
 		tempModifiedPartition = JSON.parse(JSON.stringify(modifiedPartition));
 		originalPartition = JSON.parse(JSON.stringify(modifiedPartition));
-
-		selectedDisk = selected;
-		selectedPartition = 0;
 	};
 
 	const revertChanges = () => {
@@ -216,14 +211,9 @@
 		}
 	});
 
-	// Initialize component
-	onMount(async () => {
-		await changeSelectedDisk(0);
-	});
-
 </script>
 
-{#await getStorageJSON() then json}
+{#await setup() then}
 	<div class="flex flex-col p-5 gap-y-2">
 		<div class="flex justify-between">
 			<div class="flex-1 min-w-[300px]">
@@ -280,20 +270,25 @@
 						bind:diskSize
 						bind:diskPath
 						bind:newPartitionIndex
+                        bind:espPartitionIndex
+                        { firmwareType }
 					/>
 				{:else}
-					<Detail
-						readOnly={true}
-						bind:showEdit
-						bind:tempModifiedPartition
-						bind:modifiedPartition
-						bind:selectedPartition
-						bind:newPartition
-						bind:storage
-						bind:diskSize
-						bind:diskPath
-						bind:newPartitionIndex
-					/>
+                    {#key selectedPartition}
+                        <Detail
+                            readOnly={true}
+                            bind:showEdit
+                            bind:tempModifiedPartition
+                            bind:modifiedPartition
+                            bind:selectedPartition
+                            bind:newPartition
+                            bind:storage
+                            bind:diskSize
+                            bind:diskPath
+                            bind:newPartitionIndex
+                            { firmwareType }
+                        />
+                    {/key}
 				{/if}
 			{/if}
 		</div>

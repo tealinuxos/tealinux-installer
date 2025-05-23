@@ -13,14 +13,27 @@
 		storage = $bindable(),
 		diskSize = $bindable(),
 		diskPath = $bindable(),
-		newPartitionIndex = $bindable(),
-		readOnly = false
+		readOnly = false,
+        espPartitionIndex = $bindable(),
+        firmwareType = "BIOS"
 	} = $props();
 
 	let index = selectedPartition;
+    let currentIndex = $state(selectedPartition);
+	let newPartitionIndex = $state(0);
+
+    const espSize = 2097152;
 
 	let inputtedSize = $state(0);
 	let actualSize = $state(0);
+    let filesystem = $state(modifiedPartition[index].filesystem || null);
+    let mountpoint = $state(modifiedPartition[index].mountpoint || null);
+    let format = $state(false);
+    let label = $state(modifiedPartition[index].label || null);
+    let flags = $state(modifiedPartition[index].flags || []);
+
+    let newAllocated = $state(null);
+    let newEspPartition = $state(null);
 
 	let flagList = $state(['hidden', 'boot', 'efi', 'esp', 'bios_grub']);
 
@@ -60,26 +73,81 @@
 	};
 
 	const createPartition = () => {
-		modifiedPartition = [];
 
-		let lastSize = Number(tempModifiedPartition[index].size);
-		let lastStart = Number(tempModifiedPartition[index].start);
+		modifiedPartition = [];
 
 		let inputtedSizeSector = getSectorFromMB(inputtedSize);
 
-		let newSize = lastSize - inputtedSizeSector;
+		let remainderSize = actualSize - inputtedSizeSector;
 
-		let end = Number(lastStart + inputtedSizeSector + newSize);
+		if (remainderSize >= 0) {
 
-		if (newSize >= 0) {
-			if (newSize !== 0) {
+            if (firmwareType === "UEFI") {
+                if (espPartitionIndex === null) {
+                    newEspPartition = {
+                        ...newAllocated,
+                        number: newAllocated.number,
+                        path: `#${newPartitionIndex}`,
+                        size: espSize,
+                        end: newAllocated.start + espSize,
+                        filesystem: "fat32",
+                        label: "EFI system partition",
+                        format: true,
+                        mountpoint: "/boot/efi",
+                        flags: [ "boot", "esp" ]
+                    }
+
+                    newPartitionIndex += 1;
+
+                    newAllocated = {
+                        ...newAllocated,
+                        path: `#${newPartitionIndex}`,
+                        number: newAllocated.number + 1,
+                        size: newAllocated.size - espSize,
+                        start: newEspPartition.end + 1,
+                        end: newAllocated.size - espSize,
+                        format: true,
+                        filesystem,
+                        mountpoint,
+                        label,
+                        flags
+                    }
+
+                    newPartitionIndex += 1;
+
+                    tempModifiedPartition[index] = newEspPartition;
+                    tempModifiedPartition.splice(index + 1, 0, newAllocated);
+                    espPartitionIndex = index;
+                    currentIndex += 1;
+
+                } else {
+                    tempModifiedPartition[espPartitionIndex].mountpoint = "/boot/efi"
+
+                    tempModifiedPartition[index] = {
+                        ...tempModifiedPartition[currentIndex],
+                        path: `#${newPartitionIndex}`,
+                        size: inputtedSizeSector,
+                        end: newAllocated.start + inputtedSizeSector - 1,
+                        filesystem,
+                        mountpoint,
+                        format: true,
+                        label,
+                        flags
+                    };
+                }
+            } else {
+                // todo
+            }
+
+			if (remainderSize !== 0) {
+
 				let newUnallocated = {
-					number: Number(tempModifiedPartition[index].number) + 1,
-					diskPath,
+                    ...newAllocated,
+					number: Number(tempModifiedPartition[currentIndex].number) + 1,
 					path: null,
-					size: newSize,
-					start: Number(lastStart + inputtedSizeSector),
-					end,
+					size: inputtedSizeSector,
+					start: newAllocated.end + 1,
+					end: inputtedSizeSector + newAllocated.end + 1,
 					filesystem: null,
 					label: null,
 					format: false,
@@ -88,29 +156,27 @@
 					flags: []
 				};
 
-				tempModifiedPartition.splice(index + 1, 0, newUnallocated);
-				tempModifiedPartition[index + 1].size -= 511;
-				tempModifiedPartition[index + 1].end -= 512;
+				tempModifiedPartition.splice(currentIndex + 1, 0, newUnallocated);
+				// tempModifiedPartition[index + 1 + indexIncrement].size -= 511;
+				// tempModifiedPartition[index + 1 + indexIncrement].end -= 512;
 			}
-
-			tempModifiedPartition[index].size = inputtedSizeSector;
-			tempModifiedPartition[index].end = lastStart + inputtedSizeSector - 1;
-
-			modifiedPartition = JSON.parse(JSON.stringify(tempModifiedPartition));
 		}
+
+        modifiedPartition = JSON.parse(JSON.stringify(tempModifiedPartition));
 
 		newPartition = false;
 		showEdit = false;
 	};
 
-	// $effect(() => {
-	// 	// $inspect(tempModifiedPartition[index])
-	// });
+	$effect(() => {
+		$inspect(modifiedPartition)
+	});
 
 	onMount(() => {
 		tempModifiedPartition = JSON.parse(JSON.stringify(modifiedPartition));
 
 		if (newPartition && !readOnly) {
+
 			let partitionWithTag = modifiedPartition.filter((p) =>
 				p.path ? p.path.includes('#') : false
 			);
@@ -120,14 +186,14 @@
 
 			newPartitionIndex = highestIndex + 1;
 
-			tempModifiedPartition[index] = {
-				...modifiedPartition[index],
-				path: `#${newPartitionIndex}`,
-				format: true,
-				filesystem: 'ext4',
-				label: null,
-				flags: []
-			};
+            newAllocated = {
+                ...modifiedPartition[index],
+                path: `#${newPartitionIndex}`,
+                number: modifiedPartition[index].number + 1,
+                size: modifiedPartition[index].size - espSize,
+                start: modifiedPartition[index].end + 1,
+                end: modifiedPartition[index].size - espSize
+            }
 
 			actualSize = modifiedPartition[index].size;
 			inputtedSize = (actualSize * 512) / (1024 * 1024);
@@ -184,10 +250,10 @@
 						<input
 							type="radio"
 							value={false}
-							bind:group={tempModifiedPartition[index].format}
+							bind:group={format}
 							class="absolute opacity-0 h-4 w-4 cursor-pointer"
 						/>
-						{#if tempModifiedPartition[index].format === false}
+						{#if format === false}
 							<div class="h-2 w-2 bg-[#3C6350] rounded-full"></div>
 						{/if}
 					</div>
@@ -198,10 +264,10 @@
 						<input
 							type="radio"
 							value={true}
-							bind:group={tempModifiedPartition[index].format}
+							bind:group={format}
 							class="absolute opacity-0 h-4 w-4 cursor-pointer"
 						/>
-						{#if tempModifiedPartition[index].format === true}
+						{#if format === true}
 							<div class="h-2 w-2 bg-[#3C6350] rounded-full"></div>
 						{/if}
 					</div>
@@ -224,27 +290,27 @@
 						{ value: 'ext4', name: 'ext4' },
 						{ value: 'swap', name: 'swap' }
 					]}
-					bind:selectedValue={tempModifiedPartition[index].filesystem}
+					bind:selectedValue={filesystem}
 					displayField="name"
 					width="100%"
 				/>
 			{:else}
 				<div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2">
-					{tempModifiedPartition[index].filesystem || 'None'}
+					{filesystem || 'None'}
 				</div>
 			{/if}
 		</div>
 		<div class="flex flex-col">
 			<span class="text-[#FFFEFB] mb-1">Mountpoint</span>
 			{#if !readOnly}
-				{#if tempModifiedPartition[index].filesystem === 'swap'}
+				{#if filesystem === 'swap'}
 					<div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2 opacity-50">
 						 swap disable
 					</div>
 					
 					<script>
-						$: if (tempModifiedPartition[index].filesystem === 'swap') {
-							tempModifiedPartition[index].mountpoint = null;
+						$: if filesystem === 'swap') {
+							mountpoint = null;
 						}
 					</script>
 				{:else}
@@ -255,14 +321,14 @@
 							{ value: '/boot/efi', name: '/boot/efi' },
 							{ value: '/home', name: '/home' }
 						]}
-						bind:selectedValue={tempModifiedPartition[index].mountpoint}
+						bind:selectedValue={mountpoint}
 						displayField="name"
 						width="100%"
 					/>
 				{/if}
 			{:else}
 				<div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2 min-h-[46px]">
-					{tempModifiedPartition[index].mountpoint || null}
+					{mountpoint || null}
 				</div>
 			{/if}
 		</div>
@@ -275,9 +341,9 @@
 			{#if !readOnly}
 				<input
 					type="text"
-					bind:value={tempModifiedPartition[index].label}
+					bind:value={label}
 					oninput={(e) => {
-						if (!e.target.value.length) tempModifiedPartition[index].label = null;
+						if (!e.target.value.length) label = null;
 					}}
 					class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2 focus:outline-none"
 				/>
@@ -285,7 +351,7 @@
 				<div
 					class="w-full bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2"
 				>
-					{tempModifiedPartition[index].label || 'None'}
+					{label || 'None'}
 				</div>
 			{/if}
 	</div>
@@ -298,30 +364,31 @@
             {#each flagList as flag}
                 <div class="flex items-center space-x-2">
                     {#if !readOnly}
-                        {#key tempModifiedPartition[index].flags}
+                        {#key flags}
                             <div class="h-4 w-4 border border-[#3C6350] rounded flex items-center justify-center">
                                 <input 
                                     type="checkbox" 
                                     id={flag}
-                                    checked={tempModifiedPartition[index].flags.includes(flag)}
+                                    checked={flags.includes(flag)}
                                     onchange={(e) => {
                                         const checked = e.target.checked;
-                                        const flags = tempModifiedPartition[index].flags;
-                                        tempModifiedPartition[index].flags = checked
+
+                                        flags = checked
                                             ? [...flags, flag]
                                             : flags.filter(f => f !== flag);
-                                        getFlagList(tempModifiedPartition[index].flags)
+
+                                        getFlagList(flags)
                                     }}
                                     class="absolute opacity-0 h-4 w-4 cursor-pointer"
                                 />
-                                {#if tempModifiedPartition[index].flags.includes(flag)}
+                                {#if flags.includes(flag)}
                                     <div class="h-2 w-2 bg-[#3C6350] rounded-sm"></div>
                                 {/if}
                             </div>
                         {/key}
                     {:else}
                         <div class="h-4 w-4 border border-[#3C6350] rounded flex items-center justify-center">
-                            {#if tempModifiedPartition[index].flags.includes(flag)}
+                            {#if flags.includes(flag)}
                                 <div class="h-2 w-2 bg-[#3C6350] rounded-sm"></div>
                             {/if}
                         </div>
