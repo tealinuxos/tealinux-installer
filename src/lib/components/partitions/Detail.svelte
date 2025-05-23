@@ -28,7 +28,7 @@
 	let actualSize = $state(0);
     let filesystem = $state(modifiedPartition[index].filesystem || null);
     let mountpoint = $state(modifiedPartition[index].mountpoint || null);
-    let format = $state(false);
+    let format = $state(modifiedPartition[index].formta || false);
     let label = $state(modifiedPartition[index].label || null);
     let flags = $state(modifiedPartition[index].flags || []);
 

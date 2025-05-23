@@ -45,7 +45,7 @@
 		<div class="flex gap-x-4 items-start">
 			<div class="w-full">
 				{#key disk}
-					<DiskPreview {disk} />
+					<DiskPreview {disk} showMountpoint={false} showLabel={true} />
 				{/key}
 				<div class="flex items-center justify-between w-full gap-4">
 					<!-- Slider indicators (centered) -->
