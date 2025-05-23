@@ -28,6 +28,8 @@
 	let showWarningModal = $state(false);
 	let warningMessage = $state("This action will reset all your data. Please backup your data before proceeding.");
 
+    let espPartitionIndex = $state(null);
+
 	let storage = $state({
 		diskPath: null,
 		partitionTable: null,
@@ -49,6 +51,8 @@
         let selectedDiskPath = blueprint.storage.diskPath || null;
 
         selectedDisk = read.disk.find(disk => disk.diskPath === selectedDiskPath) || null;
+
+        espPartitionIndex = selectedDisk.partitions.findIndex(p => p.flags.includes("esp"));
 
 		modifiedPartition = [];
 		tempModifiedPartition = [];
@@ -266,6 +270,8 @@
 						bind:diskSize
 						bind:diskPath
 						bind:newPartitionIndex
+                        bind:espPartitionIndex
+                        { firmwareType }
 					/>
 				{:else}
                     {#key selectedPartition}
@@ -280,6 +286,7 @@
                             bind:diskSize
                             bind:diskPath
                             bind:newPartitionIndex
+                            { firmwareType }
                         />
                     {/key}
 				{/if}

@@ -13,22 +13,27 @@
 		storage = $bindable(),
 		diskSize = $bindable(),
 		diskPath = $bindable(),
-		newPartitionIndex = $bindable(),
 		readOnly = false,
-        espPartitionIndex = null
+        espPartitionIndex = $bindable(),
+        firmwareType = "BIOS"
 	} = $props();
 
 	let index = selectedPartition;
+    let currentIndex = $state(selectedPartition);
+	let newPartitionIndex = $state(0);
 
     const espSize = 2097152;
 
 	let inputtedSize = $state(0);
 	let actualSize = $state(0);
-    let filesystem = $state(tempModifiedPartition[index].filesystem || null);
-    let mountpoint = $state(tempModifiedPartition[index].mountpoint || null);
+    let filesystem = $state(modifiedPartition[index].filesystem || null);
+    let mountpoint = $state(modifiedPartition[index].mountpoint || null);
     let format = $state(false);
-    let label = $state(tempModifiedPartition[index].label || null);
-    let flags = $state(tempModifiedPartition[index].flags || []);
+    let label = $state(modifiedPartition[index].label || null);
+    let flags = $state(modifiedPartition[index].flags || []);
+
+    let newAllocated = $state(null);
+    let newEspPartition = $state(null);
 
 	let flagList = $state(['hidden', 'boot', 'efi', 'esp', 'bios_grub']);
 
@@ -68,35 +73,81 @@
 	};
 
 	const createPartition = () => {
+
 		modifiedPartition = [];
-
-
-        let indexIncrement = 0;
-
-        if (!espPartitionIndex) {
-            indexIncrement += 1;
-        }
-
-		let lastSize = actualSize;
-		let lastStart = Number(tempModifiedPartition[index + indexIncrement].start);
 
 		let inputtedSizeSector = getSectorFromMB(inputtedSize);
 
-		let remainderSize = lastSize - inputtedSizeSector;
-
-		let end = Number(lastStart + inputtedSizeSector + remainderSize);
+		let remainderSize = actualSize - inputtedSizeSector;
 
 		if (remainderSize >= 0) {
+
+            if (firmwareType === "UEFI") {
+                if (espPartitionIndex === null) {
+                    newEspPartition = {
+                        ...newAllocated,
+                        number: newAllocated.number,
+                        path: `#${newPartitionIndex}`,
+                        size: espSize,
+                        end: newAllocated.start + espSize,
+                        filesystem: "fat32",
+                        label: "EFI system partition",
+                        format: true,
+                        mountpoint: "/boot/efi",
+                        flags: [ "boot", "esp" ]
+                    }
+
+                    newPartitionIndex += 1;
+
+                    newAllocated = {
+                        ...newAllocated,
+                        path: `#${newPartitionIndex}`,
+                        number: newAllocated.number + 1,
+                        size: newAllocated.size - espSize,
+                        start: newEspPartition.end + 1,
+                        end: newAllocated.size - espSize,
+                        format: true,
+                        filesystem,
+                        mountpoint,
+                        label,
+                        flags
+                    }
+
+                    newPartitionIndex += 1;
+
+                    tempModifiedPartition[index] = newEspPartition;
+                    tempModifiedPartition.splice(index + 1, 0, newAllocated);
+                    espPartitionIndex = index;
+                    currentIndex += 1;
+
+                } else {
+                    tempModifiedPartition[espPartitionIndex].mountpoint = "/boot/efi"
+
+                    tempModifiedPartition[index] = {
+                        ...tempModifiedPartition[currentIndex],
+                        path: `#${newPartitionIndex}`,
+                        size: inputtedSizeSector,
+                        end: newAllocated.start + inputtedSizeSector - 1,
+                        filesystem,
+                        mountpoint,
+                        format: true,
+                        label,
+                        flags
+                    };
+                }
+            } else {
+                // todo
+            }
 
 			if (remainderSize !== 0) {
 
 				let newUnallocated = {
-					number: Number(tempModifiedPartition[index + indexIncrement].number) + 1,
-					diskPath,
+                    ...newAllocated,
+					number: Number(tempModifiedPartition[currentIndex].number) + 1,
 					path: null,
-					size: remainderSize,
-					start: Number(lastStart + inputtedSizeSector),
-					end,
+					size: inputtedSizeSector,
+					start: newAllocated.end + 1,
+					end: inputtedSizeSector + newAllocated.end + 1,
 					filesystem: null,
 					label: null,
 					format: false,
@@ -105,24 +156,21 @@
 					flags: []
 				};
 
-				tempModifiedPartition.splice(index + 1 + indexIncrement, 0, newUnallocated);
-				tempModifiedPartition[index + 1 + indexIncrement].size -= 511;
-				tempModifiedPartition[index + 1 + indexIncrement].end -= 512;
+				tempModifiedPartition.splice(currentIndex + 1, 0, newUnallocated);
+				// tempModifiedPartition[index + 1 + indexIncrement].size -= 511;
+				// tempModifiedPartition[index + 1 + indexIncrement].end -= 512;
 			}
-
-			tempModifiedPartition[index + indexIncrement].size = inputtedSizeSector;
-			tempModifiedPartition[index + indexIncrement].end = lastStart + inputtedSizeSector - 1;
-
-			modifiedPartition = JSON.parse(JSON.stringify(tempModifiedPartition));
 		}
+
+        modifiedPartition = JSON.parse(JSON.stringify(tempModifiedPartition));
 
 		newPartition = false;
 		showEdit = false;
 	};
 
-	// $effect(() => {
-	// 	// $inspect(tempModifiedPartition[index])
-	// });
+	$effect(() => {
+		$inspect(modifiedPartition)
+	});
 
 	onMount(() => {
 		tempModifiedPartition = JSON.parse(JSON.stringify(modifiedPartition));
@@ -138,55 +186,17 @@
 
 			newPartitionIndex = highestIndex + 1;
 
-			actualSize = modifiedPartition[index].size;
-			inputtedSize = (actualSize * 512) / (1024 * 1024);
-
-            // todo: need to check if firmware is UEFI
-            if (!espPartitionIndex) {
-
-                let newEsp = {
-                    ...modifiedPartition[index],
-                    path: `#${newPartitionIndex}`,
-                    size: espSize,
-                    end: modifiedPartition[index].start + espSize,
-                    filesystem: "fat32",
-                    label: "EFI system partition",
-                    format: true,
-                    mountpoint: "/boot/efi",
-                    flags: [ "boot", "esp" ]
-                };
-
-                tempModifiedPartition[index] = newEsp;
-
-                newPartitionIndex += 1;
-
-                let newReducedPartition = {
-                    ...modifiedPartition[index],
-                    number: newEsp.number + 1,
-                    path: `#${newPartitionIndex}`,
-                    size: actualSize - espSize,
-                    start: newEsp.end + 1,
-                    end: newEsp.start + actualSize - espSize,
-                    filesystem,
-                    label,
-                    format: true,
-                    mountpoint,
-                    flags
-                };
-
-                tempModifiedPartition.splice(index + 1, 0, newReducedPartition);
-            } else {
-
-                tempModifiedPartition[index] = {
-                    ...modifiedPartition[index],
-                    path: `#${newPartitionIndex}`,
-                    format: true,
-                    filesystem: 'ext4',
-                    label: null,
-                    flags: []
-                };
+            newAllocated = {
+                ...modifiedPartition[index],
+                path: `#${newPartitionIndex}`,
+                number: modifiedPartition[index].number + 1,
+                size: modifiedPartition[index].size - espSize,
+                start: modifiedPartition[index].end + 1,
+                end: modifiedPartition[index].size - espSize
             }
 
+			actualSize = modifiedPartition[index].size;
+			inputtedSize = (actualSize * 512) / (1024 * 1024);
 		}
 
 		getFlagList(modifiedPartition[index].flags);
