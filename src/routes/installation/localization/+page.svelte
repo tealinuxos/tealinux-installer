@@ -187,13 +187,19 @@
 
 			if (blueprint.keyboard) {
 				selectedLayout = keyboards.find(layout => layout.code === blueprint.keyboard.layout);
+
                 let defaultVariant = { code: null, name: selectedLayout?.name };
+
+                if (blueprint.keyboard.variant) {
+                    selectedVariant = selectedLayout.variant.find(variant => variant.code === blueprint.keyboard.variant);
+                } else {
+                    selectedVariant = defaultVariant;
+                }
 
                 filteredVariants = selectedLayout
                     ? [defaultVariant].concat(selectedLayout.variant)
                     : null;
 
-				selectedVariant = selectedLayout.variant.find(variant => variant.code === blueprint.keyboard.variant);
 			} else {
                 selectedLayout = keyboards.length
                     ? keyboards.find(keyb => keyb.code === "us")
