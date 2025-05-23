@@ -191,7 +191,6 @@
 
 		getFlagList(modifiedPartition[index].flags);
 	});
-    $effect(() => $inspect(tempModifiedPartition))
 </script>
 
 <div
