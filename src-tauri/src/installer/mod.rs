@@ -11,10 +11,13 @@ use std::io::{BufReader, Error};
 use std::path::Path;
 use std::thread::sleep;
 use std::time::Duration;
-use tauri::Window;
 use tauri::Emitter;
+use tauri::Window;
 use tea_arch_chroot_lib::chroot::*;
 use tea_arch_chroot_lib::prechroot::*;
+
+use tea_arch_chroot_lib::resource::MethodKind;
+use tea_partition_generator::os::Os;
 
 pub use self::blueprint::BluePrint;
 pub use self::blueprint::Bootloader;
@@ -44,8 +47,6 @@ pub async fn start_install(window: Window) {
     wait();
 
     let blueprint = step::json::read_blueprint().expect("Failed when reading blueprint file");
-
-    
 
     if !Path::exists(Path::new("/tealinux-mount")) {
         match std::fs::create_dir("/tealinux-mount/") {
@@ -184,6 +185,12 @@ pub async fn start_install(window: Window) {
         }
     }
 
+    // return;
+
+    if blueprint.storage.clone().unwrap().install_method != MethodKind::MANUAL {
+        Os::append_swap_fstab(&blueprint.storage.clone().unwrap().into());
+    }
+
     // Chroot
 
     let _ = window.emit(
@@ -235,6 +242,11 @@ pub async fn start_install(window: Window) {
     }
 
     // Bootloader
+
+    if blueprint.storage.clone().unwrap().install_method == MethodKind::DUAL {
+        // Os::append_swap_fstab(&blueprint.storage.clone().unwrap().into());
+        Os::patch_grub_config_disable_os_probe(false);
+    }
 
     let _ = window.emit(
         "INSTALL",
