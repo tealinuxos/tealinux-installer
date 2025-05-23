@@ -268,18 +268,20 @@
 						bind:newPartitionIndex
 					/>
 				{:else}
-					<Detail
-						readOnly={true}
-						bind:showEdit
-						bind:tempModifiedPartition
-						bind:modifiedPartition
-						bind:selectedPartition
-						bind:newPartition
-						bind:storage
-						bind:diskSize
-						bind:diskPath
-						bind:newPartitionIndex
-					/>
+                    {#key selectedPartition}
+                        <Detail
+                            readOnly={true}
+                            bind:showEdit
+                            bind:tempModifiedPartition
+                            bind:modifiedPartition
+                            bind:selectedPartition
+                            bind:newPartition
+                            bind:storage
+                            bind:diskSize
+                            bind:diskPath
+                            bind:newPartitionIndex
+                        />
+                    {/key}
 				{/if}
 			{/if}
 		</div>
