@@ -4,7 +4,7 @@
 	import prettyBytes from 'pretty-bytes';
 	import { parse } from 'svelte/compiler';
 
-	let { disk, colors, isShowMountPoint = true } = $props();
+	let { disk, colors, showMountpoint = true, showLabel = false } = $props();
 
 	const getColors = (disk) => {
 		let generated_colors = [];
@@ -63,9 +63,13 @@
 				<div class="flex flex-col text-[11px] font-jakarta">
 					<span class="pl-1 font-semibold tracking-wide"
 						>{path}
-						{isShowMountPoint && (partition.mountpoint)
+						{(partition.mountpoint) && showMountpoint
 							? `- ${partition.mountpoint}`
-							: ''}</span
+							: ''}
+                        {(partition.name) && showLabel
+                            ? `- ${partition.name}`
+                            : ''}
+                    </span
 					>
 					<span class="pl-1 uppercase whitespace-nowrap">{prettySize} {filesystem}</span>
 				</div>

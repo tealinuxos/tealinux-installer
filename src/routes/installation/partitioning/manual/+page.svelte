@@ -73,7 +73,7 @@
 				size: Number(partitions[i].size.slice(0, -1)),
 				start: Number(partitions[i].start.slice(0, -1)),
 				end: Number(partitions[i].end.slice(0, -1)),
-				filesystem: partitions[i].filesystem,
+				filesystem: partitions[i].filesystem?.includes('swap') ? 'swap' : partitions[i].filesystem,
 				label: null,
 				format: false,
 				mountpoint: null,
