@@ -40,10 +40,20 @@
 			return;
 
 		if (modifiedPartition[selectedPartition].path?.includes('#')) {
-			modifiedPartition = modifiedPartition.filter((_, i) => i !== selectedPartition);
 
 			// Update the numbering of remaining new partitions
-			modifiedPartition = modifiedPartition.map((partition) => {
+			modifiedPartition = modifiedPartition.map((partition, i) => {
+                if (selectedPartition === i) {
+					return {
+						...partition,
+						path: null,
+						filesystem: null,
+						format: false,
+						mountpoint: null,
+						label: null,
+						flags: []
+					};
+                }
 				if (partition.path && partition.path.includes('#')) {
 					const num = parseInt(partition.path.replace('#', ''));
 					if (num > 1) {
