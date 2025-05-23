@@ -219,31 +219,46 @@
 		</span>
 	</div>
 
-	<!-- Size and Format Section -->
+<!-- Size and Format Section -->
 	<div class="flex w-full justify-between items-center">
 		<!-- Size Box -->
-		<div
-			class="flex items-center w-[157px] gap-2 p-2 rounded-[14px] border-[1.3px] border-[#3C6350]"
-		>
-			{#if newPartition && !readOnly}
-				<span class="text-[#FFFEFB]">New Size</span>
-				<input
+		
+		{#if newPartition && !readOnly}
+			<div
+					class="flex items-center w-full justify-between p-2 rounded-[14px] border-[1.3px] border-[#3C6350]"
+			>
+				<div>
+					<span class="text-[#FFFEFB]">New Size</span>
+				</div>
+				
+				<div class="gap-2">
+
+					<input
 					type="number"
 					bind:value={inputtedSize}
 					class="w-16 bg-transparent text-white focus:outline-none"
-				/>
-				<span class="text-[#FFFEFB]">MB</span>
+					/>
+					<span class="text-[#FFFEFB]">MB</span>
+				</div>
+				
+			</div>
 			{:else}
+
+			<div
+					class="flex items-center w-[150px] justify-between p-2 rounded-[14px] border-[1.3px] border-[#3C6350]"
+			>
 				<span class="text-[#FFFEFB]">Size</span>
 				<span class="text-[#FFFEFB]">
 					{prettySize(tempModifiedPartition[index].size)}
 				</span>
-			{/if}
-		</div>
+			</div>
+		{/if}
+		
 
-		<!-- Format Options -->
-		<!-- Format Options -->
-		{#if !newPartition && !readOnly}
+			<!-- Format Options -->
+		{#if !newPartition}
+			{#if !readOnly}
+			<!-- Mode interaktif (bisa diubah) -->
 			<div class="flex flex-col space-y-2">
 				<div class="flex items-center space-x-2">
 					<div class="h-4 w-4 border border-[#3C6350] rounded-full flex items-center justify-center">
@@ -274,11 +289,31 @@
 					<span class="text-[#FFFEFB] text-sm">Erase data</span>
 				</div>
 			</div>
+			{:else}
+				<!-- Mode read-only (hanya tampilan) -->
+				<div class="flex flex-col space-y-2">
+					<div class="flex items-center space-x-2">
+						<div class="h-4 w-4 border border-[#3C6350] rounded-full flex items-center justify-center">
+							{#if format === false}
+								<div class="h-2 w-2 bg-[#3C6350] rounded-full"></div>
+							{/if}
+						</div>
+						<span class="text-[#FFFEFB] text-sm">Keep data</span>
+					</div>
+					<div class="flex items-center space-x-2">
+						<div class="h-4 w-4 border border-[#3C6350] rounded-full flex items-center justify-center">
+							{#if format === true}
+								<div class="h-2 w-2 bg-[#3C6350] rounded-full"></div>
+							{/if}
+						</div>
+						<span class="text-[#FFFEFB] text-sm">Erase data</span>
+					</div>
+				</div>
 		{/if}
+	{/if}
 	</div>
 
 	<!-- Filesystem and Mountpoint -->
-
 	<div class="grid grid-cols-2 w-full gap-4">
 		<div class="flex flex-col">
 			<span class="text-[#FFFEFB] mb-1">Filesystem</span>
@@ -398,7 +433,7 @@
             {/each}
         </div>
     </div>
-
+ 
 	<!-- Buttons -->
 	{#if !readOnly}
 		<div class="flex w-full justify-end space-x-2 mt-4">
