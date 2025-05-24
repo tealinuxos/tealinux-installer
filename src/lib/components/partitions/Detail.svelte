@@ -14,9 +14,10 @@
 		diskSize = $bindable(),
 		diskPath = $bindable(),
 		readOnly = false,
-        espPartitionIndex = $bindable(),
+        bootPartitionIndex = $bindable(),
         firmwareType = "BIOS",
-        highestNumber = $bindable()
+        highestNumber = $bindable(),
+        partitionTable
 	} = $props();
 
 	let index = selectedPartition;
@@ -82,7 +83,7 @@
 
             if (mountpoint === "/") {
                 if (firmwareType === "UEFI") {
-                    if (espPartitionIndex === null) {
+                    if (bootPartitionIndex === null) {
 
                         newEspPartition = {
                             ...newAllocated,
@@ -119,28 +120,36 @@
                         newPartitionIndex += 1;
 
                         tempModifiedPartition.splice(index + 1, 0, newAllocated);
-                        espPartitionIndex = index;
+                        bootPartitionIndex = index;
                         currentIndex += 1;
                         
-                        newGap = {
-                            ...newAllocated,
-                            path: null,
-                            number: 0,
-                            size: actualSize - newAllocated.size - newEspPartition.size,
-                            start: newAllocated.end + 1,
-                            end: actualSize - newAllocated.size - newEspPartition.size + newAllocated.end,
-                            format: false,
-                            filesystem: null,
-                            mountpoint: null,
-                            label: null,
-                            flags: null
+                        if (partitionTable === "gpt") {
+                            newGap = {
+                                ...newAllocated,
+                                path: null,
+                                number: 0,
+                                size: actualSize - newAllocated.size - newEspPartition.size,
+                                start: newAllocated.end + 1,
+                                end: actualSize - newAllocated.size - newEspPartition.size + newAllocated.end,
+                                format: false,
+                                filesystem: null,
+                                mountpoint: null,
+                                label: null,
+                                flags: null
+                            }
+
+                            tempModifiedPartition.splice(index + 2, 0, newGap);
+                            currentIndex += 1;
+                        } else {
+                            tempModifiedPartition[index + 1] = {
+                                ...tempModifiedPartition[index + 1],
+                                size: tempModifiedPartition[index + 1].size + 2048,
+                                end: tempModifiedPartition[index + 1].end + 2048
+                            }
                         }
 
-                        tempModifiedPartition.splice(index + 2, 0, newGap);
-                        currentIndex += 1;
-
                     } else {
-                        tempModifiedPartition[espPartitionIndex].mountpoint = "/boot/efi"
+                        tempModifiedPartition[bootPartitionIndex].mountpoint = "/boot/efi"
 
                         tempModifiedPartition[index] = {
                             ...newAllocated,
@@ -157,29 +166,100 @@
 
                         highestNumber += 1;
 
-                        newGap = {
-                            ...tempModifiedPartition[index],
-                            path: null,
-                            number: 0,
-                            size: actualSize - tempModifiedPartition[index].size,
-                            start: tempModifiedPartition[index].end + 1,
-                            end: actualSize - tempModifiedPartition[index].size + tempModifiedPartition[index].end,
-                            format: false,
-                            filesystem: null,
-                            mountpoint: null,
-                            label: null,
-                            flags: null
-                        }
+                        if (partitionTable === "gpt") {
+                            newGap = {
+                                ...tempModifiedPartition[index],
+                                path: null,
+                                number: 0,
+                                size: actualSize - tempModifiedPartition[index].size,
+                                start: tempModifiedPartition[index].end + 1,
+                                end: actualSize - tempModifiedPartition[index].size + tempModifiedPartition[index].end,
+                                format: false,
+                                filesystem: null,
+                                mountpoint: null,
+                                label: null,
+                                flags: null
+                            }
 
-                        currentIndex += 1;
-                        tempModifiedPartition.splice(index + 1, 0, newGap);
+                            currentIndex += 1;
+                            tempModifiedPartition.splice(index + 1, 0, newGap);
+                        } else {
+                            tempModifiedPartition[index + 1] = {
+                                ...tempModifiedPartition[index + 1],
+                                size: tempModifiedPartition[index + 1].size + 2048,
+                                end: tempModifiedPartition[index + 1].end + 2048
+                            }
+                        }
                     }
                 } else {
-                    // todo
+                    if (bootPartitionIndex === null) {
+                        newEspPartition = {
+                            ...newAllocated,
+                            number: newAllocated.number,
+                            path: `#${newPartitionIndex}`,
+                            size: 2048,
+                            end: newAllocated.start + 2048 - 1,
+                            filesystem: null,
+                            label: "bios_grub",
+                            format: true,
+                            mountpoint: null,
+                            flags: [ "bios_grub" ]
+                        }
+
+                        highestNumber += 1;
+                        newPartitionIndex += 1;
+                        tempModifiedPartition[index] = newEspPartition;
+
+                        newAllocated = {
+                            ...newAllocated,
+                            number: newEspPartition.number + 1,
+                            path: `#${newPartitionIndex}`,
+                            size: inputtedSizeSector - 2048 - 4096,
+                            start: newEspPartition.end + 1,
+                            end: newAllocated.size - 2048 + newEspPartition.end - 4096,
+                            format: true,
+                            filesystem,
+                            mountpoint,
+                            label,
+                            flags
+                        }
+
+                        highestNumber += 1;
+                        newPartitionIndex += 1;
+
+                        tempModifiedPartition.splice(index + 1, 0, newAllocated);
+                        bootPartitionIndex = index;
+                        currentIndex += 1;
+                        
+                        if (partitionTable === "gpt") {
+                            newGap = {
+                                ...newAllocated,
+                                path: null,
+                                number: 0,
+                                size: actualSize - newAllocated.size - newEspPartition.size,
+                                start: newAllocated.end + 1,
+                                end: actualSize - newAllocated.size - newEspPartition.size + newAllocated.end,
+                                format: false,
+                                filesystem: null,
+                                mountpoint: null,
+                                label: null,
+                                flags: null
+                            }
+
+                            tempModifiedPartition.splice(index + 2, 0, newGap);
+                            currentIndex += 1;
+                        } else {
+                            tempModifiedPartition[index + 1] = {
+                                ...tempModifiedPartition[index + 1],
+                                size: tempModifiedPartition[index + 1].size + 2048,
+                                end: tempModifiedPartition[index + 1].end + 2048
+                            }
+                        }
+                    }
                 }
             } else {
                 if (mountpoint === "/boot/efi") {
-                    espPartitionIndex = index;
+                    bootPartitionIndex = index;
                     if (!flags.includes("boot")) flags.push("boot");
                     if (!flags.includes("esp")) flags.push("esp");
                 }
@@ -196,21 +276,31 @@
 
                 highestNumber += 1;
 
-                newGap = {
-                    ...tempModifiedPartition[index],
-                    path: null,
-                    number: 0,
-                    size: actualSize - tempModifiedPartition[index].size,
-                    start: tempModifiedPartition[index].end + 1,
-                    end: actualSize - tempModifiedPartition[index].size + tempModifiedPartition[index].end,
-                    format: false,
-                    filesystem: null,
-                    mountpoint: null,
-                    label: null,
-                    flags: null
-                }
+                if (partitionTable === "gpt") {
 
-                tempModifiedPartition.splice(index + 1, 0, newGap);
+                    newGap = {
+                        ...tempModifiedPartition[index],
+                        path: null,
+                        number: 0,
+                        size: actualSize - tempModifiedPartition[index].size,
+                        start: tempModifiedPartition[index].end + 1,
+                        end: actualSize - tempModifiedPartition[index].size + tempModifiedPartition[index].end,
+                        format: false,
+                        filesystem: null,
+                        mountpoint: null,
+                        label: null,
+                        flags: null
+                    }
+
+                    tempModifiedPartition.splice(index + 1, 0, newGap);
+
+                } else {
+                    tempModifiedPartition[index + 1] = {
+                        ...tempModifiedPartition[index + 1],
+                        size: tempModifiedPartition[index + 1].size + 2048,
+                        end: tempModifiedPartition[index + 1].end + 2048
+                    }
+                }
             }
 		}
 
