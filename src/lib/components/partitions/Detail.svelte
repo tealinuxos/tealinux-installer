@@ -309,7 +309,7 @@
 					</div>
 					
 					<script>
-						$: if filesystem === 'swap') {
+						$: if (filesystem === 'swap') {
 							mountpoint = null;
 						}
 					</script>
