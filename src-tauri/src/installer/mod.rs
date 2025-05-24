@@ -13,10 +13,13 @@ use std::thread::sleep;
 use std::time::Duration;
 use tauri::Emitter;
 use tauri::Window;
+use tea_arch_chroot_lib::chroot::bootloader::get_firmware_type;
 use tea_arch_chroot_lib::chroot::*;
 use tea_arch_chroot_lib::prechroot::*;
+use tea_arch_chroot_lib::resource::FirmwareKind;
 
 use tea_arch_chroot_lib::resource::MethodKind;
+use tea_partition_generator::dual_boot_efi_mount;
 use tea_partition_generator::os::Os;
 
 pub use self::blueprint::BluePrint;
@@ -257,6 +260,15 @@ pub async fn start_install(window: Window) {
     );
 
     wait();
+
+    // check whatever its dualboot auto partition & we need to locate where the "origin" efi partition is.
+    if blueprint.storage.clone().unwrap().install_method == MethodKind::DUAL
+        && get_firmware_type() == FirmwareKind::UEFI
+    {
+        dual_boot_efi_mount::dualboot_efi_mount_open(
+            blueprint.storage.clone().unwrap().disk_path.unwrap(),
+        );
+    }
 
     match step::bootloader::install_bootloader(&blueprint) {
         Ok(_) => (),

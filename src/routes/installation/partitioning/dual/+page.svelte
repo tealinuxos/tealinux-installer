@@ -115,41 +115,6 @@
 
 		goto('/installation/account');
 	};
-  
-    const decideFilesystem = (filesystem) => {
-        selectedFilesystem = filesystem;
-        if (selectedDisk) {
-            updateDiskPreview(selectedDisk);
-        }
-    };
-
-    const decideSwap = (swap) => {
-        swapSize = swap;
-        if (selectedDisk) {
-            updateDiskPreview(selectedDisk);
-        }
-    };
-
-    const handlePartitioning = async () => {
-        let blueprint = await getBlueprintJSON();
-
-        let diskPath = blueprint.storage.diskPath;
-        let installMethod = blueprint.storage.installMethod;
-
-        console.log("Invoking autogen_partition_select_disk with:", {
-            blkname: diskPath,
-            mode: `${installMethod}boot`,
-            partitionTable: partitionTable,
-            fs: selectedFilesystem
-        });
-
-        await invoke('autogen_partition_select_disk', {
-            blkname: diskPath,
-            mode: `${installMethod}boot`,
-            partitionTable: partitionTable,
-            fs: selectedFilesystem
-        });
-    }
 
 	$effect(() => {
 		console.log('Selected disk changed:', selectedDisk);
@@ -365,5 +330,5 @@
 	currentTitle="Dual Boot"
 	prevPath="/installation/partitioning"
 	nextPath="/installation/account"
-    nextAction={handlePartitioning}
+	nextAction={handlePartitioning}
 />
