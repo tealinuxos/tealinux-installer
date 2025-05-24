@@ -32,11 +32,12 @@ fn main() {
             build_tauri();
         }
         _ => {
+            karen::pkexec_with_env(&["WAYLAND_DISPLAY", "XDG_RUNTIME_DIR"]).unwrap();
+
             duct::cmd!("xhost", "si:localuser:root")
                 .run()
                 .expect("Failed to run xhost, does it exist?");
 
-            karen::pkexec_with_env(&["WAYLAND_DISPLAY", "XDG_RUNTIME_DIR"]).unwrap();
 
             build_tauri();
         }
