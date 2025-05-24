@@ -43,19 +43,25 @@
             <!-- Buttons -->
             <div class="flex gap-4 mt-6">
                 {#if showCancel}
-                    <button 
-                        onclick={onCancel}
-                        class="text-[#A72626] font-['Poppins'] text-[20px] font-light leading-none lowercase px-4 py-2"
-                    >
-                        cancel
-                    </button>
+                <button 
+                    onclick={onCancel}
+                    class="text-[#A72626] font-['Poppins'] text-[20px] font-light leading-none lowercase px-[15px] py-[8px] flex flex-col items-center gap-[18px] rounded-[23px] border-[1.3px] border-[#F00] bg-[#101010] active:shadow-[0_0_9px_0_#FF453A]"
+                >
+                    cancel
+                </button>
+
+               
                 {/if}
                 <button 
                     onclick={onConfirm}
-                    class="text-[#A72626] font-['Poppins'] text-[20px] font-light leading-none lowercase px-4 py-2"
+                    class="text-[#A72626] font-['Poppins'] text-[20px] font-light leading-none lowercase px-[15px] py-[8px] flex flex-col items-center gap-[18px] rounded-[23px] border-[1.3px] border-[#F00] bg-[#101010] active:shadow-[0_0_9px_0_#FF453A]"
                 >
                     confirm
                 </button>
+
+             
+                
+
             </div>
         </div>
     </div>

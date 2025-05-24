@@ -403,12 +403,12 @@
 			<GlowingText size="[11]" text="Disk Preview" />
 
 			<!-- Add this section after the partitioning tools section -->
-			<div
-				class="grayscale flex flex-col p-[15px] gap-[10px] self-stretch rounded-[10.267px] border border-[#3C6350] bg-[#101010]"
-			>
-				<!-- Disk Preview Title -->
-
-				{#key selectedDisk}
+			{#key selectedDisk}
+				<div 
+					class={`flex flex-col p-[15px] gap-[10px] self-stretch rounded-[10.267px] border border-[#3C6350] bg-[#101010] ${
+						!selectedDisk ? 'grayscale' : ''
+					}`}
+				>
 					{#if selectedDisk}
 						<div class="flex flex-row space-x-2">
 							<PreviewButton
@@ -427,25 +427,19 @@
 						<div class="space-y-[10px] w-full">
 							<div class="space-y-[10px]">
 								{#if selectedPreview === Preview.BEFORE}
-									{#key selectedDisk}
-										<DiskPreview disk={selectedDisk} />
-									{/key}
+									<DiskPreview disk={selectedDisk} />
 								{:else if diskAfter}
 									<DiskPreview disk={diskAfter} />
 								{/if}
 							</div>
 						</div>
 					{:else}
-						<div
-							class="{selectedDisk === null ??
-								'grayscale'} text-[#E4E4E4] font-jakarta text-[9.46px] font-[500] leading-[17.659px] text-center py-4"
-						>
+						<div class="text-[#E4E4E4] font-jakarta text-[9.46px] font-[500] leading-[17.659px] text-center py-4">
 							Select a disk to see preview
 						</div>
 					{/if}
-				{/key}
-			</div>
-
+				</div>
+			{/key}
 			<!-- Warning tooltip -->
 			{#if showSingleBootWarning}
 				<div
