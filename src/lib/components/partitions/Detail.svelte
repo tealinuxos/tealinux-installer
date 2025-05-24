@@ -15,12 +15,13 @@
 		diskPath = $bindable(),
 		readOnly = false,
         espPartitionIndex = $bindable(),
-        firmwareType = "BIOS"
+        firmwareType = "BIOS",
+        highestNumber = $bindable()
 	} = $props();
 
 	let index = selectedPartition;
     let currentIndex = $state(selectedPartition);
-	let newPartitionIndex = $state(0);
+	let newPartitionIndex = $state(1);
 
     const espSize = 2097152;
 
@@ -34,6 +35,7 @@
 
     let newAllocated = $state(null);
     let newEspPartition = $state(null);
+    let newGap = $state(null);
 
 	let flagList = $state(['hidden', 'boot', 'efi', 'esp', 'bios_grub']);
 
@@ -65,10 +67,6 @@
 		tempModifiedPartition = [];
 		tempModifiedPartition = JSON.parse(JSON.stringify(modifiedPartition));
 
-		if (newPartition) {
-			newPartitionIndex -= 1;
-		}
-
 		showEdit = false;
 	};
 
@@ -82,84 +80,138 @@
 
 		if (remainderSize >= 0) {
 
-            if (firmwareType === "UEFI") {
-                if (espPartitionIndex === null) {
-                    newEspPartition = {
-                        ...newAllocated,
-                        number: newAllocated.number,
-                        path: `#${newPartitionIndex}`,
-                        size: espSize,
-                        end: newAllocated.start + espSize,
-                        filesystem: "fat32",
-                        label: "EFI system partition",
-                        format: true,
-                        mountpoint: "/boot/efi",
-                        flags: [ "boot", "esp" ]
+            if (mountpoint === "/") {
+                if (firmwareType === "UEFI") {
+                    if (espPartitionIndex === null) {
+
+                        newEspPartition = {
+                            ...newAllocated,
+                            number: newAllocated.number,
+                            path: `#${newPartitionIndex}`,
+                            size: espSize,
+                            end: newAllocated.start + espSize - 1,
+                            filesystem: "fat32",
+                            label: "EFI system partition",
+                            format: true,
+                            mountpoint: "/boot/efi",
+                            flags: [ "boot", "esp" ]
+                        }
+
+                        highestNumber += 1;
+                        newPartitionIndex += 1;
+                        tempModifiedPartition[index] = newEspPartition;
+
+                        newAllocated = {
+                            ...newAllocated,
+                            number: newEspPartition.number + 1,
+                            path: `#${newPartitionIndex}`,
+                            size: inputtedSizeSector - espSize - 4096,
+                            start: newEspPartition.end + 1,
+                            end: newAllocated.size - espSize + newEspPartition.end - 4096,
+                            format: true,
+                            filesystem,
+                            mountpoint,
+                            label,
+                            flags
+                        }
+
+                        highestNumber += 1;
+                        newPartitionIndex += 1;
+
+                        tempModifiedPartition.splice(index + 1, 0, newAllocated);
+                        espPartitionIndex = index;
+                        currentIndex += 1;
+                        
+                        newGap = {
+                            ...newAllocated,
+                            path: null,
+                            number: 0,
+                            size: actualSize - newAllocated.size - newEspPartition.size,
+                            start: newAllocated.end + 1,
+                            end: actualSize - newAllocated.size - newEspPartition.size + newAllocated.end,
+                            format: false,
+                            filesystem: null,
+                            mountpoint: null,
+                            label: null,
+                            flags: null
+                        }
+
+                        tempModifiedPartition.splice(index + 2, 0, newGap);
+                        currentIndex += 1;
+
+                    } else {
+                        tempModifiedPartition[espPartitionIndex].mountpoint = "/boot/efi"
+
+                        tempModifiedPartition[index] = {
+                            ...newAllocated,
+                            number: highestNumber + 1,
+                            path: `#${newPartitionIndex}`,
+                            size: inputtedSizeSector - 4096,
+                            end: newAllocated.start + inputtedSizeSector - 4097,
+                            filesystem,
+                            mountpoint,
+                            format: true,
+                            label,
+                            flags
+                        };
+
+                        highestNumber += 1;
+
+                        newGap = {
+                            ...tempModifiedPartition[index],
+                            path: null,
+                            number: 0,
+                            size: actualSize - tempModifiedPartition[index].size,
+                            start: tempModifiedPartition[index].end + 1,
+                            end: actualSize - tempModifiedPartition[index].size + tempModifiedPartition[index].end,
+                            format: false,
+                            filesystem: null,
+                            mountpoint: null,
+                            label: null,
+                            flags: null
+                        }
+
+                        currentIndex += 1;
+                        tempModifiedPartition.splice(index + 1, 0, newGap);
                     }
-
-                    newPartitionIndex += 1;
-
-                    newAllocated = {
-                        ...newAllocated,
-                        path: `#${newPartitionIndex}`,
-                        number: newAllocated.number + 1,
-                        size: newAllocated.size - espSize,
-                        start: newEspPartition.end + 1,
-                        end: newAllocated.size - espSize,
-                        format: true,
-                        filesystem,
-                        mountpoint,
-                        label,
-                        flags
-                    }
-
-                    newPartitionIndex += 1;
-
-                    tempModifiedPartition[index] = newEspPartition;
-                    tempModifiedPartition.splice(index + 1, 0, newAllocated);
-                    espPartitionIndex = index;
-                    currentIndex += 1;
-
                 } else {
-                    tempModifiedPartition[espPartitionIndex].mountpoint = "/boot/efi"
-
-                    tempModifiedPartition[index] = {
-                        ...tempModifiedPartition[currentIndex],
-                        path: `#${newPartitionIndex}`,
-                        size: inputtedSizeSector,
-                        end: newAllocated.start + inputtedSizeSector - 1,
-                        filesystem,
-                        mountpoint,
-                        format: true,
-                        label,
-                        flags
-                    };
+                    // todo
                 }
             } else {
-                // todo
-            }
+                if (mountpoint === "/boot/efi") {
+                    espPartitionIndex = index;
+                    if (!flags.includes("boot")) flags.push("boot");
+                    if (!flags.includes("esp")) flags.push("esp");
+                }
 
-			if (remainderSize !== 0) {
-
-				let newUnallocated = {
+                tempModifiedPartition[index] = {
                     ...newAllocated,
-					number: Number(tempModifiedPartition[currentIndex].number) + 1,
-					path: null,
-					size: inputtedSizeSector,
-					start: newAllocated.end + 1,
-					end: inputtedSizeSector + newAllocated.end + 1,
-					filesystem: null,
-					label: null,
-					format: false,
-					mountpoint: null,
-					label: null,
-					flags: []
-				};
+                    size: inputtedSizeSector - 4096,
+                    end: newAllocated.start + inputtedSizeSector - 4097,
+                    filesystem,
+                    mountpoint,
+                    label,
+                    flags
+                }
 
-				tempModifiedPartition.splice(currentIndex + 1, 0, newUnallocated);
-				// tempModifiedPartition[index + 1 + indexIncrement].size -= 511;
-				// tempModifiedPartition[index + 1 + indexIncrement].end -= 512;
-			}
+                highestNumber += 1;
+
+                newGap = {
+                    ...tempModifiedPartition[index],
+                    path: null,
+                    number: 0,
+                    size: actualSize - tempModifiedPartition[index].size,
+                    start: tempModifiedPartition[index].end + 1,
+                    end: actualSize - tempModifiedPartition[index].size + tempModifiedPartition[index].end,
+                    format: false,
+                    filesystem: null,
+                    mountpoint: null,
+                    label: null,
+                    flags: null
+                }
+
+                tempModifiedPartition.splice(index + 1, 0, newGap);
+            }
 		}
 
         modifiedPartition = JSON.parse(JSON.stringify(tempModifiedPartition));
@@ -167,10 +219,6 @@
 		newPartition = false;
 		showEdit = false;
 	};
-
-	$effect(() => {
-		$inspect(modifiedPartition)
-	});
 
 	onMount(() => {
 		tempModifiedPartition = JSON.parse(JSON.stringify(modifiedPartition));
@@ -180,19 +228,17 @@
 			let partitionWithTag = modifiedPartition.filter((p) =>
 				p.path ? p.path.includes('#') : false
 			);
-			let number = partitionWithTag.map((p) => Number(p.path.replace('#', '')));
 
-			let highestIndex = number.length ? Math.max(...number) : 0;
-
-			newPartitionIndex = highestIndex + 1;
+            newPartitionIndex += partitionWithTag.length;
 
             newAllocated = {
                 ...modifiedPartition[index],
+                format: true,
                 path: `#${newPartitionIndex}`,
-                number: modifiedPartition[index].number + 1,
-                size: modifiedPartition[index].size - espSize,
-                start: modifiedPartition[index].end + 1,
-                end: modifiedPartition[index].size - espSize
+                number: highestNumber + 1,
+                size: modifiedPartition[index].size,
+                start: modifiedPartition[index].start,
+                end: modifiedPartition[index].end
             }
 
 			actualSize = modifiedPartition[index].size;
@@ -211,11 +257,14 @@
 	<!-- Partition Title -->
 	<div class="w-full">
 		<span class="text-[#26A767] font-['Plus_Jakarta_Sans'] text-[16px] font-bold leading-[140%]">
-			{tempModifiedPartition[index].path
-				? tempModifiedPartition[index].path.includes('#')
-					? `New Partition ${tempModifiedPartition[index].path}`
-					: tempModifiedPartition[index].path
-				: tempModifiedPartition.path}
+            {#if tempModifiedPartition[index]}
+                {tempModifiedPartition[index].path
+                    ? tempModifiedPartition[index].path.includes('#')
+                        ? `New Partition ${tempModifiedPartition[index].path}`
+                        : tempModifiedPartition[index].path
+                    : 'Unallocated'
+                }
+            {/if}
 		</span>
 	</div>
 
@@ -236,7 +285,7 @@
 			{:else}
 				<span class="text-[#FFFEFB]">Size</span>
 				<span class="text-[#FFFEFB]">
-					{prettySize(tempModifiedPartition[index].size)}
+					{tempModifiedPartition[index] ? prettySize(tempModifiedPartition[index].size) : ''}
 				</span>
 			{/if}
 		</div>
