@@ -91,7 +91,14 @@
 			partitionTable: partitionTable,
 			fs: selectedFilesystem,
 			useSwap: useSwap
-		});
+		})
+			.then(() => {
+				// NOP
+				goto('/installation/account');
+			})
+			.catch((error) => {
+				alert('Error: ' + error);
+			});
 	};
 
 	$effect(async () => {
@@ -225,6 +232,5 @@
 	currentStep={4}
 	currentTitle="Single Boot"
 	prevPath="/installation/partitioning"
-	nextPath="/installation/account"
 	nextAction={handlePartitioning}
 />

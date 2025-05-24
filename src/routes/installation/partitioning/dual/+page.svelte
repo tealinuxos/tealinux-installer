@@ -38,7 +38,7 @@
 	let swapSize = $state(2048);
 	let otherOs = $state(null);
 	let isRefreshing = $state(false);
-	let useSwap = $state(false);
+	let useSwap = $state(true);
 
 	const getBlueprintJSON = async () => {
 		let blueprint = await getBlueprint();
@@ -71,7 +71,9 @@
 	function updateDiskPreview(disk) {
 		if (!disk) return;
 
-		diskAfter = getDiskAfter(disk, selectedFilesystem, partitionTable, swapSize);
+        let size = useSwap ? swapSize : 0;
+
+		diskAfter = getDiskAfter(disk, selectedFilesystem, partitionTable, size);
 	}
 
 	const selectDisk = (disk) => {
@@ -79,42 +81,40 @@
 		updateDiskPreview(disk);
 	};
 
-	const decideFilesystem = (filesystem) => {
-		selectedFilesystem = filesystem;
-		if (selectedDisk) {
-			updateDiskPreview(selectedDisk);
-		}
-	};
+    const decideFilesystem = (filesystem) => {
+        selectedFilesystem = filesystem;
+        if (selectedDisk) {
+            updateDiskPreview(selectedDisk);
+        }
+    };
 
-	// const decideSwap = (swap) => {
-	// 	swapSize = swap;
-	// 	if (selectedDisk) {
-	// 		updateDiskPreview(selectedDisk);
-	// 	}
-	// };
-	const decideSwap = (swap) => {
-		useSwap = swap;
-		console.log(`use swap state: ${useSwap}`);
-	};
+    const decideSwap = (swap) => {
+        useSwap = swap;
+        if (selectedDisk) {
+            updateDiskPreview(selectedDisk);
+        }
+    };
 
-	const handlePartitioning = async () => {
-		let blueprint = await getBlueprintJSON();
+    const handlePartitioning = async () => {
+        let blueprint = await getBlueprintJSON();
 
-		let diskPath = blueprint.storage.diskPath;
-		let installMethod = blueprint.storage.installMethod;
+        let diskPath = blueprint.storage.diskPath;
+        let installMethod = blueprint.storage.installMethod;
 
-		console.log('Invoking autogen_partition_select_disk');
+        console.log("Invoking autogen_partition_select_disk with:", {
+            blkname: diskPath,
+            mode: `${installMethod}boot`,
+            partitionTable: partitionTable,
+            fs: selectedFilesystem
+        });
 
-		await invoke('autogen_partition_select_disk', {
-			blkname: diskPath,
-			mode: `${installMethod}boot`,
-			partitionTable: partitionTable,
-			fs: selectedFilesystem,
-			useSwap: useSwap
-		});
-
-		goto('/installation/account');
-	};
+        await invoke('autogen_partition_select_disk', {
+            blkname: diskPath,
+            mode: `${installMethod}boot`,
+            partitionTable: partitionTable,
+            fs: selectedFilesystem
+        });
+    }
 
 	$effect(() => {
 		console.log('Selected disk changed:', selectedDisk);
@@ -139,7 +139,7 @@
 					selectedDisk,
 					selectedFilesystem,
 					partitionTable,
-					swapSize ? 1 : 0
+					swapSize ? swapSize : 2048
 				);
 				await refreshOtherOs(selectedDisk.diskPath);
 			}
@@ -272,14 +272,14 @@
 
 				<GlowingText size="[11]" text="Swap Option" />
 				<div class="flex gap-2">
-					{#key swapSize}
+					{#key useSwap}
 						<CardTextArea
 							initialDevice="SWAP"
 							caption="Recommended"
 							showCaption={true}
 							showIcon={false}
 							onclick={() => decideSwap(true)}
-							isSelected={!useSwap}
+							isSelected={useSwap}
 						/>
 						<CardTextArea
 							initialDevice="NO SWAP"
@@ -287,7 +287,7 @@
 							showCaption={true}
 							showIcon={false}
 							onclick={() => decideSwap(false)}
-							isSelected={useSwap}
+							isSelected={!useSwap}
 						/>
 					{/key}
 				</div>
@@ -329,6 +329,5 @@
 	currentStep={4}
 	currentTitle="Dual Boot"
 	prevPath="/installation/partitioning"
-	nextPath="/installation/account"
 	nextAction={handlePartitioning}
 />
