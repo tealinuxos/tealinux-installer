@@ -221,8 +221,7 @@
 
 <!-- Size and Format Section -->
 	<div class="flex w-full justify-between items-center">
-		<!-- Size Box -->
-		
+
 		{#if newPartition && !readOnly}
 			<div
 					class="flex items-center w-full justify-between p-2 rounded-[14px] border-[1.3px] border-[#3C6350]"
@@ -258,7 +257,6 @@
 			<!-- Format Options -->
 		{#if !newPartition}
 			{#if !readOnly}
-			<!-- Mode interaktif (bisa diubah) -->
 			<div class="flex flex-col space-y-2">
 				<div class="flex items-center space-x-2">
 					<div class="h-4 w-4 border border-[#3C6350] rounded-full flex items-center justify-center">
@@ -290,7 +288,6 @@
 				</div>
 			</div>
 			{:else}
-				<!-- Mode read-only (hanya tampilan) -->
 				<div class="flex flex-col space-y-2">
 					<div class="flex items-center space-x-2">
 						<div class="h-4 w-4 border border-[#3C6350] rounded-full flex items-center justify-center">
@@ -468,3 +465,5 @@
 		</div>
 	{/if}
 </div>
+
+
