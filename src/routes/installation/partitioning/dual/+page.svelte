@@ -111,9 +111,14 @@
 			partitionTable: partitionTable,
 			fs: selectedFilesystem,
 			useSwap: useSwap
-		});
-
-		goto('/installation/account');
+		})
+			.then(() => {
+				// NOP
+				goto('/installation/account');
+			})
+			.catch((error) => {
+				alert('Error: ' + error);
+			});
 	};
 
 	$effect(() => {
@@ -329,6 +334,5 @@
 	currentStep={4}
 	currentTitle="Dual Boot"
 	prevPath="/installation/partitioning"
-	nextPath="/installation/account"
 	nextAction={handlePartitioning}
 />

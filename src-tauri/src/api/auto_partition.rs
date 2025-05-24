@@ -15,7 +15,7 @@ pub async fn autogen_partition_select_disk(
     partition_table: String,
     fs: String,
     use_swap: bool,
-) -> () {
+) -> Result<(), String> {
     // Handle singleboot
     if mode == "singleboot" {
         println!(
@@ -27,21 +27,31 @@ pub async fn autogen_partition_select_disk(
 
         let ret = ctx.getresult();
 
-        if let Ok(ret_val) = ret {
-            // Start werite json
-            let mut blueprint = super::get_blueprint().unwrap();
+        match ret {
+            Ok(ret_val) => {
+                let mut blueprint = super::get_blueprint().unwrap();
 
-            blueprint.storage = Some(ret_val.into());
+                blueprint.storage = Some(ret_val.into());
 
-            let bootloader = ctx.gen_current_bootloader();
-            if let Some(bootloader_val) = bootloader {
-                blueprint.bootloader = Some(bootloader_val.into());
-            } else {
-                println!("failed to generate bootloader for autopartitioning.");
+                let bootloader = ctx.gen_current_bootloader();
+                if let Some(bootloader_val) = bootloader {
+                    blueprint.bootloader = Some(bootloader_val.into());
+                } else {
+                    let errstr = "failed to generate bootloader for autopartitioning.".to_string();
+                    println!("{}", errstr.clone());
+                    return Err(errstr.clone());
+                }
+
+                super::write_blueprint(blueprint).unwrap();
+                return Ok(());
             }
-
-            super::write_blueprint(blueprint).unwrap();
+            Err(e) => {
+                return Err(e.to_string());
+            }
         }
+        // if let Ok(ret_val) = ret {
+        //     // Start werite json
+        // }
     } else if mode == "dualboot" {
         println!(
             "generating config dualboot {} with fs {} swap: {}",
@@ -56,29 +66,41 @@ pub async fn autogen_partition_select_disk(
 
         if start == 0 && end == 0 {
             // TODO: Add
-            println!("no empty partition, aborting!");
-            return;
+            let errstr = "no empty partition, aborting!".to_string();
+            println!("{}", errstr.clone());
+
+            return Err(errstr.clone());
         }
 
         let ret = ctx.getresult(start, end);
 
-        if let Ok(ret_val) = ret {
-            // Start werite json
-            let mut blueprint = super::get_blueprint().unwrap();
+        match ret {
+            Ok(ret_val) => {
+                let mut blueprint = super::get_blueprint().unwrap();
 
-            blueprint.storage = Some(ret_val.into());
+                blueprint.storage = Some(ret_val.into());
 
-            let bootloader = ctx.gen_current_bootloader();
-            if let Some(bootloader_val) = bootloader {
-                blueprint.bootloader = Some(bootloader_val.into());
-            } else {
-                println!("failed to generate bootloader for autopartitioning.");
+                let bootloader = ctx.gen_current_bootloader();
+                if let Some(bootloader_val) = bootloader {
+                    blueprint.bootloader = Some(bootloader_val.into());
+                } else {
+                    println!("failed to generate bootloader for autopartitioning.");
+                }
+
+                super::write_blueprint(blueprint).unwrap();
+                return Ok(());
             }
-
-            super::write_blueprint(blueprint).unwrap();
+            Err(e) => {
+                return Err(e);
+            }
         }
+
+        // if let Ok(ret_val) = ret {
+        //     // Start werite json
+        // }
     } else {
         // mode manual, ignored
+        return Ok(());
     }
 
     // You can add more functionality as needed
