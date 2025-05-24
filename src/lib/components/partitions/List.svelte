@@ -14,7 +14,7 @@
 		diskPath = $bindable(),
 		storage = $bindable(),
         highestNumber = $bindable(),
-        espPartitionIndex = $bindable(),
+        bootPartitionIndex = $bindable(),
 		maxHeight = '200'
 	} = $props();
 
@@ -43,8 +43,11 @@
 
         if (modifiedPartition[selectedPartition].path) highestNumber -= 1;
 
-        if (modifiedPartition[selectedPartition].flags && modifiedPartition[selectedPartition].flags.includes("esp")) {
-            espPartitionIndex = null;
+        if (modifiedPartition[selectedPartition].flags &&
+            (modifiedPartition[selectedPartition].flags.includes("esp")) ||
+            modifiedPartition[selectedPartition].flags.includes("bios_grub")
+        ) {
+            bootPartitionIndex = null;
         }
 
         modifiedPartition = modifiedPartition.map((partition, i) => {
@@ -88,6 +91,8 @@
 		showEdit = true;
 		newPartition = false;
 	};
+
+    $effect(() => $inspect(modifiedPartition))
 </script>
 
 <div
@@ -138,13 +143,15 @@
 	</div>
 
 	<div class="flex justify-between mt-4">
-		<button
-			class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
-			onclick={showCreateDetail}
-            disabled={modifiedPartition[selectedPartition].path !== null || modifiedPartition[selectedPartition].size < 4194304}
-		>
-			+ Add
-		</button>
+        {#key modifiedPartition}
+            <button
+                class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
+                onclick={showCreateDetail}
+                disabled={modifiedPartition[selectedPartition].path !== null || modifiedPartition[selectedPartition].size <= 4096}
+            >
+                + Add
+            </button>
+        {/key}
 		<div class="flex gap-3">
 			<button
 				class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
