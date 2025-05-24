@@ -23,8 +23,8 @@
            {disable
 		? 'grayscale opacity-70 border-[1.3px] border-transparent cursor-not-allowed!'
 		: selectedMethod === method
-			? 'border-[1.3px] border-[#3C6350] shadow-[0_0_9px_#26A768]'
-			: 'border-[1.3px] border-transparent hover:border-[#3C6350] hover:shadow-[0_0_9px_#26A768]'}"
+			? 'border-[1.3px] border-[#3C6352] shadow-[0_0_9px_#26A768] bg-[#151515]'
+			: 'border-[1.3px] border-[#3C6352] hover:border-[#3C6350] hover:bg-[#151515]'}"
 	{onclick}
 	{onmouseenter}
 	{onmouseleave}

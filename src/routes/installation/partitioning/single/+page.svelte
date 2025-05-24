@@ -198,7 +198,7 @@
 				</div>
 
 				<div
-					class="flex flex-col p-[15px] gap-[10px] self-stretch rounded-[10.267px] border border-[#3C6350] bg-[#101010]"
+					class="flex flex-col p-[15px] gap-2px] self-stretch rounded-[10.267px] border border-[#3C6350] bg-[#101010]"
 				>
 					<!-- {#if $selectedDisk} -->
 					<div class="flex flex-row space-x-2">
