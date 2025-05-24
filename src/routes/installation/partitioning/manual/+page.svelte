@@ -18,6 +18,8 @@
 	let diskSize = $state(0);
 	let diskPath = $state('');
 
+    let highestNumber = $state(null);
+
 	let firmwareType = $state('');
 
 	let originalPartition = $state([]);
@@ -62,7 +64,7 @@
 		storage.partitions = selectedDisk.partitions || null;
 
 		let partitions = selectedDisk.partitions;
-		diskSize = selectedDisk.size;
+        diskSize = Number(selectedDisk.size.slice(0, -1));
 		diskPath = selectedDisk.diskPath;
 
 		for (let i of partitions.keys()) {
@@ -85,6 +87,8 @@
 			modifiedPartition = [...modifiedPartition, p];
 		}
 
+        highestNumber = Math.max(...modifiedPartition.map(p => p.number)) || 0;
+
 		tempModifiedPartition = JSON.parse(JSON.stringify(modifiedPartition));
 		originalPartition = JSON.parse(JSON.stringify(modifiedPartition));
 	};
@@ -92,6 +96,7 @@
 	const revertChanges = () => {
 		modifiedPartition = JSON.parse(JSON.stringify(originalPartition));
 		tempModifiedPartition = JSON.parse(JSON.stringify(originalPartition));
+        espPartitionIndex = selectedDisk.partitions.findIndex(p => p.flags.includes("esp"));
 	};
 
 	const isUnallocated = (partition) => {
@@ -105,15 +110,14 @@
 	const newPartitionTable = () => {
 		showEdit = false;
 		storage.newPartitionTable = true;
-		showWarningModal = false;
 
 		let partition = {
 			number: 1,
 			diskPath,
 			path: null,
-			size: Number(diskSize.slice(0, -1)) - 2048,
+			size: diskSize,
 			start: 2048,
-			end: Number(diskSize.slice(0, -1)) - 1,
+			end: diskSize - 1,
 			filesystem: null,
 			format: false,
 			mountpoint: null,
@@ -121,8 +125,12 @@
 			flags: []
 		};
 
+        selectedPartition = 0;
+        highestNumber = 0;
+        espPartitionIndex = null;
 		modifiedPartition = [partition];
 		tempModifiedPartition = [partition];
+		showWarningModal = false;
 	};
 
 	const cancelNewPartitionTable = () => {
@@ -256,11 +264,14 @@
 				bind:showEdit
 				bind:newPartition
 				bind:newPartitionIndex
+                bind:highestNumber
+                bind:espPartitionIndex
 			/>
 			
-			{#if tempModifiedPartition[selectedPartition]}
-				{#if showEdit}
+            {#key [selectedPartition, showEdit]}
+                {#if tempModifiedPartition[selectedPartition]}
 					<Detail
+                        readOnly={!showEdit}
 						bind:showEdit
 						bind:tempModifiedPartition
 						bind:modifiedPartition
@@ -271,26 +282,11 @@
 						bind:diskPath
 						bind:newPartitionIndex
                         bind:espPartitionIndex
+                        bind:highestNumber
                         { firmwareType }
 					/>
-				{:else}
-                    {#key selectedPartition}
-                        <Detail
-                            readOnly={true}
-                            bind:showEdit
-                            bind:tempModifiedPartition
-                            bind:modifiedPartition
-                            bind:selectedPartition
-                            bind:newPartition
-                            bind:storage
-                            bind:diskSize
-                            bind:diskPath
-                            bind:newPartitionIndex
-                            { firmwareType }
-                        />
-                    {/key}
-				{/if}
-			{/if}
+                {/if}
+            {/key}
 		</div>
 	</div>
 {/await}

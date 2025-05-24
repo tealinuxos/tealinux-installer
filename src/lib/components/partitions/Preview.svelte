@@ -27,7 +27,6 @@
 
     $effect(() => {
         diskSize; getColors(modifiedPartition)
-        // console.log(partitionColors)
     })
 
 </script>
@@ -40,9 +39,8 @@
                     <div class="flex mb-4 h-7 w-full overflow-hidden">
                         <div class="h-full flex overflow-hidden w-full">
                             {#each modifiedPartition as partition, i}
-                                {@const size = diskSize.slice(0, -1)}
                                 {@const partitionSize = partition.size}
-                                {@const percentage = (partitionSize / size) * 100}
+                                {@const percentage = (partitionSize / diskSize) * 100}
 
                                 {@const color = partitionColors[i]}
 
