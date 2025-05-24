@@ -71,8 +71,9 @@ fn main() {
                 });
         }
         _ => {
-            karen::pkexec_with_env(&["WAYLAND_DISPLAY", "XDG_RUNTIME_DIR"]).unwrap();
             duct::cmd!("xhost", "si:localuser:root").run().unwrap();
+            karen::escalate_if_needed().unwrap();
+            // karen::pkexec_with_env(&["WAYLAND_DISPLAY", "XDG_RUNTIME_DIR"]).unwrap();
         }
     }
 }
