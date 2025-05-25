@@ -62,7 +62,8 @@
 					isLoadingBack ||
 					currentStep === totalSteps ||
 					(!prevPath && !prevAction)}
-				btnText={isLoadingNext ? '....' : 'Back'}
+				btnText={isLoadingBack ? '....' : 'Back'}
+				onclick={handlePrev}
 				href={prevPath || '#'}
 			/>
 			<div class="flex items-center gap-1">
@@ -94,6 +95,7 @@
 				currentStep === totalSteps ||
 				(!nextPath && !nextAction)}
 			btnText={isLoadingNext ? '....' : 'Next'}
+			onclick={handleNext}
 			href={nextPath || '#'}
 		/>
 	</div>
