@@ -182,7 +182,7 @@
 
 	{#snippet right()}
 		<div
-			class="flex flex-col h-[600px] p-4 space-y-[15px] mb-[15px] bg-black/30 border-[0.5px] border-gray-900 rounded-[10px] font-jakarta"
+			class="flex flex-col p-4 space-y-[15px] mb-[15px] bg-black/30 border-[0.5px] border-gray-900 rounded-[10px] font-jakarta"
 		>
 			<GlowingText size="[11]" text="Disk" />
 
@@ -409,7 +409,7 @@
 
 			<!-- Add this section after the partitioning tools section -->
 			{#key selectedDisk}
-				<div 
+				<div
 					class={`flex flex-col p-[15px] gap-[10px] self-stretch rounded-[10.267px] border border-[#3C6350] bg-[#101010] ${
 						!selectedDisk ? 'grayscale' : ''
 					}`}
@@ -439,27 +439,29 @@
 							</div>
 						</div>
 					{:else}
-						<div class="text-[#E4E4E4] font-jakarta text-[9.46px] font-[500] leading-[17.659px] text-center py-4">
+						<div
+							class="text-[#E4E4E4] font-jakarta text-[9.46px] font-[500] leading-[17.659px] text-center py-4"
+						>
 							Select a disk to see preview
 						</div>
 					{/if}
 				</div>
 			{/key}
-			<!-- Warning tooltip -->
-			{#if selectedDisk && showSingleBootWarning}
-				<div
-					class="absolute bg-[#3C6350] text-white p-3 rounded-lg shadow-lg z-50 max-w-[200px]"
-					style="left: {warningPosition.x}px; top: {warningPosition.y + 20}px"
-				>
-					<p class="text-xs">
-						Warning: This will erase all existing data on the selected disk. Make sure to backup any
-						important files.
-					</p>
-				</div>
-			{/if}
 		</div>
 	{/snippet}
 </TwoSide>
+
+{#if showSingleBootWarning}
+	<div
+		class="absolute bg-[#3C6350] text-white p-3 rounded-lg shadow-lg z-50 max-w-[200px]"
+		style="left: {warningPosition.x}px; top: {warningPosition.y + 20}px"
+	>
+		<p class="text-xs">
+			Warning: This will erase all existing data on the selected disk. Make sure to backup any
+			important files.
+		</p>
+	</div>
+{/if}
 
 <Navigation
 	currentStep={3}
