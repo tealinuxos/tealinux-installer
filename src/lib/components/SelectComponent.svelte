@@ -1,10 +1,8 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
 
   let {
     options = [],
-    selectedValue = null,
-    value= null,
+    value = $bindable(),
     displayField = 'name',
     sizeField = '',
     formatter = null,
@@ -17,25 +15,8 @@
     error = null
   } = $props();
 
-  const dispatch = createEventDispatcher();
   let isOpen = $state(false);
   let selectElement = $state(null);
-
-  $effect(() =>{
-    if(selectedValue !== undefined && selectedValue !== null){
-      value =selectedValue
-    }
-  })
-
-  let selectedOption = $derived(
-    selectedValue 
-      ? options.find(opt => {
-          const optValue = typeof opt === 'object' ? opt.value : opt;
-          const compareValue = typeof selectedValue === 'object' ? selectedValue.value : selectedValue;
-          return optValue === compareValue;
-        })
-      : null
-  );
 
   function handleClickOutside(event) {
     if (selectElement && !selectElement.contains(event.target)) {
@@ -50,8 +31,7 @@
   }
 
   function selectOption(option) {
-    const value = typeof option === 'object' ? option.value : option;
-    dispatch('select', option); 
+    value = option;
     isOpen = false;
   }
 
@@ -88,12 +68,12 @@
 <div class="custom-select" bind:this={selectElement} style="width: {width}; height: {height}">
   <div 
     class="selected-value" 
-    on:click={toggleDropdown}
+    onclick={toggleDropdown}
     style:border-color={isOpen ? '#26A768' : '#3C6350'}
     class:disabled={isLoading || error}
   >
     <div class="selected-text">
-      {getDisplayText(selectedOption)}
+      {getDisplayText(value)}
     </div>
     
     {#if !isLoading && !error}
@@ -111,8 +91,8 @@
     <div class="dropdown-options">
       {#each options as option (option.value || option)}
         <div 
-          class="option {selectedValue === option ? 'selected' : ''}"
-          on:click={() => selectOption(option)}
+          class="option {value === option ? 'selected' : ''}"
+          onclick={() => selectOption(option)}
         >
           {getDisplayText(option)}
         </div>

@@ -35,6 +35,7 @@
 	let selectedPreview = $state(Preview.BEFORE);
 	let partitionTable = $state('gpt');
 	let showAfter = $state(false);
+    let disableNext = $state(true);
 
 	const getStorageJSON = async () => {
 		let json = await getRead();
@@ -47,14 +48,12 @@
 	}
 
 	const selectDisk = (disk) => {
-		console.log(`Selected Disk: ${disk.name}`);
 		selectedDisk = disk;
 		updateDiskPreview(disk);
 	};
 
 	const selectMethod = (method) => {
 		showAfter = false;
-		console.log(`Selected Method: ${method}`);
 		selectedMethod = method;
 
 		if (method !== Method.MANUAL) {
@@ -146,6 +145,11 @@
 		}
 	});
 
+    $effect(() => {
+        selectedMethod;
+        disableNext = selectedMethod === null;
+    })
+
 	onMount(async () => {
 		disks = await getStorageJSON();
 
@@ -195,8 +199,9 @@
 				/> -->
 				<SelectComponent
 					options={disks}
-					selectedValue={selectedDisk}
+					bind:value={selectedDisk}
 					on:select={(e) => {
+                        selectedMethod = null;
 						selectedDisk = e.detail;
 						updateDiskPreview(e.detail);
 					}}
@@ -442,12 +447,11 @@
 					{/if}
 				</div>
 			{/key}
-			<!-- Warning tooltip -->
 		</div>
 	{/snippet}
 </TwoSide>
 
-{#if showSingleBootWarning}
+{#if selectedDisk && showSingleBootWarning}
 	<div
 		class="absolute bg-[#3C6350] text-white p-3 rounded-lg shadow-lg z-50 max-w-[200px]"
 		style="left: {warningPosition.x}px; top: {warningPosition.y + 20}px"
@@ -465,4 +469,5 @@
 	prevPath="/installation/localization"
 	nextPath="/installation/partitioning/{selectedMethod}"
 	nextAction={handleSetMethod}
+    disabled={disableNext}
 />

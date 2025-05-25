@@ -1,10 +1,10 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
 
   let {
     options = [],
-    selectedValue = $bindable(),
+    value = $bindable(),
     displayField,
+    onchange,
     width = '100%',
     height = '40',
     loadingText = "Loading...",
@@ -13,26 +13,8 @@
     error = null
   } = $props();
 
-  const dispatch = createEventDispatcher();
   let isOpen = $state(false);
   let selectElement = $state(null);
-
-  $effect(() => {
-    // Reaksi ketika selectedValue berubah dari parent
-    if (selectedValue !== undefined && selectedValue !== null) {
-      // Tidak perlu melakukan apa-else khusus di sini
-    }
-  });
-
-  let selectedOption = $derived(
-    selectedValue 
-      ? options.find(opt => {
-          const optValue = typeof opt === 'object' ? opt.value : opt;
-          const compareValue = typeof selectedValue === 'object' ? selectedValue.value : selectedValue;
-          return optValue === compareValue;
-        })
-      : null
-  );
 
   function handleClickOutside(event) {
     if (selectElement && !selectElement.contains(event.target)) {
@@ -47,10 +29,7 @@
   }
 
   function selectOption(option) {
-    const value = typeof option === 'object' ? option.value : option;
-    dispatch('select', option);
-    // Perbarui selectedValue langsung
-    selectedValue = value;
+    value = option.value;
     isOpen = false;
   }
 
@@ -61,7 +40,7 @@
     if (!option) return displayField ? nullValue ? nullValue[displayField] : defaultText : nullValue || defaultText;
     
     if (typeof option === 'object') {
-      return displayField ? option[displayField] : option.name || option.value;
+      return displayField ? option[displayField] ? option[displayField] : null : option;
     }
     return option;
   }
@@ -80,7 +59,7 @@
     class:disabled={isLoading || error}
   >
     <div class="selected-text">
-      {getDisplayText(selectedOption)}
+      {getDisplayText(value)}
     </div>
     
     {#if !isLoading && !error}
@@ -98,8 +77,9 @@
     <div class="dropdown-options">
       {#each options as option (option.value || option)}
         <div 
-          class="option {selectedValue && (typeof selectedValue === 'object' ? selectedValue.value : selectedValue) === (typeof option === 'object' ? option.value : option) ? 'selected' : ''}"
+          class="option {value && (typeof value === 'object' ? value.value : value) === (typeof option === 'object' ? option.value : option) ? 'selected' : ''}"
           on:click={() => selectOption(option)}
+          on:change={onchange}
         >
           {getDisplayText(option)}
         </div>
