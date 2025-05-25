@@ -92,8 +92,6 @@
 		showEdit = true;
 		newPartition = false;
 	};
-
-	$effect(() => $inspect(modifiedPartition));
 </script>
 
 <div
