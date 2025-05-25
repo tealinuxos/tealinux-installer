@@ -30,7 +30,7 @@
 	let actualSize = $state(0);
     let filesystem = $state(modifiedPartition[index].filesystem || null);
     let mountpoint = $state(modifiedPartition[index].mountpoint || null);
-    let format = $state(modifiedPartition[index].formta || false);
+    let format = $state(modifiedPartition[index].format || false);
     let label = $state(modifiedPartition[index].label || null);
     let flags = $state(modifiedPartition[index].flags || []);
 
@@ -310,6 +310,18 @@
 		showEdit = false;
 	};
 
+    $effect(() => {
+        tempModifiedPartition[index].filesystem = filesystem;
+        tempModifiedPartition[index].mountpoint = mountpoint;
+        tempModifiedPartition[index].format = format;
+        tempModifiedPartition[index].label = label;
+        tempModifiedPartition[index].flags = flags;
+
+        if (filesystem === "swap") {
+            mountpoint = "swap";
+        }
+    })
+
 	onMount(() => {
 		tempModifiedPartition = JSON.parse(JSON.stringify(modifiedPartition));
 
@@ -476,14 +488,8 @@
 			{#if !readOnly}
 				{#if filesystem === 'swap'}
 					<div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2 opacity-50">
-						 swap disable
+						 [SWAP]
 					</div>
-					
-					<script>
-						$: if (filesystem === 'swap') {
-							mountpoint = null;
-						}
-					</script>
 				{:else}
 					<ComponentSelect
 						options={[
