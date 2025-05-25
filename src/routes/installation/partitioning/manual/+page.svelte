@@ -60,20 +60,19 @@
         firmwareType = read.firmware;
 
         let selectedDiskPath = blueprint.storage.diskPath || null;
+        let disk = read.disk?.find(disk => disk.diskPath === selectedDiskPath) ?? null;
 
-        selectedDisk = read.disk.find(disk => disk.diskPath === selectedDiskPath) || null;
+        selectedDisk = disk || null;
 
         getBootPartitionIndex();
 
-		modifiedPartition = [];
-		tempModifiedPartition = [];
-		originalPartition = [];
+        let newPartitions = [];
 
 		storage.diskPath = selectedDiskPath;
 		storage.partitions = selectedDisk.partitions || null;
         storage.partitionTable = selectedDisk.label ? selectedDisk.label : "gpt";
 
-		let partitions = selectedDisk.partitions;
+        let partitions = selectedDisk.partitions;
         diskSize = Number(selectedDisk.size.slice(0, -1));
 		diskPath = selectedDisk.diskPath;
 
@@ -94,23 +93,18 @@
 				schemas: selectedDisk.label.toLowerCase() === 'gpt' ? 'gpt' : 'mbr'
 			};
 
-			modifiedPartition = [...modifiedPartition, p];
+            newPartitions.push(p);
 		}
 
         highestNumber = Math.max(...modifiedPartition.map(p => p.number)) || 0;
 
-		tempModifiedPartition = JSON.parse(JSON.stringify(modifiedPartition));
-		originalPartition = JSON.parse(JSON.stringify(modifiedPartition));
+        modifiedPartition = tempModifiedPartition = originalPartition = newPartitions;
 	};
 
 	const revertChanges = () => {
 		modifiedPartition = JSON.parse(JSON.stringify(originalPartition));
 		tempModifiedPartition = JSON.parse(JSON.stringify(originalPartition));
         getBootPartitionIndex();
-	};
-
-	const isUnallocated = (partition) => {
-		return !partition || !partition.path;
 	};
 
 	const showNewPartitionTableWarning = () => {
@@ -145,46 +139,6 @@
 
 	const cancelNewPartitionTable = () => {
 		showWarningModal = false;
-	};
-
-	const removePartition = () => {
-		let partitionWithTag = modifiedPartition.filter((p) => (p.path ? p.path.includes('#') : false));
-		let numbers = partitionWithTag.map((p) => Number(p.path.replace('#', '')));
-
-		if (modifiedPartition[selectedPartition].path.includes('#')) {
-			if (numbers) {
-				for (let [i, partition] of modifiedPartition.entries()) {
-					if (partition.path && partition.path.includes('#')) {
-						let number = Number(partition.path.replace('#', ''));
-						if (number > 1) {
-							modifiedPartition[i].path = `#${number - 1}`;
-						}
-					}
-				}
-			}
-		}
-
-		tempModifiedPartition[selectedPartition] = {
-			...tempModifiedPartition[selectedPartition],
-			path: null,
-			filesystem: null,
-			format: false,
-			mountpoint: null,
-			label: null,
-			flags: []
-		};
-
-		modifiedPartition[selectedPartition] = {
-			...modifiedPartition[selectedPartition],
-			path: null,
-			filesystem: null,
-			format: false,
-			mountpoint: null,
-			label: null,
-			flags: []
-		};
-
-		showEdit = false;
 	};
 
 	const handleSetStorage = () => {
@@ -263,17 +217,13 @@
 		<div class="">
 			<Preview bind:modifiedPartition bind:diskSize />
 		</div>
-
 		
 		<div class="flex flex-row flex-auto space-x-2 text-white">
 			<List
-				bind:selectedDisk
 				bind:selectedPartition
 				bind:modifiedPartition
-				bind:originalPartition
 				bind:showEdit
 				bind:newPartition
-				bind:newPartitionIndex
                 bind:highestNumber
                 bind:bootPartitionIndex
 			/>
@@ -287,9 +237,6 @@
 						bind:modifiedPartition
 						bind:selectedPartition
 						bind:newPartition
-						bind:storage
-						bind:diskSize
-						bind:diskPath
 						bind:newPartitionIndex
                         bind:bootPartitionIndex
                         bind:highestNumber
