@@ -32,7 +32,7 @@ fn main() {
             build_tauri();
         }
         _ => {
-            karen::pkexec_with_env(&["WAYLAND_DISPLAY", "XDG_RUNTIME_DIR"]).unwrap();
+            karen::pkexec_with_env(&["WAYLAND_DISPLAY", "XDG_RUNTIME_DIR", "XDG_SESSION_TYPE", "XDG_CURRENT_DESKTOP"]).unwrap();
 
             duct::cmd!("xhost", "si:localuser:root")
                 .run()

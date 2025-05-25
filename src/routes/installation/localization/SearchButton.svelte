@@ -15,7 +15,7 @@
 
 <div
     class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] items-center text-[15px] justify-between h-fit w-full cursor-pointer"
-    on:click={() => (show = true)}
+    onclick={() => (show = true)}
 >
     <div>
         <span>{selected}</span>

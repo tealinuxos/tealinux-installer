@@ -110,7 +110,7 @@
     <div
         style="-webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px)"
         class="absolute inset-0 bg-black/50"
-        on:click={() => (show = false)}
+        onclick={() => (show = false)}
     ></div>
     
     <!-- Modal Content -->
@@ -133,10 +133,10 @@
                     class="flex items-center justify-between w-full h-[35px] pl-9 pr-8 bg-[#122C1F] text-white rounded-[4px] border border-[#26A768] border-opacity-100 focus:outline-none focus:ring-1 focus:ring-[#26A768]"
                     style="border-width: 1.3px"
                     autofocus
-                    on:keydown={(e) => e.key === 'Escape' && (show = false)}
+                    onkeydown={(e) => e.key === 'Escape' && (show = false)}
                 />
 
-                <div class="absolute right-3 text-[#26A768] cursor-pointer" on:click={() => (show = false)}>
+                <div class="absolute right-3 text-[#26A768] cursor-pointer" onclick={() => (show = false)}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -156,7 +156,7 @@
                                 ${tempSelected === itemData ? 
                                     'bg-[#122C1F] text-white' : 
                                     'bg-[rgba(29,33,31,0.7)] text-white hover:bg-[#122C1F]'}`}
-                            on:click={() => handleSelect(itemData, index)}
+                            onclick={() => handleSelect(itemData, index)}
                             id={itemValue}
                         >
                             <span>{itemValue}</span>
@@ -172,13 +172,13 @@
             <div class="flex gap-2 mt-4">
                 <button
                     class="w-full px-4 py-2 rounded text-white border border-[#3C6350] hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)] disabled:opacity-50"
-                    on:click={cancelSelection}
+                    onclick={cancelSelection}
                 >
                     Cancel
                 </button>
                 <button
                     class="w-full px-4 py-2 rounded text-white bg-[#26A768] border border-[#3C6350] hover:bg-[#1E8A56] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)] disabled:opacity-50"
-                    on:click={confirmSelection}
+                    onclick={confirmSelection}
                     disabled={!tempSelected}
                 >
                     Confirm
@@ -188,4 +188,4 @@
     </div>
 </div>
 
-<svelte:window on:keydown={onKeyDown} />
+<svelte:window onkeydown={onKeyDown} />
