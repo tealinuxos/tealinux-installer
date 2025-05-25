@@ -451,7 +451,7 @@
 	{/snippet}
 </TwoSide>
 
-{#if showSingleBootWarning}
+{#if selectedDisk && showSingleBootWarning}
 	<div
 		class="absolute bg-[#3C6350] text-white p-3 rounded-lg shadow-lg z-50 max-w-[200px]"
 		style="left: {warningPosition.x}px; top: {warningPosition.y + 20}px"
