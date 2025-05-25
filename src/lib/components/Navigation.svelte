@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import Button from './ui/Button.svelte';
 	import GlowingText from './ui/GlowingText.svelte';
+	import Link from './ui/Link.svelte';
 
 	export let totalSteps = 7;
 	export let currentStep = 1;
@@ -9,46 +10,41 @@
 	export let prevPath = '';
 	export let nextPath = '';
 	export let nextAction = null;
-    export let prevAction = null;
+	export let prevAction = null;
 
-    let isLoadingNext = false;
-    let isLoadingBack = false;
+	let isLoadingNext = false;
+	let isLoadingBack = false;
 
 	function handleNext() {
+		isLoadingNext = true;
 
-        isLoadingNext = true;
-        
 		if (nextAction) {
 			Promise.resolve(nextAction()).then(() => {
+				isLoadingNext = false;
 
-                isLoadingNext = false
-
-                if (nextPath) {
-                    goto(nextPath);
-                }
-            });
+				if (nextPath) {
+					goto(nextPath);
+				}
+			});
 		} else {
-            goto(nextPath);
-        }
-
+			goto(nextPath);
+		}
 	}
 
 	function handlePrev() {
-        
-        isLoadingBack = true;
+		isLoadingBack = true;
 
-        if (prevAction) {
-            Promise.resolve(prevAction()).then(() => {
+		if (prevAction) {
+			Promise.resolve(prevAction()).then(() => {
+				isLoadingBack = false;
 
-                isLoadingBack = false
-
-                if (prevPath) {
-                    goto(prevPath);
-                }
-            })
-        } else {
-            goto(prevPath);
-        }
+				if (prevPath) {
+					goto(prevPath);
+				}
+			});
+		} else {
+			goto(prevPath);
+		}
 	}
 </script>
 
@@ -56,11 +52,19 @@
 	<div class="flex items-center justify-between w-full bg-black/30 px-4 p-1">
 		<!-- Tombol Kembali -->
 		<div class="flex items-center gap-6">
-			<Button
-                isDisabled={isLoadingNext || isLoadingBack || currentStep === 1 || !prevPath}
-                onclick={handlePrev}
-                btnText={isLoadingBack ? "...." : "Back"}
-            />
+			<!-- <Button
+				isDisabled={isLoadingNext || isLoadingBack || currentStep === 1 || !prevPath}
+				onclick={handlePrev}
+				btnText={isLoadingBack ? '....' : 'Back'}
+			/> -->
+			<Link
+				isDisabled={isLoadingNext ||
+					isLoadingBack ||
+					currentStep === totalSteps ||
+					(!prevPath && !prevAction)}
+				btnText={isLoadingNext ? '....' : 'Back'}
+				href={prevPath || '#'}
+			/>
 			<div class="flex items-center gap-1">
 				{#each Array(totalSteps).fill() as _, index}
 					<div
@@ -79,10 +83,18 @@
 		</div>
 
 		<!-- Tombol Selanjutnya -->
-		<Button
+		<!-- <Button
 			isDisabled={isLoadingNext || isLoadingBack || currentStep === totalSteps || (!nextPath && !nextAction)}
 			onclick={handleNext}
 			btnText={isLoadingNext ? "...." : "Next"}
+		/> -->
+		<Link
+			isDisabled={isLoadingNext ||
+				isLoadingBack ||
+				currentStep === totalSteps ||
+				(!nextPath && !nextAction)}
+			btnText={isLoadingNext ? '....' : 'Next'}
+			href={nextPath || '#'}
 		/>
 	</div>
 </div>
