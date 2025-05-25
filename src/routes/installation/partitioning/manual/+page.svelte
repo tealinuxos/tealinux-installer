@@ -44,12 +44,16 @@
 	});
 
     const getBootPartitionIndex = () => {
+
+        let result = -1;
+
         if (firmwareType === "UEFI") {
-            bootPartitionIndex = selectedDisk.partitions.findIndex(p => p.flags?.includes("esp") ?? false);
+            result = selectedDisk.partitions.findIndex(p => p.flags?.includes("esp") ?? false);
         } else {
-            bootPartitionIndex = selectedDisk.partitions.findIndex(p => p.flags?.includes("bios_grub") ?? false);
+            result = selectedDisk.partitions.findIndex(p => p.flags?.includes("bios_grub") ?? false);
         }
 
+        bootPartitionIndex = result === -1 ? null : result;
     }
 
 	const setup = async () => {
@@ -96,9 +100,8 @@
             newPartitions.push(p);
 		}
 
-        highestNumber = Math.max(...modifiedPartition.map(p => p.number)) || 0;
-
         modifiedPartition = tempModifiedPartition = originalPartition = newPartitions;
+        highestNumber = Math.max(...modifiedPartition.map(p => p.number)) || 0;
 	};
 
 	const revertChanges = () => {
@@ -141,7 +144,7 @@
 		showWarningModal = false;
 	};
 
-	const handleSetStorage = () => {
+	const handleSetStorage = async () => {
 		let partitionWithBoot = modifiedPartition.find((p) => p.mountpoint.includes('boot'));
 		let partitionWithRoot = modifiedPartition.find((p) => p.mountpoint.includes('/'));
 
@@ -157,8 +160,9 @@
 			});
 
 			storage.partitions = filteredPartition;
-			invoke('blueprint_set_bootloader', { bootloader: JSON.stringify(bootloader) });
-			invoke('blueprint_set_storage', { storage: JSON.stringify(storage) });
+
+			await invoke('blueprint_set_bootloader', { bootloader: JSON.stringify(bootloader) });
+			await invoke('blueprint_set_storage', { storage: JSON.stringify(storage) });
 		} else {
 			alert('Root or EFI partition does not exist');
 		}
