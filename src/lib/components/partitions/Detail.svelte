@@ -86,7 +86,7 @@
 							size: espSize,
 							end: newAllocated.start + espSize - 1,
 							filesystem: 'fat32',
-							label: 'EFI system partition',
+							label: 'EFI',
 							format: true,
 							mountpoint: '/boot/efi',
 							flags: ['boot', 'esp']
