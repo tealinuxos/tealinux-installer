@@ -45,9 +45,9 @@
 
     const getBootPartitionIndex = () => {
         if (firmwareType === "UEFI") {
-            bootPartitionIndex = selectedDisk.partitions.findIndex(p => p.flags.includes("esp"));
+            bootPartitionIndex = selectedDisk.partitions.findIndex(p => p.flags?.includes("esp") ?? false);
         } else {
-            bootPartitionIndex = selectedDisk.partitions.findIndex(p => p.flags ? p.flags.includes("bios_grub") : false);
+            bootPartitionIndex = selectedDisk.partitions.findIndex(p => p.flags?.includes("bios_grub") ?? false);
         }
 
     }
