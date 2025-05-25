@@ -11,27 +11,31 @@ use super::installer::BluePrint;
 pub mod filesystem;
 pub mod btrfs;
 
-pub fn format(filesystem: &str, path: &str) -> Result<(), Error>
+pub fn format(filesystem: &str, path: &str, label: Option<&str>) -> Result<(), Error>
 {
     let command = {
 
         if filesystem == "btrfs"
         {
-            format!("mkfs.btrfs --force {}", path)
+            let label = label.as_ref().map(|l| format!("--label {}", l)).unwrap_or_default();
+            format!("mkfs.btrfs --force {} {}", label, path)
         }
         else if filesystem == "exfat"
         {
-            format!("mkfs.{} {}", filesystem, path)
+            let label = label.as_ref().map(|l| format!("-n {}", l)).unwrap_or_default();
+            format!("mkfs.exfat {} {}", label, path)
         }
         else if filesystem.contains("fat")
         {
             let fat = filesystem.trim_matches(|c| c == 'f' || c == 'a' || c == 't');
 
-            format!("mkfs.fat -F {} {}", fat, path)
+            let label = label.as_ref().map(|l| format!("-n {}", l)).unwrap_or_default();
+            format!("mkfs.fat -F {} {} {}", fat, label, path)
         }
         else if filesystem.contains("ext")
         {
-            format!("mkfs.{} -F {}", filesystem, path)
+            let label = label.as_ref().map(|l| format!("-L {}", l)).unwrap_or_default();
+            format!("mkfs.{} {} {}", filesystem, label, path)
         }
         else if filesystem.contains("swap")
         {
@@ -151,17 +155,7 @@ pub fn format_unallocated(partitions: &Vec<Partition>, disk_path: &str, start: u
     let start = format!("{}s", start);
     let end = format!("{}s", end);
 
-    let label = match label
-    {
-        Some(l) => {
-            l
-        },
-        None => {
-            String::from(r"''")
-        }
-    };
-
-    cmd!("parted", "--script", "--fix", disk_path, "mkpart", label, filesystem, &start, &end).run()?;
+    cmd!("parted", "--script", "--fix", disk_path, "mkpart", "primary", filesystem, &start, &end).run()?;
 
     let path = self::get_path_from_sector(disk_path, &start, &end);
 
@@ -169,7 +163,7 @@ pub fn format_unallocated(partitions: &Vec<Partition>, disk_path: &str, start: u
 
     if let Some(path) = path.as_ref()
     {
-        format(filesystem, path)?;
+        format(filesystem, path, label.as_deref())?;
     }
 
     Ok(path)

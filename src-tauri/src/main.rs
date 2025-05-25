@@ -24,6 +24,7 @@ use system::reboot::reboot;
 use system::spawn::*;
 use tauri::RunEvent;
 use users::get_current_uid;
+use crate::installer::step::partitioning::test_partitioning;
 
 fn main() {
     match get_current_uid()
@@ -76,7 +77,8 @@ fn build_tauri()
             get_disk_lists_key_val_with_otheros_check, // defined in partition api
             get_other_os_json,
             set_cosmic_keymap,
-            read_refresh_disk
+            read_refresh_disk,
+            test_partitioning // remove this on production
         ])
         .build(tauri::generate_context!())
         .expect("error while running tauri application")

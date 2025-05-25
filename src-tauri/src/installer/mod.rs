@@ -1,6 +1,6 @@
 pub mod blueprint;
 mod payload;
-mod step;
+pub mod step;
 
 use self::payload::Payload;
 use super::read::online::Online;
@@ -406,6 +406,7 @@ fn post_install(account: Account) -> Result<(), Error> {
     )
     .run()?;
     std::fs::remove_file("/tealinux-mount/etc/xdg/autostart/tealinux-installer.desktop")?;
+    std::fs::remove_file(format!("/tealinux-mount/home/{}/Desktop/tealinux-installer-git.desktop", account.username))?;
     // cmd!("arch-chroot", "/tealinux-mount", "machinectl", "shell", "gdm@", "/bin/bash", "-c", "'dbus-launch gsettings set org.gnome.login-screen logo /usr/share/icons/tealinux-logo.png'").run()?;
     //
 
