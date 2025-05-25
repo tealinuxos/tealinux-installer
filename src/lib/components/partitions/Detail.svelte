@@ -473,7 +473,7 @@
 						{ value: 'ext4', name: 'ext4' },
 						{ value: 'swap', name: 'swap' }
 					]}
-					bind:selectedValue={filesystem}
+					bind:value={filesystem}
 					displayField="name"
 					width="100%"
 				/>
@@ -498,7 +498,7 @@
 							{ value: '/boot/efi', name: '/boot/efi' },
 							{ value: '/home', name: '/home' }
 						]}
-						bind:selectedValue={mountpoint}
+						bind:value={mountpoint}
 						displayField="name"
 						width="100%"
 					/>
