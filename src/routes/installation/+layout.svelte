@@ -1,3 +1,18 @@
+<script>
+	import { onNavigate } from '$app/navigation';
+
+	onNavigate((navigation) => {
+		if (!document.startViewTransition) return;
+
+		return new Promise((resolve) => {
+			document.startViewTransition(async () => {
+				resolve();
+				await navigation.complete;
+			});
+		});
+	});
+</script>
+
 <main
 	class="max-h-[720px] max-w-[1080px] min-h-dvh w-[1080px] grid place-items-center bg-tealinux font-jakarta"
 >
