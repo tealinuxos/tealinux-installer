@@ -19,7 +19,7 @@
 	});
 
 	const startInstall = async () => {
-		await invoke('start_install'); // uncomment on production
+		// await invoke('start_install'); // uncomment on production
         console.log('installing');
 	};
 

@@ -244,7 +244,7 @@
 	currentStep={5}
 	currentTitle="User"
 	prevPath="/installation/partitioning"
-	nextPath="/installation/summary"
+	nextPath="/installation/install"
 	nextAction={handleSetAccount}
     prevAction={refreshDisk}
 />
