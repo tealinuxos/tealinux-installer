@@ -2,20 +2,13 @@
 	import { prettySize } from '$lib/essentials.js';
 
 	let {
-		selectedDisk = $bindable(),
 		selectedPartition = $bindable(),
 		modifiedPartition = $bindable(),
-		originalPartition = $bindable(),
 		showEdit = $bindable(),
 		newPartition = $bindable(),
-		newPartitionIndex = $bindable(),
 		tempModifiedPartition = $bindable(),
-		diskSize = $bindable(),
-		diskPath = $bindable(),
-		storage = $bindable(),
 		highestNumber = $bindable(),
 		bootPartitionIndex = $bindable(),
-		maxHeight = '200'
 	} = $props();
 
 	const changeSelectedPartition = async (selected = selectedPartition) => {
