@@ -58,10 +58,7 @@
 				btnText={isLoadingBack ? '....' : 'Back'}
 			/> -->
 			<Link
-				isDisabled={isLoadingNext ||
-					isLoadingBack ||
-					currentStep === totalSteps ||
-					(!prevPath && !prevAction)}
+				isDisabled={isLoadingNext || isLoadingBack || currentStep === 1 || !prevPath}
 				btnText={isLoadingBack ? '....' : 'Back'}
 				onclick={handlePrev}
 				href={prevPath || '#'}
