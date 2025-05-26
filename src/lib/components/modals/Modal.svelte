@@ -1,7 +1,8 @@
 <script>
-	import { getModalState, closeModal } from '$lib/stores/modalStore.js';
+	import { modalStore, closeModal } from '$lib/stores/modalStore'; // Import closeModal here
 
-	let modal = $state(getModalState());
+	let modal;
+	$: modal = $modalStore;
 
 	const handleConfirm = () => {
 		if (modal.onConfirm) modal.onConfirm();
@@ -9,7 +10,7 @@
 	};
 </script>
 
-{#if $modal.isOpen}
+{#if modal.isOpen}
 	<div class="fixed inset-0 z-50 overflow-y-auto">
 		<div
 			class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
@@ -29,7 +30,7 @@
 				<div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
 					<div class="sm:flex sm:items-start">
 						<!-- Icon based on modal type -->
-						{#if $modal.type === 'success'}
+						{#if modal.type === 'success'}
 							<div
 								class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10"
 							>
@@ -47,7 +48,7 @@
 									/>
 								</svg>
 							</div>
-						{:else if $modal.type === 'error'}
+						{:else if modal.type === 'error'}
 							<div
 								class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
 							>
@@ -65,7 +66,7 @@
 									/>
 								</svg>
 							</div>
-						{:else if $modal.type === 'warning'}
+						{:else if modal.type === 'warning'}
 							<div
 								class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 sm:mx-0 sm:h-10 sm:w-10"
 							>
@@ -105,11 +106,11 @@
 
 						<div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
 							<h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
-								{$modal.title}
+								{modal.title}
 							</h3>
 							<div class="mt-2">
 								<p class="text-sm text-gray-500">
-									{@html $modal.content}
+									{@html modal.content}
 								</p>
 							</div>
 						</div>
@@ -123,7 +124,7 @@
 					>
 						OK
 					</button>
-					{#if $modal.showCancel}
+					{#if modal.showCancel}
 						<button
 							type="button"
 							class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
