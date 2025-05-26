@@ -1,5 +1,5 @@
 <script>
-	import { modalStore, closeModal } from '$lib/stores/modalStore'; // Import closeModal here
+	import { modalStore, closeModal } from '$lib/stores/modalStore';
 
 	let modal;
 	$: modal = $modalStore;
@@ -17,7 +17,10 @@
 		>
 			<!-- Background overlay -->
 			<div class="fixed inset-0 transition-opacity" on:click={closeModal}>
-				<div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+				<div
+					class="absolute inset-0 bg-black/50"
+					style="-webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px)"
+				></div>
 			</div>
 
 			<!-- Modal container -->

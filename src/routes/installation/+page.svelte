@@ -30,6 +30,19 @@
 		});
 	};
 
+	const showErrorModal = () => {
+		showModal({
+			isOpen: false,
+			type: 'error',
+			title: 'Error !',
+			content: 'ini error',
+			confirmText: 'OK',
+			cancelText: 'Cancel',
+			showCancel: false,
+			onConfirm: null
+		});
+	};
+
 	const getStorageJSON = async () => {
 		let json = await getRead();
 
@@ -189,6 +202,10 @@
 
 			<button onclick={showConfirmationModal} class="bg-yellow-500 text-white p-2 rounded ml-4">
 				Show Confirmation Modal
+			</button>
+
+			<button onclick={showErrorModal} class="bg-red-500 text-white p-2 rounded ml-4">
+				Show Error Modal
 			</button>
 
 			{#await getStorageJSON()}
