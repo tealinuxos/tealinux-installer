@@ -331,7 +331,7 @@
 			>
 				<!-- label -->
 				<GlowingText size="[11]" text="Preview" />
-				<!-- <Preview {selectedLocale} {selectedRegion} {selectedCity} /> -->
+				<Preview {selectedLocale} {selectedRegion} {selectedCity} />
 			</div>
 		</div>
 	{/snippet}
