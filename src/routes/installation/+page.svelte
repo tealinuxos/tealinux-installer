@@ -8,6 +8,27 @@
 	import GlowingText from '$lib/components/ui/GlowingText.svelte';
 	import DiskSlider from '../../lib/components/DiskSlider.svelte';
 	import Navigation from '../../lib/components/Navigation.svelte';
+	import { showModal } from '$lib/stores/modalStore';
+
+	const showSuccessModal = () => {
+		showModal({
+			title: 'Success!',
+			content: 'Your action was completed successfully.',
+			type: 'success'
+		});
+	};
+
+	const showConfirmationModal = () => {
+		showModal({
+			title: 'Are you sure?',
+			content: 'This action cannot be undone.',
+			type: 'warning',
+			showCancel: true,
+			onConfirm: () => {
+				console.log('Confirmed!');
+			}
+		});
+	};
 
 	const getStorageJSON = async () => {
 		let json = await getRead();
@@ -161,11 +182,20 @@
 				</div>
 			</div>
 
+			<!-- testing only (safe to delete) -->
+			<button onclick={showSuccessModal} class="bg-green-500 text-white p-2 rounded">
+				Show Success Modal
+			</button>
+
+			<button onclick={showConfirmationModal} class="bg-yellow-500 text-white p-2 rounded ml-4">
+				Show Confirmation Modal
+			</button>
+
 			{#await getStorageJSON()}
 				Loading...
 			{:then disks}
 				<DiskSlider {disks} colors={getColors(disks, 0)} />
-			{/await} 
+			{/await}
 		{/snippet}
 	</TwoSide>
 {/await}
