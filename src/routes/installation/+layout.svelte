@@ -1,5 +1,6 @@
 <script>
 	import { onNavigate } from '$app/navigation';
+	import Modal from '$lib/components/modals/Modal.svelte';
 
 	onNavigate((navigation) => {
 		if (!document.startViewTransition) return;
@@ -18,5 +19,6 @@
 >
 	<div class="flex flex-col justify-between max-h-[720px] min-h-[720px] min-w-full max-w-[1080px]">
 		<slot />
+		<Modal />
 	</div>
 </main>
