@@ -38,7 +38,7 @@
 			content: 'ini error',
 			confirmText: 'OK',
 			cancelText: 'Cancel',
-			showCancel: false,
+			showCancel: true,
 			onConfirm: null
 		});
 	};
