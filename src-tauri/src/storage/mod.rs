@@ -35,7 +35,7 @@ pub fn format(filesystem: &str, path: &str, label: Option<&str>) -> Result<(), E
         else if filesystem.contains("ext")
         {
             let label = label.as_ref().map(|l| format!("-L {}", l)).unwrap_or_default();
-            format!("mkfs.{} {} {}", filesystem, label, path)
+            format!("mkfs.{} {} -F {}", filesystem, label, path)
         }
         else if filesystem.contains("swap")
         {
@@ -146,12 +146,8 @@ pub fn umount_all() -> Result<(), Error>
     Ok(())
 }
 
-pub fn format_unallocated(partitions: &Vec<Partition>, disk_path: &str, start: u64, end: u64, filesystem: &str, label: Option<String>) -> Result<Option<String>, Error>
+pub fn format_unallocated(disk_path: &str, start: u64, end: u64, filesystem: &str, label: Option<String>) -> Result<Option<String>, Error>
 {
-    let max_number = partitions.iter().max_by_key(|partition| partition.number);
-    let max_number = max_number.unwrap().number;
-    let max_number = max_number + 1;
-
     let start = format!("{}s", start);
     let end = format!("{}s", end);
 
