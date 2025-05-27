@@ -6,6 +6,7 @@ export const modalStore = writable({
 	content: '',
 	type: 'info', // 'info', 'success', 'error', 'warning'
 	onConfirm: null,
+	onCancel: null,
 	showCancel: false
 });
 
@@ -16,6 +17,7 @@ export function showModal(options) {
 		content: options.content || '',
 		type: options.type || 'info',
 		onConfirm: options.onConfirm || null,
+		onCancel: options.onCancel || null,
 		showCancel: options.showCancel || false
 	});
 }
