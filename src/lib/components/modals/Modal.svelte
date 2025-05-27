@@ -8,6 +8,11 @@
 		if (modal.onConfirm) modal.onConfirm();
 		closeModal();
 	};
+
+	const handleCancel = () => {
+		if (modal.onCancel) modal.onCancel();
+		closeModal();
+	};
 </script>
 
 {#if modal.isOpen}
@@ -59,7 +64,7 @@
 				<div class="flex gap-4 mt-6">
 					{#if modal.showCancel}
 						<button
-							on:click={closeModal}
+							on:click={handleCancel}
 							class="text-[#A72626] font-['Poppins'] text-[20px] font-light leading-none lowercase px-[15px] py-[8px] flex flex-col items-center gap-[18px] rounded-[23px] border-[1.3px] border-[#F00] bg-[#101010] active:shadow-[0_0_9px_0_#FF453A]"
 						>
 							cancel
