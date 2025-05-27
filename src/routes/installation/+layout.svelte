@@ -36,7 +36,7 @@
 		}
 	}
 
-	@keyframes slide-from-right {
+	/* @keyframes slide-from-right {
 		from {
 			transform: translatex(30px);
 		}
@@ -46,17 +46,15 @@
 		to {
 			transform: translateX(-30px);
 		}
-	}
+	} */
 
 	:root::view-transition-old(root) {
-		animation:
-			90ms linear both fade-out,
-			200ms linear both slide-to-left;
+		animation: 300ms linear both fade-out;
+		/* 200ms linear both slide-to-left; */
 	}
 
 	:root::view-transition-new(root) {
-		animation:
-			210ms linear both fade-in,
-			200ms linear both slide-from-right;
+		animation: 300ms linear both fade-in;
+		/* 200ms linear both slide-from-right; */
 	}
 </style>
