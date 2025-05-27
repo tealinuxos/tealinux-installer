@@ -8,7 +8,8 @@
 		title = 'This is a title',
 		notFoundMessage = 'Message not found',
 		field = null,
-		selected
+		selected,
+        nullValue
 	} = $props();
 
 	let filteredData = $state(data);
@@ -20,9 +21,9 @@
 		term = term.toLowerCase();
 
 		if (field) {
-			filteredData = data.filter((e) => e[field].toLowerCase().includes(term));
+			filteredData = data?.filter((e) => e[field].toLowerCase().includes(term));
 		} else {
-			filteredData = data.filter((e) => e.toLowerCase().includes(term));
+			filteredData = data?.filter((e) => e.toLowerCase().includes(term));
 		}
 	}
 
@@ -53,14 +54,14 @@
     const onKeyDown = (event) => {
 
         if (!tempSelected) {
-            selectedIndex = data.findIndex(d => field ? d[field] === selected : d === selected);
-            tempSelected = data[selectedIndex];
+            selectedIndex = data?.findIndex(d => field ? d[field] === selected : d === selected);
+            tempSelected = data ? data[selectedIndex] : null;
         }
 
-        if (data.length) {
+        if (data?.length) {
             switch(event.keyCode) {
                 case 40:
-                    if (selectedIndex < data.length) {
+                    if (selectedIndex < data?.length) {
                         tempSelected = data[selectedIndex + 1];
                         selectedIndex += 1;
                     }
@@ -123,7 +124,7 @@
             <br>
             <!-- Daftar item -->
             <div class="max-h-60 overflow-auto space-y-2">
-                {#if data.length > 0}
+                {#if data?.length > 0}
                     {#key tempSelected}
                         {#each filteredData as data, index}
                             {@const item = field ? data[field] : data}

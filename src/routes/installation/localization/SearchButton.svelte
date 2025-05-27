@@ -8,7 +8,8 @@
         title = "This is a title",
         notFoundMessage = "Message not found",
         onclick = () => console.log('clicked'),
-        selected
+        selected = $bindable(),
+        nullValue
     } = $props();
 
 </script> 
@@ -18,7 +19,7 @@
     onclick={() => (show = true)}
 >
     <div>
-        <span>{selected}</span>
+        <span>{selected ? selected : nullValue}</span>
     </div>
   
     <div>
@@ -45,5 +46,6 @@
         { title }
         { notFoundMessage }
         { selected }
+        { nullValue }
     />
 {/if}

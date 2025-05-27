@@ -102,9 +102,9 @@
 
 
             // Set city selection when changing timezone to the first entry
-            selectedCity = selectedTimezone.city.length ? selectedTimezone.city[0] : null;
+            selectedCity = selectedTimezone.city?.length ? selectedTimezone.city[0] : null ?? null;
 
-            filteredCity = selectedTimezone.city.length ? selectedTimezone.city : null;
+            filteredCity = selectedTimezone.city?.length ? selectedTimezone.city : null ?? null;
         }
 	};
 
@@ -166,7 +166,7 @@
                     ? selectedTimezone.city
                     : null;
 
-                selectedCity = selectedTimezone.city.find(city => city === blueprint.timezone.city)
+                selectedCity = selectedTimezone.city?.find(city => city === blueprint.timezone.city) ?? null;
             } else {
                 selectedTimezone = timezones.length
                     ? timezones.find((zone) => zone.region === 'Asia')
@@ -269,7 +269,7 @@
 				 <div class="flex gap-3">
 					<SearchButton
 					title="Select Timezone Region"
-					notFoundMessage="Timezone Region Not Found"
+					notFoundMessage="No region found"
 					bind:show={showRegionModal}
 					bind:keyword={regionSearchTerm}
 					data={filteredRegion}
@@ -279,11 +279,12 @@
 				/>
 				<SearchButton
 					title="Select Timezone City"
-					notFoundMessage="Timezone City Not Found"
+					notFoundMessage="No city found for {selectedRegion}"
 					bind:show={showCityModal}
 					bind:keyword={citySearchTerm}
 					data={filteredCity}
 					onclick={selectTimezoneCity}
+                    nullValue={selectedRegion}
                     selected={selectedCity}
 				/>
 				 </div>

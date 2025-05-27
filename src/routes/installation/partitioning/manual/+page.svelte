@@ -25,6 +25,8 @@
 	let modifiedPartition = $state([]);
 	let tempModifiedPartition = $state([]);
 
+    let disableNext = $state(true);
+
 	let newPartitionIndex = $state(0);
 	let warningMessage = $state(
 		'This action will reset all your data. Please backup your data before proceeding.'
@@ -148,8 +150,8 @@
 	};
 
 	const handleSetStorage = async () => {
-		let partitionWithBoot = modifiedPartition.find((p) => p.mountpoint.includes('boot'));
-		let partitionWithRoot = modifiedPartition.find((p) => p.mountpoint.includes('/'));
+		let partitionWithBoot = modifiedPartition.find((p) => p.mountpoint?.includes('boot') ?? false);
+		let partitionWithRoot = modifiedPartition.find((p) => p.mountpoint?.includes('/') ?? false);
 
 		if (partitionWithBoot && partitionWithRoot) {
 			let bootloaderPath = partitionWithBoot.path;
@@ -171,6 +173,26 @@
 		}
 	};
 
+    // Next button state
+    $effect(() => {
+        let rootExist = modifiedPartition.find(p => p.mountpoint == "/");
+
+        if (storage.partitionTable === "gpt" && firmwareType === "UEFI") {
+
+            let espExist = modifiedPartition.find(p => p.mountpoint == "/boot/efi");
+            disableNext = !(espExist && rootExist);
+
+        } else if (storage.partitionTable === "gpt" && firmwareType === "BIOS") {
+
+            let mbrExist = modifiedPartition.find(p => p.flags.includes("bios_grub"));
+            disableNext = !(rootExist && mbrExist);
+
+        } else {
+            disableNext = !rootExist;
+        }
+    })
+
+    // Unallocated partition alignment
 	$effect(() => {
 		for (let i = 0; i < modifiedPartition.length - 1; i += 1) {
 			let current = modifiedPartition[i];
@@ -265,4 +287,5 @@
 	prevPath="/installation/partitioning"
 	nextPath="/installation/account"
 	nextAction={handleSetStorage}
+    { disableNext }
 />

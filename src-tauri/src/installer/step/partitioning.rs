@@ -1,6 +1,6 @@
-use crate::api::get_blueprint_from_opt;
+use crate::api::{get_blueprint_from_opt, get_read_from_opt};
 use crate::installer::{BluePrint, Partition};
-use crate::read::get_read;
+use crate::read::{get_read, Read};
 use crate::storage::btrfs::{create_subvolume, mount_subvolume};
 use crate::storage::{
     create_new_partition_table, create_new_partition_table_with_partition, format,
@@ -120,6 +120,11 @@ fn partitioning_new_partition_table(blueprint: &BluePrint) -> Result<(), Error> 
 fn get_formatted_partitions(disk_path: &str, partitions: &Vec<Partition>) -> Result<Vec<Partition>, Error>
 {
     let mut temp_partitions: Vec<Partition> = Vec::new();
+    let disk = get_read().disk;
+    let actual_disk = disk.iter().find(|disk| disk.disk_path.clone().unwrap() == *disk_path);
+    let actual_partition = actual_disk.as_ref().unwrap().partitions.as_ref().unwrap();
+
+    let mut deleted_partitions: Vec<u64> = Vec::new();
 
     for partition in partitions
     {
@@ -127,8 +132,28 @@ fn get_formatted_partitions(disk_path: &str, partitions: &Vec<Partition>) -> Res
 
         if partition.format
         {
+            println!("asked to format");
+            for actual in actual_partition
+            {
+                let start_sector = actual.start.as_ref().unwrap().trim_end_matches("s").parse::<u64>().unwrap();
+                let end_sector = actual.end.as_ref().unwrap().trim_end_matches("s").parse::<u64>().unwrap();
+
+                if partition.number != 0 &&
+                    !deleted_partitions.contains(&partition.number) &&
+                    partition.start >= start_sector &&
+                    partition.end > end_sector
+                {
+                    println!("about to format {}", partition.number);
+                    let number = partition.number;
+                    deleted_partitions.push(number);
+                    cmd!("parted", "--script", partition.disk_path.as_ref().unwrap(), "rm", number.to_string()).run()?;
+                    println!("its formatted");
+                }
+            }
+
+            println!("it's done");
+
             path = format_unallocated(
-                partitions.as_ref(),
                 disk_path,
                 partition.start,
                 partition.end,
@@ -261,7 +286,6 @@ fn actual_partitioning(partitions: Option<Vec<Partition>>) -> Result<(), Error> 
                 if root.format && root.path.is_none() && root.filesystem.is_some() {
                     println!("Unallocated root detected! Formatting unallocated partition");
                     path = format_unallocated(
-                        &partitions,
                         root.disk_path.as_ref().unwrap(),
                         root.start,
                         root.end,
