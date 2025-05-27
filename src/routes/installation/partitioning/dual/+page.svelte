@@ -12,6 +12,7 @@
 	import { invoke } from '@tauri-apps/api/core';
 	import { showModal } from '$lib/stores/modalStore.js';
 	import { goto } from '$app/navigation';
+	import PartitionsSlider from '../../../../lib/components/PartitionsSlider.svelte';
 
 	const {
 		osName = 'Another Operating System',
@@ -35,6 +36,7 @@
 	let selectedDisk = $state(null);
 	let selectedFilesystem = $state('ext4');
 	let selectedPreview = $state(Preview.AFTER);
+    let selectedPartition = $state(null);
 	let partitionTable = $state(null);
 	let swapSize = $state(2048);
 	let otherOs = $state(null);
@@ -183,7 +185,7 @@
 
 		{#snippet right()}
 			<div
-				class="flex flex-col h-[562px] p-6 space-y-[15px] mb-[15px] bg-black/30 border-[0.5px] border-gray-900 rounded-[10px] font-jakarta"
+				class="flex flex-col h-[680px] p-6 space-y-[15px] mb-[15px] bg-black/30 border-[0.5px] border-gray-900 rounded-[10px] font-jakarta"
 			>
 				<div class="flex flex-col gap-2 mt-8">
 					<!-- OS Info Section -->
@@ -265,6 +267,13 @@
 						{/if}
 					</div>
 				</div>
+
+                <GlowingText size="[11]" text="Select Partition to Replace" />
+                <PartitionsSlider
+                    disk={selectedDisk}
+                    partitions={selectedDisk.partitions}
+                    bind:selectedPartition
+                />
 
 				<GlowingText size="[11]" text="File System" />
 				<div class="flex gap-2">
