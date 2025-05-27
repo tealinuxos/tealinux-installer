@@ -145,8 +145,8 @@
 	};
 
 	const handleSetStorage = async () => {
-		let partitionWithBoot = modifiedPartition.find((p) => p.mountpoint.includes('boot'));
-		let partitionWithRoot = modifiedPartition.find((p) => p.mountpoint.includes('/'));
+		let partitionWithBoot = modifiedPartition.find((p) => p.mountpoint?.includes('boot') ?? false);
+		let partitionWithRoot = modifiedPartition.find((p) => p.mountpoint?.includes('/') ?? false);
 
 		if (partitionWithBoot && partitionWithRoot) {
 			let bootloaderPath = partitionWithBoot.path;
