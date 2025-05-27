@@ -469,5 +469,5 @@
 	prevPath="/installation/localization"
 	nextPath="/installation/partitioning/{selectedMethod}"
 	nextAction={handleSetMethod}
-    disabled={disableNext}
+    disableNext={disableNext}
 />
