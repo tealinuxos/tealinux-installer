@@ -11,6 +11,7 @@
 	export let nextPath = '';
 	export let nextAction = null;
 	export let prevAction = null;
+    export let disableNext = false;
 
 	let isLoadingNext = false;
 	let isLoadingBack = false;
@@ -87,7 +88,7 @@
 			btnText={isLoadingNext ? "...." : "Next"}
 		/> -->
 		<Link
-			isDisabled={isLoadingNext ||
+			isDisabled={disableNext || isLoadingNext ||
 				isLoadingBack ||
 				currentStep === totalSteps ||
 				(!nextPath && !nextAction)}
