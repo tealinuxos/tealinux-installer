@@ -10,6 +10,7 @@
 	import PreviewButton from '../components/PreviewButton.svelte';
 	import { getDiskAfter } from '../utils.js';
 	import { invoke } from '@tauri-apps/api/core';
+	import { showModal } from '$lib/stores/modalStore.js';
 	import { goto } from '$app/navigation';
 
 	const {
@@ -71,7 +72,7 @@
 	function updateDiskPreview(disk) {
 		if (!disk) return;
 
-        let size = useSwap ? swapSize : 0;
+		let size = useSwap ? swapSize : 0;
 
 		diskAfter = getDiskAfter(disk, selectedFilesystem, partitionTable, size);
 	}
@@ -81,40 +82,57 @@
 		updateDiskPreview(disk);
 	};
 
-    const decideFilesystem = (filesystem) => {
-        selectedFilesystem = filesystem;
-        if (selectedDisk) {
-            updateDiskPreview(selectedDisk);
-        }
-    };
+	const decideFilesystem = (filesystem) => {
+		selectedFilesystem = filesystem;
+		if (selectedDisk) {
+			updateDiskPreview(selectedDisk);
+		}
+	};
 
-    const decideSwap = (swap) => {
-        useSwap = swap;
-        if (selectedDisk) {
-            updateDiskPreview(selectedDisk);
-        }
-    };
+	const decideSwap = (swap) => {
+		useSwap = swap;
+		if (selectedDisk) {
+			updateDiskPreview(selectedDisk);
+		}
+	};
 
-    const handlePartitioning = async () => {
-        let blueprint = await getBlueprintJSON();
+	const handlePartitioning = async () => {
+		try {
+			let blueprint = await getBlueprintJSON();
 
-        let diskPath = blueprint.storage.diskPath;
-        let installMethod = blueprint.storage.installMethod;
+			if (!blueprint || !blueprint.storage || !blueprint.storage.diskPath) {
+				throw new Error('Invalid blueprint data');
+			}
 
-        console.log("Invoking autogen_partition_select_disk with:", {
-            blkname: diskPath,
-            mode: `${installMethod}boot`,
-            partitionTable: partitionTable,
-            fs: selectedFilesystem
-        });
+			let diskPath = blueprint.storage.diskPath;
+			let installMethod = blueprint.storage.installMethod;
 
-        await invoke('autogen_partition_select_disk', {
-            blkname: diskPath,
-            mode: `${installMethod}boot`,
-            partitionTable: partitionTable,
-            fs: selectedFilesystem
-        });
-    }
+			console.log('Invoking autogen_partition_select_disk with:', {
+				blkname: diskPath,
+				mode: `${installMethod}boot`,
+				partitionTable: partitionTable,
+				fs: selectedFilesystem
+			});
+
+			await invoke('autogen_partition_select_disk', {
+				blkname: diskPath,
+				mode: `${installMethod}boot`,
+				partitionTable: partitionTable,
+				fs: selectedFilesystem
+			});
+		} catch (error) {
+			showModal({
+				isOpen: false,
+				type: 'error',
+				title: 'Partition Error !',
+				content: error,
+				confirmText: 'OK',
+				// cancelText: 'Cancel',
+				// showCancel: true,
+				onConfirm: null
+			});
+		}
+	};
 
 	$effect(() => {
 		console.log('Selected disk changed:', selectedDisk);
