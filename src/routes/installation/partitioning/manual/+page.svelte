@@ -110,6 +110,12 @@
 		getBootPartitionIndex();
 	};
 
+	const cancelNewPartitionTable = () =>{
+		showModal({
+			isOpen: true
+		})
+	}
+
 	const showNewPartitionTableWarning = () => {
 		showModal({
 			isOpen: false,
