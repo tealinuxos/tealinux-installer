@@ -7,7 +7,7 @@
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
 
 
-	let fullname, username, hostname, password, confirmPassword;
+	let fullname, username, hostname, password, confirmPassword, autologin;
 	let isAdministrator = false;
 	let passwordsMatch = false;
 	let passwordVisible = false;
@@ -29,7 +29,7 @@
 		}
 		passwordsMatch = true;
 
-		await invoke('blueprint_set_account', { fullname, username, hostname, password });
+		await invoke('blueprint_set_account', { fullname, username, hostname, password, autologin });
 	};
 
 	$: if (password && confirmPassword && password === confirmPassword) {
@@ -282,6 +282,7 @@ $: showPasswordIndicator = password && password.length > 0;
 						type="checkbox" 
 						id="automaticLogin"
 						class="w-5 h-5 rounded border-[1.423px] border-[#4CDA95] bg-grayTealinux focus:ring-[#4CDA95]"
+                        bind:checked={autologin}
 					/>
 					<label for="automaticLogin" class="ml-2 text-sm text-white">Automatic Login</label>
 				</div>
