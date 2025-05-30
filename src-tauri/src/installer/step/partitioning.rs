@@ -117,6 +117,14 @@ fn partitioning_new_partition_table(blueprint: &BluePrint) -> Result<(), Error> 
     Ok(())
 }
 
+fn is_intersect(r1: std::ops::RangeInclusive<u64>, r2: std::ops::RangeInclusive<u64>) -> bool
+{
+    let start = std::cmp::max(r1.start(), r2.start());
+    let end = std::cmp::min(r1.end(), r2.end());
+
+    start <= end
+}
+
 fn get_formatted_partitions(disk_path: &str, partitions: &Vec<Partition>) -> Result<Vec<Partition>, Error>
 {
     let mut temp_partitions: Vec<Partition> = Vec::new();
@@ -135,16 +143,15 @@ fn get_formatted_partitions(disk_path: &str, partitions: &Vec<Partition>) -> Res
             println!("asked to format");
             for actual in actual_partition
             {
+                let number = actual.number.clone().unwrap_or("0".into()).parse::<u64>().unwrap();
                 let start_sector = actual.start.as_ref().unwrap().trim_end_matches("s").parse::<u64>().unwrap();
                 let end_sector = actual.end.as_ref().unwrap().trim_end_matches("s").parse::<u64>().unwrap();
 
-                if partition.number != 0 &&
-                    !deleted_partitions.contains(&partition.number) &&
-                    partition.start >= start_sector &&
-                    partition.end > end_sector
+                if number != 0 &&
+                    !deleted_partitions.contains(&number) &&
+                    is_intersect(partition.start..=partition.end, start_sector..=end_sector)
                 {
-                    println!("about to format {}", partition.number);
-                    let number = partition.number;
+                    println!("about to format {}", number);
                     deleted_partitions.push(number);
                     cmd!("parted", "--script", partition.disk_path.as_ref().unwrap(), "rm", number.to_string()).run()?;
                     println!("its formatted");

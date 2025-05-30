@@ -307,7 +307,22 @@ pub async fn start_install(window: Window) {
     }
 
     match blueprint.account.as_ref().unwrap().add_user() {
-        Ok(_) => (),
+        Ok(_) => {
+            if blueprint.account.as_ref().unwrap().autologin
+            {
+                match blueprint.account.as_ref().unwrap().set_cosmic_automatic_login() {
+                    Ok(_) => (),
+                    Err(_) => {
+                        let _ = window.emit(
+                            "ERROR",
+                            self::payload::Error {
+                                message: "Failed to configure user".into(),
+                            },
+                        );
+                    }
+                }
+            }
+        },
         Err(_) => {
             let _ = window.emit(
                 "ERROR",
@@ -371,7 +386,7 @@ pub async fn start_install(window: Window) {
 
     let account = match blueprint.account {
         Some(account) => account,
-        None => Account::new("", "", "", ""),
+        None => Account::new("", "", "", "", false),
     };
 
     let _ = post_install(account);
