@@ -36,7 +36,7 @@
 	let selectedDisk = $state(null);
 	let selectedFilesystem = $state('ext4');
 	let selectedPreview = $state(Preview.AFTER);
-    let selectedPartition = $state(null);
+	let selectedPartition = $state(null);
 	let partitionTable = $state(null);
 	let swapSize = $state(2048);
 	let otherOs = $state(null);
@@ -120,8 +120,11 @@
 				blkname: diskPath,
 				mode: `${installMethod}boot`,
 				partitionTable: partitionTable,
-				fs: selectedFilesystem
+				fs: selectedFilesystem,
+				useSwap: useSwap
 			});
+
+			goto('/installation/account');
 		} catch (error) {
 			showModal({
 				isOpen: false,
@@ -268,12 +271,12 @@
 					</div>
 				</div>
 
-                <GlowingText size="[11]" text="Select Partition to Replace" />
-                <PartitionsSlider
-                    disk={selectedDisk}
-                    partitions={selectedDisk.partitions}
-                    bind:selectedPartition
-                />
+				<GlowingText size="[11]" text="Select Partition to Replace" />
+				<PartitionsSlider
+					disk={selectedDisk}
+					partitions={selectedDisk.partitions}
+					bind:selectedPartition
+				/>
 
 				<GlowingText size="[11]" text="File System" />
 				<div class="flex gap-2">
