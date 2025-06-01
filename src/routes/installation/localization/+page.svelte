@@ -72,7 +72,7 @@
             filteredVariants = filteredVariants.concat(selectedLayout.variant);
 
 
-            await setPreview(selectedLayout, selectedVariant);
+            await setCosmicKeymapPreview(selectedLayout, selectedVariant);
         }
 	};
 
@@ -80,10 +80,10 @@
 		selectedVariant = variant;
 		showVariantModal = false;
 
-        await setPreview(selectedLayout, selectedVariant);
+        await setCosmicKeymapPreview(selectedLayout, selectedVariant);
 	};
 
-    const setPreview = async (layout, variant) => {
+    const setCosmicKeymapPreview = async (layout, variant) => {
         if (layout && variant) {
             await invoke("set_cosmic_keymap", {
                 live: false,
@@ -224,6 +224,7 @@
         selectTimezoneCity(selectedCity);
 		selectKeyboardLayout(selectedLayout);
 		selectKeyboardVariant(selectedVariant);
+        setCosmicKeymapPreview(selectedLayout, selectedVariant);
 	});
 
 </script>
@@ -322,7 +323,7 @@
 				<!-- keyboard test -->
 				<input
 					type="text"
-					placeholder="test type here"
+					placeholder="Type here to test your keyboard..."
 					class="p-[10px] border border-border bg-[#101010] rounded-[14px] text-[15px] justify-between h-fit w-full"
 				/>
 			</div>
