@@ -46,7 +46,7 @@
 	const getStorageJSON = async () => {
 		let json = await getRead();
 
-		json = json.disk.filter((disk) => disk.partitions !== null);
+		json = json.disk;
 
 		return json;
 	};
@@ -65,19 +65,24 @@
 	};
 
 	const getColors = (disks, partIdx) => {
-		let length = disks[partIdx].partitions.length;
+        if (disks[partIdx].partitions) {
 
-		let colors = [];
+            let length = disks[partIdx].partitions.length;
 
-		for (let i = 0; i < length; i++) {
-			colors.push(
-				randomColor({
-					luminosity: 'bright',
-					hue: 'random'
-				})
-			);
-		}
-		return colors;
+            let colors = [];
+
+            for (let i = 0; i < length; i++) {
+                colors.push(
+                    randomColor({
+                        luminosity: 'bright',
+                        hue: 'random'
+                    })
+                );
+            }
+            return colors;
+        }
+
+        return "#454545";
 	};
 
 	const checkUnknown = (s) => {
@@ -211,7 +216,7 @@
 			{#await getStorageJSON()}
 				Loading...
 			{:then disks}
-				<DiskSlider {disks} colors={getColors(disks, 0)} />
+				<DiskSlider {disks} />
 			{/await}
 		{/snippet}
 	</TwoSide>
