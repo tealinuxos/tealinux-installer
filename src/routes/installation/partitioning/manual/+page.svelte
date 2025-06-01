@@ -29,7 +29,7 @@
 
 	let newPartitionIndex = $state(0);
 	let warningMessage = $state(
-		'This action will reset all your data. Please backup your data before proceeding.'
+		'This action will remove all of your data. Please backup your data before proceeding.'
 	);
 
 	let bootPartitionIndex = $state(null);
