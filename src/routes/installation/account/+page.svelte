@@ -294,7 +294,7 @@ $: showPasswordIndicator = password && password.length > 0;
 	currentStep={5}
 	currentTitle="User"
 	prevPath="/installation/partitioning"
-	nextPath="/installation/install"
+	nextPath="/installation/summary"
 	nextAction={handleSetAccount}
     prevAction={refreshDisk}
 />
