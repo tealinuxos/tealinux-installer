@@ -31,7 +31,7 @@
     const getColors = (disk) => {
 		let generated_colors = [];
 
-		let length = disk.partitions.length;
+		let length = disk.partitions?.length ?? null;
 
 		for (let i = 0; i < length; i++) {
 			generated_colors.push(
@@ -63,8 +63,7 @@
     })
 
     $effect(() => {
-        selectedPartition = disk.partitions[currentSlide];
-        console.log(selectedPartition)
+        selectedPartition = disk.partitions ? disk.partitions[currentSlide] : null;
     })
 
 	onMount(() => {
@@ -83,10 +82,10 @@
 		{@const partition = partitions[currentSlide]}
 
 		<div class="mb-2 mt-1 flex justify-between items-center ">
-            <GlowingText size="lg" text={`${partition.partitionPath} ${partition.name ? ` - ${partition.name}` : ''}`} />
+            <GlowingText size="lg" text={`${partition.partitionPath || 'Unallocated'} ${partition.name ? ` - ${partition.name}` : ''}`} />
 			<p class="text-xs font-[200]">
 				<!-- {partitions.disk} -->
-                {partitionTable ? partitionTable : ''}
+                {partitionTable ? partitionTable : 'Unknown Partition Table'}
 			</p>
 		</div>
 

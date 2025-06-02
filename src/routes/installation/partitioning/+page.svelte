@@ -40,7 +40,7 @@
 	const getStorageJSON = async () => {
 		let json = await getRead();
 
-		return json.disk.filter((disk) => disk.partitions !== null);
+		return json.disk;
 	};
 
 	function getColors(disk, index) {

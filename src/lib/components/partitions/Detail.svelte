@@ -306,15 +306,25 @@
     };
 
     $effect(() => {
+        if (filesystem === "swap") mountpoint = "swap";
+        if (filesystem === "fat32") mountpoint = "/boot/efi";
+        if (filesystem === "ext4" || filesystem === "btrfs") mountpoint = null;
+    })
+
+    $effect(() => {
+        if (mountpoint === "/boot/efi") filesystem = "fat32";
+    })
+
+    $effect(() => {
+        if (tempModifiedPartition[index]?.filesystem !== modifiedPartition[index]?.filesystem) format = true;
+    })
+
+    $effect(() => {
         tempModifiedPartition[index].filesystem = filesystem;
         tempModifiedPartition[index].mountpoint = mountpoint;
         tempModifiedPartition[index].format = format;
         tempModifiedPartition[index].label = label;
         tempModifiedPartition[index].flags = flags;
-
-        if (filesystem === "swap") {
-            mountpoint = "swap";
-        }
     })
 
 	onMount(() => {
