@@ -177,7 +177,7 @@
 		{#snippet left()}
 			<div class="mx-[35px] space-y-[15px]">
 				<h1 class="font-jakarta font-[800] text-[28px]">
-					Configure <span class="text-[#26A768]">Dual Boot</span><br />
+					Configure <span class="text-green-tealinux">Dual Boot</span><br />
 				</h1>
 				<p class="font-jakarta text-sm font-[200]">
                     Set up TealinuxOS alongside another operating system by configuring a dual boot, allowing you to choose between different OS options at startup.
