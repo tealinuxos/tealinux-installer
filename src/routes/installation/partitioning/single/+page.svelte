@@ -126,7 +126,7 @@
 		{#snippet left()}
 			<div class="mx-[35px] space-y-[15px]">
 				<h1 class="font-jakarta font-[800] text-[28px]">
-					Configure <span class="text-[#26A768]">Single Boot</span><br />
+					Configure <span class="text-green-tealinux">Single Boot</span><br />
 				</h1>
 				<p class="font-jakarta text-sm font-[200]">
                     Install TealinuxOS as the only operating system on your disk by erasing existing partitions and setting up a new structure.
