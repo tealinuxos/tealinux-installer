@@ -266,7 +266,7 @@
 				bind:bootPartitionIndex
 			/>
 
-			{#key [selectedPartition, showEdit]}
+			{#key [modifiedPartition, selectedPartition, showEdit]}
 				{#if tempModifiedPartition[selectedPartition]}
 					<Detail
 						readOnly={!showEdit}
