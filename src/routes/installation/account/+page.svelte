@@ -105,11 +105,10 @@ $: showPasswordIndicator = password && password.length > 0;
 	{#snippet left()}
 		<div class="mx-[35px] space-y-[15px]">
 			<h1 class="font-jakarta font-[800] text-[28px]">
-				Setup your user<br />
+				Create a <span class="text-[#26A768]">User</span><br />
 			</h1>
 			<p class="font-jakarta text-sm font-[200]">
-				Qorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum
-				est a, mattis tellus.
+                Set up a user by defining a username, creating a password, or even enabling automatic login for quicker access, though this may reduce security, especially on shared devices.
 			</p>
 		</div>
 	{/snippet}
