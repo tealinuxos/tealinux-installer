@@ -12,22 +12,26 @@
 	const getColors = (disk) => {
 		let generated_colors = [];
 
-		let length = disk.partitions.length;
+        if (disk.partitions) {
+            let length = disk.partitions.length;
 
-		for (let i = 0; i < length; i++) {
-			generated_colors.push(
-				randomColor({
-					luminosity: 'bright',
-					hue: 'random'
-				})
-			);
-		}
+            for (let i = 0; i < length; i++) {
+                generated_colors.push(
+                    randomColor({
+                        luminosity: 'bright',
+                        hue: 'random'
+                    })
+                );
+            }
 
-		return generated_colors;
+            return generated_colors;
+        }
+
+        return "#454545";
 	};
 
 	onMount(() => {
-        noPartitionTable = disk?.label === "unknown" ? true : false ?? true;
+        noPartitionTable = disk?.label ? false : true ?? false;
 		colors = colors ? colors : getColors(disk);
 	});
 </script>

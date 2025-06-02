@@ -169,13 +169,12 @@
 	{#snippet left()}
 		<div class="mx-[35px] space-y-[15px]">
 			<h1 class="font-jakarta font-[800] text-[28px]">
-				Choose your disks and
+				Choose your <span class="text-[#26A768]">disk</span> and
 				<br />
-				tool for partitioning
+				<span class="text-[#26A768]">installation method</span>
 			</h1>
 			<p class="font-jakarta text-sm font-[200]">
-				Qorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum
-				est a, mattis tellus.
+                Select the disk where you want to install the system and pick your preferred installation method, whether manual for some control or automatic for ease.
 			</p>
 		</div>
 	{/snippet}
