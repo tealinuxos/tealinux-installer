@@ -120,9 +120,9 @@
 		{/snippet}
 		{#snippet right()}
 			<!-- information system -->
-			<div class="flex space-x-5 mb-[10px]">
+			<div class="flex space-x-2 mb-[8px] mt-[5px]">
 				<div
-					class="w-1/2 bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px] space-y-5"
+					class="w-1/2 bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px] space-y-4"
 				>
 					<GlowingText size="[15]" text="Hardware" />
 					<div class="space-y-4 text-[15px]">

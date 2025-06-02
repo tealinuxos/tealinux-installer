@@ -98,6 +98,7 @@
 					<th class="p-3 text-left">Format</th>
 					<th class="p-3 text-left">Type</th>
 					<th class="p-3 text-left">MountPoint</th>
+					
 				</tr>
 			</thead>
 			<tbody class="text-[#FFFEFB] font-['Poppins'] text-[14px] overflow-y-auto">
