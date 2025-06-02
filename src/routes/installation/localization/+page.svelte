@@ -233,8 +233,8 @@
 	{#snippet left()}
 		<div class="mx-[35px] space-y-[15px]">
 			<h1 class="font-jakarta font-[800] text-[28px]">
-				Set up your <span class="text-[#26A768]">keyboard</span><br />
-				<span class="text-[#26A768]">layout</span>, <span class="text-[#26A768]">timezone</span>, <span class="text-[#26A768]">locale</span>
+				Set up your <span class="text-green-tealinux">keyboard</span><br />
+				<span class="text-green-tealinux">layout</span>, <span class="text-green-tealinux">timezone</span>, <span class="text-green-tealinux">locale</span>
 			</h1>
 			<p class="font-jakarta text-sm font-[200]">
                 Select your preffered keyboard layout, adjust the timezone based on your location, and configure locale to define regional preferences.
