@@ -26,9 +26,26 @@
 }
 
 body {
-	@apply bg-blue-300;
+    background: radial-gradient(
+            92.04% 82.52% at 104.4% -8.33%,
+            rgba(122, 75, 222, 0.23) 0%,
+            rgba(0, 0, 0, 0.23) 100%
+        ),
+        radial-gradient(
+            84.01% 85.84% at -27.59% 123.12%,
+            rgba(0, 87, 255, 0.29) 0%,
+            rgba(0, 0, 0, 0.29) 100%
+        ),
+        radial-gradient(
+            126.17% 95.07% at -6.94% -14.79%,
+            rgba(38, 167, 104, 0.29) 0%,
+            rgba(0, 0, 0, 0.29) 100%
+        ),
+        #07080a;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
 }
-
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
