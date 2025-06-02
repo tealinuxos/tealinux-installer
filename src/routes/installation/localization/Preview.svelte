@@ -9,7 +9,7 @@
 
     let selectedTimezone = $state(null);
 
-    let date = new Date();
+    let date = $state(new Date());
 	let dateOptions = {
 		weekday: 'short',
 		year: 'numeric',
@@ -69,6 +69,10 @@
 			timePreview = timeFormat.format(date);
 		}
 	};
+
+    setInterval(() => {
+        date = new Date();
+    }, 1000);
 
 	$effect(() => {
 		selectedLocale, handlePreview();
