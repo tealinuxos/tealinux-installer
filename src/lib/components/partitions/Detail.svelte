@@ -306,6 +306,15 @@
     };
 
     $effect(() => {
+        if (mountpoint === "/boot/efi") filesystem = "fat32";
+        if (filesystem === "fat32") mountpoint = "/boot/efi";
+    })
+
+    $effect(() => {
+        if (tempModifiedPartition[index]?.filesystem !== modifiedPartition[index]?.filesystem) format = true;
+    })
+
+    $effect(() => {
         tempModifiedPartition[index].filesystem = filesystem;
         tempModifiedPartition[index].mountpoint = mountpoint;
         tempModifiedPartition[index].format = format;
