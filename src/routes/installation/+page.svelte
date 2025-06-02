@@ -46,7 +46,7 @@
 	const getStorageJSON = async () => {
 		let json = await getRead();
 
-		json = json.disk.filter((disk) => disk.partitions !== null);
+		json = json.disk;
 
 		return json;
 	};
@@ -65,19 +65,24 @@
 	};
 
 	const getColors = (disks, partIdx) => {
-		let length = disks[partIdx].partitions.length;
+        if (disks[partIdx].partitions) {
 
-		let colors = [];
+            let length = disks[partIdx].partitions.length;
 
-		for (let i = 0; i < length; i++) {
-			colors.push(
-				randomColor({
-					luminosity: 'bright',
-					hue: 'random'
-				})
-			);
-		}
-		return colors;
+            let colors = [];
+
+            for (let i = 0; i < length; i++) {
+                colors.push(
+                    randomColor({
+                        luminosity: 'bright',
+                        hue: 'random'
+                    })
+                );
+            }
+            return colors;
+        }
+
+        return "#454545";
 	};
 
 	const checkUnknown = (s) => {
@@ -109,8 +114,7 @@
 					<h1 class="font-archivo font-[600] text-[40px] tracking-[-1.8px]">TeaLinux OS</h1>
 				</div>
 				<p class="font-jakarta text-sm font-[200] tracking-[-0.56px] text-center">
-					Qorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum
-					est a, mattis tellus
+                    Nikmatnya sebuah racikan
 				</p>
 			</div>
 		{/snippet}
@@ -194,24 +198,10 @@
 					</div>
 				</div>
 			</div>
-
-			<!-- testing only (safe to delete) -->
-			<button onclick={showSuccessModal} class="bg-green-500 text-white p-2 rounded">
-				Show Success Modal
-			</button>
-
-			<button onclick={showConfirmationModal} class="bg-yellow-500 text-white p-2 rounded ml-4">
-				Show Confirmation Modal
-			</button>
-
-			<button onclick={showErrorModal} class="bg-red-500 text-white p-2 rounded ml-4">
-				Show Error Modal
-			</button>
-
 			{#await getStorageJSON()}
 				Loading...
 			{:then disks}
-				<DiskSlider {disks} colors={getColors(disks, 0)} />
+				<DiskSlider {disks} />
 			{/await}
 		{/snippet}
 	</TwoSide>

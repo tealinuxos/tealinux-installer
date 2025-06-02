@@ -301,6 +301,10 @@
 		showEdit = false;
 	};
 
+    const ignoreNonNumeric = (event) => {
+        inputtedSize = event.target.value.replace(/[^0-9]/g, '');
+    };
+
     $effect(() => {
         tempModifiedPartition[index].filesystem = filesystem;
         tempModifiedPartition[index].mountpoint = mountpoint;
@@ -371,9 +375,10 @@
 
 				<div class="gap-2">
 					<input
-						type="number"
+						type="text"
 						bind:value={inputtedSize}
 						class="w-16 bg-transparent text-white focus:outline-none"
+                        oninput={ignoreNonNumeric}
 					/>
 					<span class="text-[#FFFEFB]">MB</span>
 				</div>
