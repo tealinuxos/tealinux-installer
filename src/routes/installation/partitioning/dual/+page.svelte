@@ -42,6 +42,7 @@
 	let otherOs = $state(null);
 	let isRefreshing = $state(false);
 	let useSwap = $state(true);
+    let disableNext = $state(true);
 
 	const getBlueprintJSON = async () => {
 		let blueprint = await getBlueprint();
@@ -247,27 +248,6 @@
 							</span>
 						</button>
 					</div>
-					<div class="flex flex-col gap-2">
-						<GlowingText size="[11]" text="Selected Disk" />
-
-						{#if selectedDisk}
-							<CardTextArea
-								initialDevice={selectedDisk.diskPath}
-								initialDescription={selectedDisk.model}
-								showCaption={false}
-								showIcon={true}
-								isSelected={true}
-							/>
-						{:else}
-							<CardTextArea
-								initialDevice="No Disk Selected"
-								initialDescription="Please select a disk"
-								showCaption={false}
-								showIcon={true}
-								isSelected={false}
-							/>
-						{/if}
-					</div>
 				</div>
 
 				<GlowingText size="[11]" text="Select Partition to Replace" />
@@ -275,6 +255,8 @@
 					disk={selectedDisk}
 					partitions={selectedDisk.partitions}
 					bind:selectedPartition
+                    { partitionTable }
+                    bind:disableNext
 				/>
 
 				<GlowingText size="[11]" text="File System" />
@@ -359,4 +341,5 @@
 	currentTitle="Dual Boot"
 	prevPath="/installation/partitioning"
 	nextAction={handlePartitioning}
+    { disableNext }
 />
