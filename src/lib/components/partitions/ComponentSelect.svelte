@@ -4,7 +4,7 @@
     options = [],
     value = $bindable(),
     displayField,
-    onchange,
+    onchange = () => {},
     width = '100%',
     height = '40',
     loadingText = "Loading...",
@@ -31,6 +31,7 @@
   function selectOption(option) {
     value = option.value;
     isOpen = false;
+    onchange();
   }
 
   function getDisplayText(option) {
@@ -79,7 +80,6 @@
         <div 
           class="option {value && (typeof value === 'object' ? value.value : value) === (typeof option === 'object' ? option.value : option) ? 'selected' : ''}"
           on:click={() => selectOption(option)}
-          on:change={onchange}
         >
           {getDisplayText(option)}
         </div>
