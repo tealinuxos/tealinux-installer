@@ -23,8 +23,14 @@
 
 	const espSize = 2097152;
 
+    const Metric = {
+        MiB: "MiB",
+        GiB: "GiB"
+    };
+
 	let inputtedSize = $state(0);
 	let actualSize = $state(0);
+    let selectedMetric = $state(Metric.MiB)
     let filesystem = $state(modifiedPartition[index].filesystem || null);
     let mountpoint = $state(modifiedPartition[index].mountpoint || null);
     let format = $state(modifiedPartition[index].format || false);
@@ -37,8 +43,9 @@
 
 	let flagList = $state(['hidden', 'boot', 'efi', 'esp', 'bios_grub']);
 
-	const getSectorFromMB = (size) => {
-		return Math.floor((Number(size) * 1024 * 1024) / 512);
+	const getSector = (selectedMetric, size) => {
+        if (selectedMetric === Metric.MiB) return Math.floor((Number(size) * 1024 * 1024) / 512);
+        if (selectedMetric === Metric.GiB) return Math.floor((Number(size) * 1024 * 1024 * 1024) / 512);
 	};
 
 	const getFlagList = (existFlags) => {
@@ -71,7 +78,7 @@
 	const createPartition = () => {
 		modifiedPartition = [];
 
-		let inputtedSizeSector = getSectorFromMB(inputtedSize);
+		let inputtedSizeSector = getSector(selectedMetric, inputtedSize);
 
 		let remainderSize = actualSize - inputtedSizeSector;
 
@@ -305,6 +312,32 @@
         inputtedSize = event.target.value.replace(/[^0-9]/g, '');
     };
 
+    const mibToGib = (num) => {
+        return num / 1024;
+    }
+
+    const gibToMib = (num) => {
+        return num * 1024;
+    }
+    
+    let previous = $state(Metric.MiB);
+
+    const convertMetric = () => {
+        if (selectedMetric !== previous) {
+            if (selectedMetric === Metric.MiB) {
+                selectedMetric = Metric.MiB;
+                inputtedSize = gibToMib(inputtedSize);
+                previous = selectedMetric;
+            }
+
+            if (selectedMetric === Metric.GiB) {
+                selectedMetric = Metric.GiB;
+                inputtedSize = mibToGib(inputtedSize);
+                previous = selectedMetric;
+            }
+        }
+    }
+
     $effect(() => {
         if (filesystem === "swap") mountpoint = "swap";
         if (filesystem === "fat32") mountpoint = "/boot/efi";
@@ -383,14 +416,23 @@
 					<span class="text-[#FFFEFB]">New Size</span>
 				</div>
 
-				<div class="gap-2">
+				<div class="gap-0 flex flex-row">
 					<input
 						type="text"
 						bind:value={inputtedSize}
 						class="w-16 bg-transparent text-white focus:outline-none"
                         oninput={ignoreNonNumeric}
 					/>
-					<span class="text-[#FFFEFB]">MB</span>
+                    <ComponentSelect
+                        options={[
+                            { value: Metric.MiB, name: Metric.MiB },
+                            { value: Metric.GiB, name: Metric.GiB }
+                        ]}
+                        bind:value={selectedMetric}
+                        displayField="name"
+                        width="100%"
+                        onchange={convertMetric}
+                    />
 				</div>
 			</div>
 		{:else}
