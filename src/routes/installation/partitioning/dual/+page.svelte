@@ -34,7 +34,7 @@
 	let blueprint = $state(null);
 	let diskAfter = $state(null);
 	let selectedDisk = $state(null);
-    let selectedDiskAfter = $state(null);
+	let selectedDiskAfter = $state(null);
 	let selectedFilesystem = $state('ext4');
 	let selectedPreview = $state(Preview.AFTER);
 	let selectedPartition = $state(null);
@@ -43,7 +43,7 @@
 	let otherOs = $state(null);
 	let isRefreshing = $state(false);
 	let useSwap = $state(true);
-    let disableNext = $state(true);
+	let disableNext = $state(true);
 
 	const getBlueprintJSON = async () => {
 		let blueprint = await getBlueprint();
@@ -54,25 +54,27 @@
 		let json = await getRead();
 		selectedDisk = json.disk.find((disk) => disk.diskPath === selected);
 
-        if (!selectedDisk.partitions) {
-            selectedDisk.partitions = [{
-                number: 0,
-                diskPath: selectedDisk.diskPath,
-                partitionPath: null,
-                size: selectedDisk.size,
-                start: 2048,
-                end: selectedDisk.size,
-                filesystem: null,
-                label: null,
-                name: null,
-                format: false,
-                mountpoint: null,
-                flags: [],
-                typePartisi: null,
-                typeUuid: null,
-                uuid: null
-            }];
-        }
+		if (!selectedDisk.partitions) {
+			selectedDisk.partitions = [
+				{
+					number: 0,
+					diskPath: selectedDisk.diskPath,
+					partitionPath: null,
+					size: selectedDisk.size,
+					start: 2048,
+					end: selectedDisk.size,
+					filesystem: null,
+					label: null,
+					name: null,
+					format: false,
+					mountpoint: null,
+					flags: [],
+					typePartisi: null,
+					typeUuid: null,
+					uuid: null
+				}
+			];
+		}
 	};
 
 	const getOtherOsJSON = async (path) => {
@@ -128,11 +130,18 @@
 			let diskPath = blueprint.storage.diskPath;
 			let installMethod = blueprint.storage.installMethod;
 
+			console.log(selectedPartition);
+
+			let start_nosuffix = Number(selectedPartition.start.slice(0, -1));
+			let end_nosuffix = Number(selectedPartition.end.slice(0, -1));
+
 			console.log('Invoking autogen_partition_select_disk with:', {
 				blkname: diskPath,
 				mode: `${installMethod}boot`,
 				partitionTable: partitionTable,
-				fs: selectedFilesystem
+				fs: selectedFilesystem,
+				start: start_nosuffix,
+				end: end_nosuffix
 			});
 
 			await invoke('autogen_partition_select_disk', {
@@ -140,7 +149,9 @@
 				mode: `${installMethod}boot`,
 				partitionTable: partitionTable,
 				fs: selectedFilesystem,
-				useSwap: useSwap
+				useSwap: useSwap,
+				start: start_nosuffix,
+				end: end_nosuffix
 			});
 
 			goto('/installation/account');
@@ -198,7 +209,8 @@
 					Configure <span class="text-green-tealinux">Dual Boot</span><br />
 				</h1>
 				<p class="font-jakarta text-sm font-[200]">
-                    Set up TealinuxOS alongside another operating system by configuring a dual boot, allowing you to choose between different OS options at startup.
+					Set up TealinuxOS alongside another operating system by configuring a dual boot, allowing
+					you to choose between different OS options at startup.
 				</p>
 			</div>
 		{/snippet}
@@ -268,12 +280,13 @@
 				</div>
 
 				<GlowingText size="[11]" text="Select Partition to Replace" />
+
 				<PartitionsSlider
 					disk={selectedDisk}
 					partitions={selectedDisk.partitions}
 					bind:selectedPartition
-                    { partitionTable }
-                    bind:disableNext
+					{partitionTable}
+					bind:disableNext
 				/>
 
 				<GlowingText size="[11]" text="File System" />
@@ -358,5 +371,5 @@
 	currentTitle="Dual Boot"
 	prevPath="/installation/partitioning"
 	nextAction={handlePartitioning}
-    { disableNext }
+	{disableNext}
 />
