@@ -339,13 +339,19 @@
     }
 
     $effect(() => {
-        if (filesystem === "swap") mountpoint = "swap";
-        if (filesystem === "fat32") mountpoint = "/boot/efi";
-        if (filesystem === "ext4" || filesystem === "btrfs") mountpoint = null;
+        if (showEdit) {
+            if (filesystem === "swap") mountpoint = "swap";
+            if (filesystem === "fat32") mountpoint = "/boot/efi";
+            if ( (filesystem === "ext4" || filesystem === "btrfs") && mountpoint === "swap") {
+                mountpoint = null;
+            }
+        }
     })
 
     $effect(() => {
-        if (mountpoint === "/boot/efi") filesystem = "fat32";
+        if (showEdit) {
+            if (mountpoint === "/boot/efi") filesystem = "fat32";
+        }
     })
 
     $effect(() => {
