@@ -235,5 +235,5 @@
 	currentStep={5}
 	currentTitle="Summary"
 	prevPath="/installation"
-	nextPath="/installation/execute"
+	nextPath="/installation/install"
 />

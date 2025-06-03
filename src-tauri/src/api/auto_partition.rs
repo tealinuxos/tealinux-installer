@@ -3,6 +3,7 @@ use duct::cmd;
 use serde::{Deserialize, Serialize};
 use std::vec::Vec;
 use std::{clone, str::FromStr};
+use tea_partition_generator::core::ListsAllSpace;
 use tea_partition_generator::single_boot_blockdev::{Blkstuff, SingleBootBlockdevice};
 
 use tea_partition_generator::core::{PartitionGenerator, TeaPartitionGenerator};
@@ -15,6 +16,8 @@ pub async fn autogen_partition_select_disk(
     partition_table: String,
     fs: String,
     use_swap: bool,
+    start: Option<u64>,
+    end: Option<u64>,
 ) -> Result<(), String> {
     // Handle singleboot
     if mode == "singleboot" {
@@ -61,10 +64,12 @@ pub async fn autogen_partition_select_disk(
         let mut ctx: DualbootBlkstuff =
             DualBootBlockdevice::blockdevice(blkname.clone(), fs, use_swap);
 
-        let partition_generator_ctx = TeaPartitionGenerator::new(blkname.clone());
-        let (start, end) = partition_generator_ctx.find_empty_space_sector_area();
+        // let partition_generator_ctx = TeaPartitionGenerator::new(blkname.clone());
+        // let (start, end) = partition_generator_ctx.find_empty_space_sector_area();
 
-        if start == 0 && end == 0 {
+        // should be guarantee not none (from frontend)
+        println!("{:?}", start);
+        if start.unwrap() == 0 && end.unwrap() == 0 {
             // TODO: Add
             let errstr = "no empty partition, aborting!".to_string();
             println!("{}", errstr.clone());
@@ -72,7 +77,7 @@ pub async fn autogen_partition_select_disk(
             return Err(errstr.clone());
         }
 
-        let ret = ctx.getresult(start, end);
+        let ret = ctx.getresult(start.unwrap(), end.unwrap());
 
         match ret {
             Ok(ret_val) => {
@@ -104,4 +109,10 @@ pub async fn autogen_partition_select_disk(
     }
 
     // You can add more functionality as needed
+}
+
+#[tauri::command]
+pub async fn get_partition_sector_lists(selected_disks: String) -> Vec<ListsAllSpace> {
+    let ctx = TeaPartitionGenerator::new(selected_disks);
+    return ctx.find_partition_sector_areav();
 }

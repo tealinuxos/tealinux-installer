@@ -1,17 +1,15 @@
 <script>
 	import { prettySize } from '$lib/essentials.js';
 
-	let {
-		selectedPartition = $bindable(),
-		modifiedPartition = $bindable(),
-		showEdit = $bindable(),
-		newPartition = $bindable(),
-		tempModifiedPartition = $bindable(),
-		highestNumber = $bindable(),
-		bootPartitionIndex = $bindable(),
-	} = $props();
+	export let selectedPartition;
+	export let modifiedPartition;
+	export let showEdit;
+	export let newPartition;
+	export let tempModifiedPartition;
+	export let highestNumber;
+	export let bootPartitionIndex;
 
-	const changeSelectedPartition = async (selected = selectedPartition) => {
+	const changeSelectedPartition = async (selected) => {
 		selectedPartition = selected;
 		showEdit = false;
 		newPartition = false;
@@ -39,7 +37,8 @@
 		if (
 			(modifiedPartition[selectedPartition].flags &&
 				modifiedPartition[selectedPartition].flags.includes('esp')) ||
-			modifiedPartition[selectedPartition].flags.includes('bios_grub')
+			(modifiedPartition[selectedPartition].flags &&
+				modifiedPartition[selectedPartition].flags.includes('bios_grub'))
 		) {
 			bootPartitionIndex = null;
 		}
@@ -103,35 +102,61 @@
 					<th class="p-3 text-left">Format</th>
 					<th class="p-3 text-left">Type</th>
 					<th class="p-3 text-left">MountPoint</th>
+					
 				</tr>
 			</thead>
 			<tbody class="text-[#FFFEFB] font-['Poppins'] text-[14px] overflow-y-auto">
 				{#if modifiedPartition}
 					{#each modifiedPartition as p, num}
-						{#key selectedPartition}
-							<tr
-								onclick={() => changeSelectedPartition(num)}
-								class="border-b border-[#3C6350] {num === selectedPartition
-									? 'bg-[rgba(38,167,104,0.2)]'
-									: 'bg-[#101010]'}"
-								style="cursor: default;"
-							>
-								<td class="p-3"
-									>{p.path
-										? p.path.includes('#')
-											? `New Partition ${p.path}`
-											: p.path
-										: 'Unallocated'}</td
-								>
-								<!-- <td class="p-3">{prettySize(p.size)}</td> -->
-								<td class="p-3">{p?.size ? prettySize(p.size) : ''}</td>
-								<td class="p-3">{p.format ? 'Yes' : 'No'}</td>
-								<td class="p-3"
-									>{p.filesystem ? p.filesystem : p.path ? 'Unknown' : 'Unallocated'}</td
-								>
-								<td class="p-3">{p.mountpoint ? p.mountpoint : ''}</td>
-							</tr>
-						{/key}
+						<tr
+							on:click={() => changeSelectedPartition(num)}
+							class="border-b border-[#3C6350] {num === selectedPartition
+								? 'bg-[rgba(38,167,104,0.2)]'
+								: 'bg-[#101010]'}"
+							style="cursor: default;"
+						>
+							<td class="p-3">
+								{#if p.path}
+									{#if p.path.includes('#')}
+										New Partition {p.path}
+									{:else}
+										{p.path}
+									{/if}
+								{:else}
+									Unallocated
+								{/if}
+							</td>
+							<td class="p-3">{p?.size ? prettySize(p.size) : ''}</td>
+							<td class="p-3">
+								{#if p.format}
+									Yes
+								{:else}
+									<div class="relative inline-block group">
+										<span>No</span>
+										<svg
+											class="w-4 h-4 ml-1 inline-block text-[#26A768]"
+											viewBox="0 0 24 24"
+											fill="currentColor"
+										>
+											<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+										</svg>
+										<div class="absolute z-10 hidden group-hover:block bg-[#3C6350] text-white text-xs rounded p-2 whitespace-nowrap bottom-full left-1/2 transform -translate-x-1/2 mb-1">
+												This partition will not be reformatted
+										</div>
+									</div>
+								{/if}
+							</td>
+							<td class="p-3">
+								{#if p.filesystem}
+									{p.filesystem}
+								{:else if p.path}
+									Unknown
+								{:else}
+									Unallocated
+								{/if}
+							</td>
+							<td class="p-3">{p.mountpoint || ''}</td>
+						</tr>
 					{/each}
 				{/if}
 			</tbody>
@@ -139,20 +164,19 @@
 	</div>
 
 	<div class="flex justify-between mt-4">
-		{#key modifiedPartition}
-			<button
-				class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
-				onclick={showCreateDetail}
-				disabled={modifiedPartition[selectedPartition].path !== null ||
-					modifiedPartition[selectedPartition].size <= 4096}
-			>
-				+ Add
-			</button>
-		{/key}
+		<button
+			class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
+			on:click={showCreateDetail}
+			disabled={!modifiedPartition || 
+				modifiedPartition[selectedPartition]?.path !== null ||
+				modifiedPartition[selectedPartition]?.size <= 4096}
+		>
+			+ Add
+		</button>
 		<div class="flex gap-3">
 			<button
 				class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
-				onclick={editPartition}
+				on:click={editPartition}
 				disabled={selectedPartition === null ||
 					isUnallocated(modifiedPartition?.[selectedPartition])}
 			>
@@ -160,7 +184,7 @@
 			</button>
 			<button
 				class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#633C3C] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#FF453A] active:shadow-[0_0_9px_#FF453A] disabled:opacity-50 disabled:hover:shadow-none"
-				onclick={removePartition}
+				on:click={removePartition}
 				disabled={selectedPartition === null ||
 					!modifiedPartition?.[selectedPartition] ||
 					!modifiedPartition?.[selectedPartition].path}
