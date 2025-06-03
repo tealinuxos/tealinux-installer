@@ -43,30 +43,34 @@
 		) {
 			bootPartitionIndex = null;
 		}
+        
+        let wasUnallocated = modifiedPartition[selectedPartition].path.includes("#");
+        let highestUnallocated = Math.max(...modifiedPartition.map(p => p.path?.includes("#") ?? false ? Number(p.path.slice(1)) : 0));
 
-		modifiedPartition = modifiedPartition.map((partition, i) => {
-			if (selectedPartition === i) {
-				return {
-					...partition,
-					number: 0,
-					path: null,
-					filesystem: null,
-					format: false,
-					mountpoint: null,
-					label: null,
-					flags: []
-				};
-			}
-			if (partition.path?.includes('#')) {
-				if (partition.path && partition.path.includes('#')) {
-					const num = parseInt(partition.path.replace('#', ''));
-					if (num > 1) {
-						return { ...partition, path: `#${num - 1}` };
-					}
-				}
-			}
-			return partition;
-		});
+        if (wasUnallocated) {
+            modifiedPartition = modifiedPartition.map(partition => {
+                if (partition.path?.includes('#')) {
+                    if (partition.path && partition.path.includes('#')) {
+                        const num = parseInt(partition.path.replace('#', ''));
+                        if (num > 1 && num !== highestUnallocated - 1) {
+                            return { ...partition, path: `#${num - 1}` };
+                        }
+                    }
+                }
+                return partition;
+            });
+        }
+
+        modifiedPartition[selectedPartition] = {
+            ...modifiedPartition[selectedPartition],
+            number: 0,
+            path: null,
+            filesystem: null,
+            format: false,
+            mountpoint: null,
+            label: null,
+            flags: []
+        }
 
 		tempModifiedPartition = modifiedPartition;
 		showEdit = false;
