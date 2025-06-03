@@ -209,7 +209,7 @@
 
         } else if (storage.partitionTable === "gpt" && firmwareType === "BIOS") {
 
-            let mbrExist = modifiedPartition.find(p => p.flags.includes("bios_grub"));
+            let mbrExist = modifiedPartition.find(p => p.flags?.includes("bios_grub") ?? false);
             disableNext = !(rootExist && mbrExist);
 
         } else {

@@ -255,7 +255,48 @@
 								end: tempModifiedPartition[index + 1].end + 2048
 							};
 						}
-					}
+					} else {
+                        
+						tempModifiedPartition[index] = {
+							...newAllocated,
+							number: highestNumber + 1,
+							path: `#${newPartitionIndex}`,
+							size: inputtedSizeSector - 4096,
+							end: newAllocated.start + inputtedSizeSector - 4097,
+							filesystem,
+							mountpoint,
+							format: true,
+							label,
+							flags
+						};
+
+						highestNumber += 1;
+
+						if (partitionTable === 'gpt' && currentIndex === tempModifiedPartition.length - 1) {
+							newGap = {
+								...tempModifiedPartition[index],
+								path: null,
+								number: 0,
+								size: actualSize - tempModifiedPartition[index].size - 2048,
+								start: tempModifiedPartition[index].end + 1,
+								end: actualSize - tempModifiedPartition[index].size + tempModifiedPartition[index].end - 2048,
+								format: false,
+								filesystem: null,
+								mountpoint: null,
+								label: null,
+								flags: null
+							};
+
+							currentIndex += 1;
+							tempModifiedPartition.splice(index + 1, 0, newGap);
+						} else {
+							tempModifiedPartition[index + 1] = {
+								...tempModifiedPartition[index + 1],
+								size: tempModifiedPartition[index + 1].size + 2048,
+								end: tempModifiedPartition[index + 1].end + 2048
+							};
+						}
+                    }
 				}
 			} else {
 				if (mountpoint === '/boot/efi') {
