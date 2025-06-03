@@ -29,7 +29,7 @@
 
 	let newPartitionIndex = $state(0);
 	let warningMessage = $state(
-		'This action will reset all your data. Please backup your data before proceeding.'
+		'This action will remove all of your data. Please backup your data before proceeding.'
 	);
 
 	let bootPartitionIndex = $state(null);
@@ -48,11 +48,13 @@
 	const getBootPartitionIndex = () => {
 		let result = -1;
 
-		if (firmwareType === 'UEFI') {
-			result = selectedDisk.partitions.findIndex((p) => p.flags?.includes('esp') ?? false);
-		} else {
-			result = selectedDisk.partitions.findIndex((p) => p.flags?.includes('bios_grub') ?? false);
-		}
+        if (selectedDisk.partitions) {
+            if (firmwareType === 'UEFI') {
+                result = selectedDisk.partitions.findIndex((p) => p.flags?.includes('esp') ?? false);
+            } else {
+                result = selectedDisk.partitions.findIndex((p) => p.flags?.includes('bios_grub') ?? false);
+            }
+        } 
 
 		bootPartitionIndex = result === -1 ? null : result;
 	};
@@ -75,30 +77,47 @@
 		storage.diskPath = selectedDiskPath;
 		storage.partitions = selectedDisk.partitions || null;
 		storage.partitionTable = selectedDisk.label ? selectedDisk.label : 'gpt';
+        storage.newPartitionTable = selectedDisk.label ? false : true;
 
 		let partitions = selectedDisk.partitions;
 		diskSize = Number(selectedDisk.size.slice(0, -1));
 		diskPath = selectedDisk.diskPath;
 
-		for (let i of partitions.keys()) {
-			let p = {
-				number: Number(partitions[i].number),
-				diskPath,
-				path: partitions[i].partitionPath,
-				size: Number(partitions[i].size.slice(0, -1)),
-				start: Number(partitions[i].start.slice(0, -1)),
-				end: Number(partitions[i].end.slice(0, -1)),
-				filesystem: partitions[i].filesystem?.includes('swap') ? 'swap' : partitions[i].filesystem,
-				label: null,
-				format: false,
-				mountpoint: null,
-				label: partitions[i].name,
-				flags: partitions[i].flags ? partitions[i].flags : [],
-				schemas: selectedDisk.label.toLowerCase() === 'gpt' ? 'gpt' : 'mbr'
-			};
+        if (partitions) {
+            for (let i of partitions.keys()) {
+                let p = {
+                    number: Number(partitions[i].number),
+                    diskPath,
+                    path: partitions[i].partitionPath,
+                    size: Number(partitions[i].size.slice(0, -1)),
+                    start: Number(partitions[i].start.slice(0, -1)),
+                    end: Number(partitions[i].end.slice(0, -1)),
+                    filesystem: partitions[i].filesystem?.includes('swap') ? 'swap' : partitions[i].filesystem,
+                    label: null,
+                    format: false,
+                    mountpoint: null,
+                    label: partitions[i].name,
+                    flags: partitions[i].flags ? partitions[i].flags : [],
+                    schemas: selectedDisk.label.toLowerCase() === 'gpt' ? 'gpt' : 'mbr'
+                };
 
-			newPartitions.push(p);
-		}
+                newPartitions.push(p);
+            }
+        } else {
+            newPartitions.push({
+                number: 0,
+                diskPath,
+                path: null,
+                size: Number(disk.size.slice(0, -1)),
+                start: 2048,
+                end: Number(disk.size.slice(0, -1)),
+                filesystem: null,
+                label: null,
+                format: false,
+                mountpoint: null,
+                flags: []
+            })
+        }
 
 		modifiedPartition = tempModifiedPartition = originalPartition = newPartitions;
 		highestNumber = Math.max(...modifiedPartition.map((p) => p.number)) || 0;

@@ -34,6 +34,7 @@
 	let blueprint = $state(null);
 	let diskAfter = $state(null);
 	let selectedDisk = $state(null);
+    let selectedDiskAfter = $state(null);
 	let selectedFilesystem = $state('ext4');
 	let selectedPreview = $state(Preview.AFTER);
 	let selectedPartition = $state(null);
@@ -52,7 +53,26 @@
 	const getStorageJSON = async (selected) => {
 		let json = await getRead();
 		selectedDisk = json.disk.find((disk) => disk.diskPath === selected);
-		return selectedDisk;
+
+        if (!selectedDisk.partitions) {
+            selectedDisk.partitions = [{
+                number: 0,
+                diskPath: selectedDisk.diskPath,
+                partitionPath: null,
+                size: selectedDisk.size,
+                start: 2048,
+                end: selectedDisk.size,
+                filesystem: null,
+                label: null,
+                name: null,
+                format: false,
+                mountpoint: null,
+                flags: [],
+                typePartisi: null,
+                typeUuid: null,
+                uuid: null
+            }];
+        }
 	};
 
 	const getOtherOsJSON = async (path) => {
@@ -60,8 +80,6 @@
 		let json = JSON.parse(response);
 
 		let others = json.length ? json.filter((os) => os.path.includes(path)) : null;
-
-		console.log(others);
 
 		return others;
 	};
@@ -141,7 +159,6 @@
 	};
 
 	$effect(() => {
-		console.log('Selected disk changed:', selectedDisk);
 		if (selectedDisk) {
 			updateDiskPreview(selectedDisk);
 			selectedPreview = Preview.AFTER;
