@@ -90,7 +90,9 @@
 			mode: `${installMethod}boot`,
 			partitionTable: partitionTable,
 			fs: selectedFilesystem,
-			useSwap: useSwap
+			useSwap: useSwap,
+			start: null,
+			end: null
 		})
 			.then(() => {
 				// NOP
@@ -129,7 +131,8 @@
 					Configure <span class="text-green-tealinux">Single Boot</span><br />
 				</h1>
 				<p class="font-jakarta text-sm font-[200]">
-                    Install TealinuxOS as the only operating system on your disk by erasing existing partitions and setting up a new structure.
+					Install TealinuxOS as the only operating system on your disk by erasing existing
+					partitions and setting up a new structure.
 				</p>
 			</div>
 		{/snippet}
