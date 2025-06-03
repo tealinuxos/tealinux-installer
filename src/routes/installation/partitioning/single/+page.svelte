@@ -139,9 +139,9 @@
 
 		{#snippet right()}
 			<div
-				class="flex flex-col h-[562px] p-3 space-y-[15px] mb-[15px] bg-black/30 border-[0.5px] border-gray-900 rounded-[10px] font-jakarta"
+				class="flex flex-col h-[562px] p-4 space-y-[15px] mb-[15px] bg-black/30 border-[0.5px] border-gray-900 rounded-[10px] font-jakarta"
 			>
-				<div class="flex flex-col gap-2">
+				<div class="flex flex-col gap-1">
 					<GlowingText size="[11]" text="Selected Disk" />
 
 					{#key diskBefore}
@@ -155,8 +155,8 @@
 					{/key}
 				</div>
 
-				<GlowingText size="[11]" text="File System" />
 				<div class="flex flex-col gap-2">
+					<GlowingText size="[11]" text="File System" />
 					{#key selectedFilesystem}
 						<CardTextArea
 							initialDevice="EXT4"
@@ -177,8 +177,8 @@
 					{/key}
 				</div>
 
-				<GlowingText size="[11]" text="Swap Option" />
 				<div class="flex flex-col gap-2">
+					<GlowingText size="[11]" text="Swap Option" />
 					{#key useSwap}
 						<CardTextArea
 							initialDevice="NO SWAP"

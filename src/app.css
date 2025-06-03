@@ -134,3 +134,12 @@ body {
 	font-family: jakartaitalic;
 	src: url('/fonts/jakarta-italic.ttf');
 }
+
+input:checked + svg rect {
+    opacity: 1;
+}
+
+input:checked + svg path {
+    opacity: 1;
+}
+
