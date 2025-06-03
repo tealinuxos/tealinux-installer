@@ -201,16 +201,17 @@
     // Next button state
     $effect(() => {
         let rootExist = modifiedPartition.find(p => p.mountpoint == "/");
+        let rootSufficient = rootExist?.size >= 41938944 ?? false;
 
         if (storage.partitionTable === "gpt" && firmwareType === "UEFI") {
 
             let espExist = modifiedPartition.find(p => p.mountpoint == "/boot/efi");
-            disableNext = !(espExist && rootExist);
+            disableNext = !(espExist && rootExist && rootSufficient);
 
         } else if (storage.partitionTable === "gpt" && firmwareType === "BIOS") {
 
             let mbrExist = modifiedPartition.find(p => p.flags?.includes("bios_grub") ?? false);
-            disableNext = !(rootExist && mbrExist);
+            disableNext = !(rootExist && mbrExist && rootSufficient);
 
         } else {
             disableNext = !rootExist;
