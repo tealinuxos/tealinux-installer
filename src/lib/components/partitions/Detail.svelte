@@ -30,7 +30,7 @@
 
 	let inputtedSize = $state(0);
 	let actualSize = $state(0);
-    let selectedMetric = $state(Metric.MiB)
+    let selectedUnit = $state(Metric.MiB)
     let filesystem = $state(modifiedPartition[index].filesystem || null);
     let mountpoint = $state(modifiedPartition[index].mountpoint || null);
     let format = $state(modifiedPartition[index].format || false);
@@ -43,9 +43,9 @@
 
 	let flagList = $state(['hidden', 'boot', 'efi', 'esp', 'bios_grub']);
 
-	const getSector = (selectedMetric, size) => {
-        if (selectedMetric === Metric.MiB) return Math.floor((Number(size) * 1024 * 1024) / 512);
-        if (selectedMetric === Metric.GiB) return Math.floor((Number(size) * 1024 * 1024 * 1024) / 512);
+	const getSector = (selectedUnit, size) => {
+        if (selectedUnit === Metric.MiB) return Math.floor((Number(size) * 1024 * 1024) / 512);
+        if (selectedUnit === Metric.GiB) return Math.floor((Number(size) * 1024 * 1024 * 1024) / 512);
 	};
 
 	const getFlagList = (existFlags) => {
@@ -78,7 +78,7 @@
 	const createPartition = () => {
 		modifiedPartition = [];
 
-		let inputtedSizeSector = getSector(selectedMetric, inputtedSize);
+		let inputtedSizeSector = getSector(selectedUnit, inputtedSize);
 
 		let remainderSize = actualSize - inputtedSizeSector;
 
@@ -309,7 +309,7 @@
 	};
 
     const ignoreNonNumeric = (event) => {
-        inputtedSize = event.target.value.replace(/[^0-9]/g, '');
+        inputtedSize = event.target.value.replace(/[^0-9.]/g, '');
     };
 
     const mibToGib = (num) => {
@@ -323,17 +323,17 @@
     let previous = $state(Metric.MiB);
 
     const convertMetric = () => {
-        if (selectedMetric !== previous) {
-            if (selectedMetric === Metric.MiB) {
-                selectedMetric = Metric.MiB;
+        if (selectedUnit !== previous) {
+            if (selectedUnit === Metric.MiB) {
+                selectedUnit = Metric.MiB;
                 inputtedSize = gibToMib(inputtedSize);
-                previous = selectedMetric;
+                previous = selectedUnit;
             }
 
-            if (selectedMetric === Metric.GiB) {
-                selectedMetric = Metric.GiB;
+            if (selectedUnit === Metric.GiB) {
+                selectedUnit = Metric.GiB;
                 inputtedSize = mibToGib(inputtedSize);
-                previous = selectedMetric;
+                previous = selectedUnit;
             }
         }
     }
@@ -434,7 +434,7 @@
                             { value: Metric.MiB, name: Metric.MiB },
                             { value: Metric.GiB, name: Metric.GiB }
                         ]}
-                        bind:value={selectedMetric}
+                        bind:value={selectedUnit}
                         displayField="name"
                         width="100%"
                         onchange={convertMetric}
@@ -642,7 +642,8 @@
 				</button>
 				<button
 					onclick={createPartition}
-					class="px-4 py-2 rounded text-[#26A768] border border-[#3C6350] hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)]"
+                    disabled={(getSector(selectedUnit, inputtedSize) > actualSize) && !isNaN(inputtedSize)}
+					class="disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 rounded text-[#26A768] border border-[#3C6350] hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)]"
 				>
 					Create
 				</button>
