@@ -317,7 +317,7 @@
 
 				highestNumber += 1;
 
-				if (partitionTable === 'gpt') {
+				if (partitionTable === 'gpt' && currentIndex === tempModifiedPartition.length - 1) {
 					newGap = {
 						...tempModifiedPartition[index],
 						path: null,
