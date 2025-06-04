@@ -10,11 +10,16 @@
     loadingText = "Loading...",
     defaultText = "Select an option",
     isLoading = false,
-    error = null
+    class: customClass = "", 
+    error = null,
+      noBorder = false  // Prop baru untuk mengontrol transparansi
   } = $props();
 
   let isOpen = $state(false);
   let selectElement = $state(null);
+  
+
+
 
   function handleClickOutside(event) {
     if (selectElement && !selectElement.contains(event.target)) {
@@ -52,11 +57,13 @@
   });
 </script>
 
+
+
 <div class="custom-select" bind:this={selectElement} style="width: {width}; height: {height}">
   <div 
     class="selected-value" 
     on:click={toggleDropdown}
-    style:border-color={isOpen ? '#26A768' : '#3C6350'}
+    style:border={noBorder ? 'none' : isOpen ? '1.3px solid #26A768' : '1.3px solid #3C6350'}
     class:disabled={isLoading || error}
   >
     <div class="selected-text">
@@ -75,7 +82,10 @@
   </div>
   
   {#if isOpen && !isLoading && !error}
-    <div class="dropdown-options">
+    <div 
+      class="dropdown-options"
+      style:border={noBorder ? 'none' : '1.3px solid #3C6350'}
+    >
       {#each options as option (option.value || option)}
         <div 
           class="option {value && (typeof value === 'object' ? value.value : value) === (typeof option === 'object' ? option.value : option) ? 'selected' : ''}"
@@ -89,7 +99,7 @@
 </div>
 
 <style>
-  .custom-select {
+.custom-select {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -104,8 +114,7 @@
     justify-content: space-between;
     align-items: center;
     border-radius: 14px;
-    border: 1.3px solid #3C6350;
-    background: #101010;
+    background: #101010; /* Hapus properti border dari sini */
     cursor: pointer;
     transition: border-color 0.2s ease;
     color: #FFFEFB;
@@ -128,11 +137,12 @@
     max-height: 200px;
     overflow-y: auto;
     background: #101010;
-    border: 1.3px solid #3C6350;
+    /* Hapus properti border dari sini */
     border-radius: 14px;
     z-index: 1000;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
+  
   
   .option {
     padding: 10px 15px;
