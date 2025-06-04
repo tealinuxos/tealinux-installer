@@ -212,7 +212,7 @@
 									<tr class="border-b border-[#3C6350]">
 										<td class="p-3">{partition.path || 'Unallocated'}</td>
 										<td class="p-3">{partition.filesystem || '-'}</td>
-										<td class="p-3">{partition.mountpoint || '-'}</td>
+										<td class="p-3">{partition.filesystem === "swap" ? "[SWAP]" : partition.mountpoint || '-'}</td>
 										<td class="p-3">{partition.format ? 'Yes' : 'No'}</td>
 									</tr>
 								{/each}
