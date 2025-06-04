@@ -18,7 +18,7 @@
 </script>
 
 <a
-	class="grid place-items-center py-[6px] px-[27px] text-md bg-[#101010] rounded-sm border-[0.3px] border-[#3C6350] transition-all duration-300 {isDisabled
+	class="grid w-[102px] max-w-[102px] place-items-center py-[6px] px-[27px] text-md bg-[#101010] rounded-sm border-[0.3px] border-[#3C6350] transition-all duration-300 {isDisabled
 		? 'opacity-60 cursor-not-allowed'
 		: 'cursor-pointer hover:shadow-[0_0px_5px_1px_#00B85E]'}"
 	onclick={handleClick}

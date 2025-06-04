@@ -1,5 +1,6 @@
 <script>
 	import { invoke } from '@tauri-apps/api/core';
+	import { afterNavigate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { getBlueprint, refreshDisk } from '../global.js';
 	import { goto } from '$app/navigation';
@@ -8,6 +9,9 @@
 	import SearchButton from './SearchButton.svelte';
 	import Preview from './Preview.svelte';
 	import Navigation from '../../../lib/components/Navigation.svelte';
+
+	// Additional variables
+	let prevRoute = $state('');
 
 	// Locale
 	let locales = $state([]);
@@ -59,53 +63,50 @@
 	};
 
 	const selectKeyboardLayout = async (keyboard) => {
-        if (keyboard) {
-            selectedLayout = keyboard;
-            showLayoutModal = false;
+		if (keyboard) {
+			selectedLayout = keyboard;
+			showLayoutModal = false;
 
-            let defaultVariant = { code: null, name: selectedLayout.name };
+			let defaultVariant = { code: null, name: selectedLayout.name };
 
-            selectedVariant = defaultVariant;
+			selectedVariant = defaultVariant;
 
-            filteredVariants = [defaultVariant];
+			filteredVariants = [defaultVariant];
 
-            filteredVariants = filteredVariants.concat(selectedLayout.variant);
+			filteredVariants = filteredVariants.concat(selectedLayout.variant);
 
-
-            await setCosmicKeymapPreview(selectedLayout, selectedVariant);
-        }
+			await setCosmicKeymapPreview(selectedLayout, selectedVariant);
+		}
 	};
 
 	const selectKeyboardVariant = async (variant) => {
 		selectedVariant = variant;
 		showVariantModal = false;
 
-        await setCosmicKeymapPreview(selectedLayout, selectedVariant);
+		await setCosmicKeymapPreview(selectedLayout, selectedVariant);
 	};
 
-    const setCosmicKeymapPreview = async (layout, variant) => {
-        if (layout && variant) {
-            await invoke("set_cosmic_keymap", {
-                live: false,
-                layout: layout.code,
-                variant: variant.code
-            });
-        }
-    };
-
+	const setCosmicKeymapPreview = async (layout, variant) => {
+		if (layout && variant) {
+			await invoke('set_cosmic_keymap', {
+				live: false,
+				layout: layout.code,
+				variant: variant.code
+			});
+		}
+	};
 
 	const selectTimezoneRegion = (timezone) => {
-        if (timezone) {
-            selectedTimezone = timezone;
-            selectedRegion = selectedTimezone.region;
-            showRegionModal = false;
+		if (timezone) {
+			selectedTimezone = timezone;
+			selectedRegion = selectedTimezone.region;
+			showRegionModal = false;
 
+			// Set city selection when changing timezone to the first entry
+			selectedCity = selectedTimezone.city?.length ? selectedTimezone.city[0] : null ?? null;
 
-            // Set city selection when changing timezone to the first entry
-            selectedCity = selectedTimezone.city?.length ? selectedTimezone.city[0] : null ?? null;
-
-            filteredCity = selectedTimezone.city?.length ? selectedTimezone.city : null ?? null;
-        }
+			filteredCity = selectedTimezone.city?.length ? selectedTimezone.city : null ?? null;
+		}
 	};
 
 	const selectTimezoneCity = (city) => {
@@ -115,27 +116,25 @@
 	};
 
 	const selectLocale = (locale) => {
-        if (locale) {
-            selectedLocale = locale.name;
-            localeSearchTerm = locale.name;
-            showLocaleModal = false;
-        }
+		if (locale) {
+			selectedLocale = locale.name;
+			localeSearchTerm = locale.name;
+			showLocaleModal = false;
+		}
 	};
 
 	const handleSetLocalization = async () => {
-
 		await invoke('blueprint_set_locale', { locale: selectedLocale });
 		await invoke('blueprint_set_timezone', { region: selectedRegion, city: selectedCity });
 		await invoke('blueprint_set_keyboard', {
-            layout: selectedLayout.code,
-            variant: selectedVariant.code
-        });
+			layout: selectedLayout.code,
+			variant: selectedVariant.code
+		});
 
-        await refreshDisk();
+		await refreshDisk();
 	};
 
-    const getDefault = async () => {
-
+	const getDefault = async () => {
 		keyboards = await getKeyboard();
 		filteredLayouts = keyboards;
 
@@ -144,89 +143,79 @@
 
 		locales = await getLocale();
 		filteredLocales = locales;
-        
+
 		getBlueprint().then((blueprint) => {
-            if (blueprint.locale) {
-                selectedLocale = blueprint.locale.main;
-            } else {
-                let temp = locales.length
-                    ? locales.find((locale) => locale.name === 'en_US.UTF-8 UTF-8')
-                    : null;
+			if (blueprint.locale) {
+				selectedLocale = blueprint.locale.main;
+			} else {
+				let temp = locales.length
+					? locales.find((locale) => locale.name === 'en_US.UTF-8 UTF-8')
+					: null;
 
-                selectedLocale = temp
-                    ? temp.name
-                    : null;
-            }
+				selectedLocale = temp ? temp.name : null;
+			}
 
-            if (blueprint.timezone) {
-				selectedTimezone = timezones.find(zone => zone.region === blueprint.timezone.region);
-                selectedRegion = selectedTimezone.region;
+			if (blueprint.timezone) {
+				selectedTimezone = timezones.find((zone) => zone.region === blueprint.timezone.region);
+				selectedRegion = selectedTimezone.region;
 
-                filteredCity = selectedTimezone
-                    ? selectedTimezone.city
-                    : null;
+				filteredCity = selectedTimezone ? selectedTimezone.city : null;
 
-                selectedCity = selectedTimezone.city?.find(city => city === blueprint.timezone.city) ?? null;
-            } else {
-                selectedTimezone = timezones.length
-                    ? timezones.find((zone) => zone.region === 'Asia')
-                    : null;
+				selectedCity =
+					selectedTimezone.city?.find((city) => city === blueprint.timezone.city) ?? null;
+			} else {
+				selectedTimezone = timezones.length
+					? timezones.find((zone) => zone.region === 'Asia')
+					: null;
 
-                selectedRegion = selectedTimezone
-                    ? selectedTimezone.region
-                    : 'Asia';
+				selectedRegion = selectedTimezone ? selectedTimezone.region : 'Asia';
 
-                filteredCity = selectedTimezone
-                    ? selectedTimezone.city
-                    : null;
+				filteredCity = selectedTimezone ? selectedTimezone.city : null;
 
-                selectedCity = selectedTimezone
-                    ? selectedTimezone.city.find((city) => city === 'Jakarta')
-                    : 'Jakarta';
-            }
+				selectedCity = selectedTimezone
+					? selectedTimezone.city.find((city) => city === 'Jakarta')
+					: 'Jakarta';
+			}
 
 			if (blueprint.keyboard) {
-				selectedLayout = keyboards.find(layout => layout.code === blueprint.keyboard.layout);
+				selectedLayout = keyboards.find((layout) => layout.code === blueprint.keyboard.layout);
 
-                let defaultVariant = { code: null, name: selectedLayout?.name };
+				let defaultVariant = { code: null, name: selectedLayout?.name };
 
-                if (blueprint.keyboard.variant) {
-                    selectedVariant = selectedLayout.variant.find(variant => variant.code === blueprint.keyboard.variant);
-                } else {
-                    selectedVariant = defaultVariant;
-                }
+				if (blueprint.keyboard.variant) {
+					selectedVariant = selectedLayout.variant.find(
+						(variant) => variant.code === blueprint.keyboard.variant
+					);
+				} else {
+					selectedVariant = defaultVariant;
+				}
 
-                filteredVariants = selectedLayout
-                    ? [defaultVariant].concat(selectedLayout.variant)
-                    : null;
-
+				filteredVariants = selectedLayout ? [defaultVariant].concat(selectedLayout.variant) : null;
 			} else {
-                selectedLayout = keyboards.length
-                    ? keyboards.find(keyb => keyb.code === "us")
-                    : null;
+				selectedLayout = keyboards.length ? keyboards.find((keyb) => keyb.code === 'us') : null;
 
-                selectedVariant = { code: null, name: selectedLayout?.name }
+				selectedVariant = { code: null, name: selectedLayout?.name };
 
-                filteredVariants = selectedLayout ?
-                    [selectedVariant].concat(selectedLayout.variant) :
-                    null;
-            }
+				filteredVariants = selectedLayout ? [selectedVariant].concat(selectedLayout.variant) : null;
+			}
 		});
+	};
 
-    }
+	afterNavigate(({ from }) => {
+		prevRoute = from?.url.pathname;
+		console.log(prevRoute);
+	});
 
 	onMount(async () => {
-
-        await getDefault();
+		await getDefault();
 
 		selectLocale(selectedLocale);
 		selectTimezoneRegion(selectedRegion);
-        selectTimezoneCity(selectedCity);
+		selectTimezoneCity(selectedCity);
 		selectKeyboardLayout(selectedLayout);
 		selectKeyboardVariant(selectedVariant);
-        setCosmicKeymapPreview(selectedLayout, selectedVariant);
+		setCosmicKeymapPreview(selectedLayout, selectedVariant);
 	});
-
 </script>
 
 <TwoSide>
@@ -234,10 +223,13 @@
 		<div class="mx-[35px] space-y-[15px]">
 			<h1 class="font-jakarta font-[800] text-[28px]">
 				Set up your <span class="text-green-tealinux">keyboard</span><br />
-				<span class="text-green-tealinux">layout</span>, <span class="text-green-tealinux">timezone</span>, <span class="text-green-tealinux">locale</span>
+				<span class="text-green-tealinux">layout</span>,
+				<span class="text-green-tealinux">timezone</span>,
+				<span class="text-green-tealinux">locale</span>
 			</h1>
 			<p class="font-jakarta text-sm font-[200]">
-                Select your preffered keyboard layout, adjust the timezone based on your location, and configure locale to define regional preferences.
+				Select your preffered keyboard layout, adjust the timezone based on your location, and
+				configure locale to define regional preferences.
 			</p>
 		</div>
 	{/snippet}
@@ -251,14 +243,14 @@
 				<GlowingText size="[11]" text="Locale" />
 				<!-- selector? -->
 				<SearchButton
-					title={selectedLocale || "Select Locale"}
+					title={selectedLocale || 'Select Locale'}
 					notFoundMessage="Locale Not Found"
 					bind:show={showLocaleModal}
 					bind:keyword={localeSearchTerm}
 					data={filteredLocales}
 					field="name"
 					onclick={selectLocale}
-                    selected={selectedLocale}
+					selected={selectedLocale}
 				/>
 			</div>
 			<!-- select Timezone -->
@@ -266,58 +258,57 @@
 				<!-- label -->
 				<GlowingText size="[11]" text="Timezone" />
 				<!-- selector? -->
-				 <div class="flex gap-3">
+				<div class="flex gap-3">
 					<SearchButton
-					title="Select Timezone Region"
-					notFoundMessage="No region found"
-					bind:show={showRegionModal}
-					bind:keyword={regionSearchTerm}
-					data={filteredRegion}
-					field="region"
-					onclick={selectTimezoneRegion}
-                    selected={selectedRegion}
-				/>
-				<SearchButton
-					title="Select Timezone City"
-					notFoundMessage="No city found for {selectedRegion}"
-					bind:show={showCityModal}
-					bind:keyword={citySearchTerm}
-					data={filteredCity}
-					onclick={selectTimezoneCity}
-                    nullValue={selectedRegion}
-                    selected={selectedCity}
-				/>
-				 </div>
-
+						title="Select Timezone Region"
+						notFoundMessage="No region found"
+						bind:show={showRegionModal}
+						bind:keyword={regionSearchTerm}
+						data={filteredRegion}
+						field="region"
+						onclick={selectTimezoneRegion}
+						selected={selectedRegion}
+					/>
+					<SearchButton
+						title="Select Timezone City"
+						notFoundMessage="No city found for {selectedRegion}"
+						bind:show={showCityModal}
+						bind:keyword={citySearchTerm}
+						data={filteredCity}
+						onclick={selectTimezoneCity}
+						nullValue={selectedRegion}
+						selected={selectedCity}
+					/>
+				</div>
 			</div>
 			<!-- select Keyboard Layout -->
 			<div class=" space-y-[10px]">
 				<!-- label -->
 				<GlowingText size="[11]" text="Keyboard Layout" />
 				<!-- keyboard name -->
-				 <div class="flex gap-3">
+				<div class="flex gap-3">
 					<SearchButton
-					title="Select Keyboard Layout"
-					notFoundMessage="Keyboard Layout Not Found"
-					bind:show={showLayoutModal}
-					bind:keyword={layoutSearchTerm}
-					data={filteredLayouts}
-					field="name"
-					onclick={selectKeyboardLayout}
-                    selected={selectedLayout ? selectedLayout.name : ''}
-				/>
-				<!-- keyboard varian -->
-				<SearchButton
-					title="Select Keyboard Variant"
-					notFoundMessage="Keyboard Variant Not Found"
-					bind:show={showVariantModal}
-					bind:keyword={variantSearchTerm}
-					field="name"
-					data={filteredVariants}
-					onclick={selectKeyboardVariant}
-                    selected={selectedVariant ? selectedVariant.name : ''}
-				/>
-				 </div>
+						title="Select Keyboard Layout"
+						notFoundMessage="Keyboard Layout Not Found"
+						bind:show={showLayoutModal}
+						bind:keyword={layoutSearchTerm}
+						data={filteredLayouts}
+						field="name"
+						onclick={selectKeyboardLayout}
+						selected={selectedLayout ? selectedLayout.name : ''}
+					/>
+					<!-- keyboard varian -->
+					<SearchButton
+						title="Select Keyboard Variant"
+						notFoundMessage="Keyboard Variant Not Found"
+						bind:show={showVariantModal}
+						bind:keyword={variantSearchTerm}
+						field="name"
+						data={filteredVariants}
+						onclick={selectKeyboardVariant}
+						selected={selectedVariant ? selectedVariant.name : ''}
+					/>
+				</div>
 
 				<!-- keyboard test -->
 				<input
@@ -341,6 +332,8 @@
 	currentStep={2}
 	currentTitle="Localization"
 	prevPath="/installation"
-	nextPath="/installation/partitioning"
+	nextPath={prevRoute === '/installation/summary'
+		? '/installation/summary'
+		: '/installation/partitioning'}
 	nextAction={handleSetLocalization}
 />

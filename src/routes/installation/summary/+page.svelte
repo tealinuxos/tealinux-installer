@@ -1,4 +1,5 @@
 <script>
+	import { partitionMethod } from '$lib/stores/informationStore.js';
 	import { goto } from '$app/navigation';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
 	import { invoke } from '@tauri-apps/api/core';
@@ -9,19 +10,20 @@
 	import Navigation from '../../../lib/components/Navigation.svelte';
 	import GlowingText from '../../../lib/components/ui/GlowingText.svelte';
 
-
 	let timezone;
 	let mainLocale;
 	let locales;
 	let formattedPartitions;
 	let assignedPartitions;
 	let passwordVisible = $state(false);
-    let blueprint = $state(null);
+	let blueprint = $state(null);
 
-    const getBlueprintJSON = async () => {
-        let blueprint = await getBlueprint();
-        return blueprint;
-    }
+	const partitioningMethod = $partitionMethod;
+
+	const getBlueprintJSON = async () => {
+		let blueprint = await getBlueprint();
+		return blueprint;
+	};
 
 	const getDisk = async () => {
 		let blueprint = await getBlueprint();
@@ -62,48 +64,45 @@
 	};
 
 	const navigateToUserAccount = () => {
-        goto('/installation/account');
-    };
+		goto('/installation/account');
+	};
 
-    const navigateToLocalization = () => {
-        goto('/installation/localization');
-    };
-
+	const navigateToLocalization = () => {
+		goto('/installation/localization');
+	};
 
 	const getPartitioningMethod = () => {
-        if (!blueprint?.storage) return null;
-        return blueprint.storage.installMethod;
-    };
+		if (!blueprint?.storage) return null;
+		return blueprint.storage.installMethod;
+	};
 
-	 const navigateToPartitioning = () => {
-        const method = getPartitioningMethod();
-        if (!method) return;
+	const navigateToPartitioning = () => {
+		const method = getPartitioningMethod();
+		if (!method) return;
 
-        switch (method) {
-            case 'single':
-                goto('/installation/partitioning/single');
-                break;
-            case 'dual':
-                goto('/installation/partitioning/dual');
-                break;
-            case 'manual':
-                goto('/installation/partitioning/manual');
-                break;
-            default:
-                goto('/installation/partitioning');
-        }
-	 }
-	
-
-
+		switch (method) {
+			case 'single':
+				goto('/installation/partitioning/single');
+				break;
+			case 'dual':
+				goto('/installation/partitioning/dual');
+				break;
+			case 'manual':
+				goto('/installation/partitioning/manual');
+				break;
+			default:
+				goto('/installation/partitioning');
+		}
+	};
 
 	const printJson = async () => {
 		await invoke('print_json');
 	};
 
-    onMount(async () => {
-        blueprint = await getBlueprintJSON();
-    })
+	onMount(async () => {
+		blueprint = await getBlueprintJSON();
+		console.log($partitionMethod);
+	});
 </script>
 
 <TwoSide>
@@ -113,8 +112,8 @@
 				<h1 class="font-archivo font-[600] text-[30px] tracking-[-1.8px]">Review your choices</h1>
 			</div>
 			<p class="font-jakarta text-sm font-[200] tracking-[-0.56px] text-center">
-				Review your choices carefully to ensure everything 
-				is ready before proceeding with the installation.
+				Review your choices carefully to ensure everything is ready before proceeding with the
+				installation.
 			</p>
 		</div>
 	{/snippet}
@@ -129,14 +128,20 @@
 				blueprint.timezone === null ? 'To be filled' : blueprint.timezone.region}
 			{@const timezoneCity = blueprint.timezone === null ? 'To be filled' : blueprint.timezone.city}
 			{@const locale = blueprint.locale === null ? 'To be filled' : blueprint.locale.main}
-			{@const userFullname = blueprint.account === null ? 'To be filled' : blueprint.account.fullname}
-			{@const userUsername = blueprint.account === null ? 'To be filled' : blueprint.account.username}
-			{@const userHostname = blueprint.account === null ? 'To be filled' : blueprint.account.hostname}
-			{@const userPassword = blueprint.account === null ? 'To be filled' : blueprint.account.password}
+			{@const userFullname =
+				blueprint.account === null ? 'To be filled' : blueprint.account.fullname}
+			{@const userUsername =
+				blueprint.account === null ? 'To be filled' : blueprint.account.username}
+			{@const userHostname =
+				blueprint.account === null ? 'To be filled' : blueprint.account.hostname}
+			{@const userPassword =
+				blueprint.account === null ? 'To be filled' : blueprint.account.password}
 
 			<div class="flex flex-col space-y-2">
 				<div class="flex space-x-2">
-					<div class="w-1/2 bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px] flex flex-col justify-between">
+					<div
+						class="w-1/2 bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px] flex flex-col justify-between"
+					>
 						<div>
 							<GlowingText size="[15]" text="User account" />
 							<div class="space-y-4 text-[15px] mt-4">
@@ -157,16 +162,18 @@
 							</div>
 						</div>
 						<div class="flex justify-end mt-4">
-						<button
-							on:click={navigateToUserAccount}
-							class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none">
-							Edit
-						</button>
-
+							<button
+								onclick={navigateToUserAccount}
+								class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
+							>
+								Edit
+							</button>
 						</div>
 					</div>
-					
-					<div class="w-1/2 bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px] flex flex-col justify-between">
+
+					<div
+						class="w-1/2 bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px] flex flex-col justify-between"
+					>
 						<div>
 							<GlowingText size="[15]" text="Localization" />
 							<div class="space-y-4 text-[15px] mt-4">
@@ -176,7 +183,9 @@
 								</div>
 								<div class="leading-none space-y-[10px]">
 									<p class="font-[500]">Time Zone</p>
-									<span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{timezoneRegion}/{timezoneCity}</span>
+									<span class="ml-[4px] font-poppin text-gray-500 text-[14px]"
+										>{timezoneRegion}/{timezoneCity}</span
+									>
 								</div>
 								<div class="leading-none space-y-[10px]">
 									<p class="font-[500]">Keyboard</p>
@@ -186,14 +195,14 @@
 						</div>
 						<div class="flex justify-end mt-4">
 							<button
-								on:click={navigateToLocalization}
-								class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none">
+								onclick={navigateToLocalization}
+								class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
+							>
 								Edit
 							</button>
 						</div>
 					</div>
 				</div>
-				
 
 				<div class="bg-[#101010] border-[1.3px] border-[#3C6350] p-[15px] rounded-[14px]">
 					<GlowingText size="[15]" text="Partitions" />
@@ -221,8 +230,10 @@
 					</div>
 					<div class="flex justify-end mt-4">
 						<button
-							class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none">
-							Edit
+							onclick={() => goto(`/installation/partitioning/${partitioningMethod}`)}
+							class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
+						>
+							Edit Storage
 						</button>
 					</div>
 				</div>
