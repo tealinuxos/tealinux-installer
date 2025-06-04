@@ -144,6 +144,8 @@
 	$effect(() => {
 		if (selectedDisk && partitionTable) {
 			diskAfter = getDiskAfter(selectedDisk, 'ext4', partitionTable, 0);
+            selectedPreview = Preview.BEFORE;
+            selectedMethod = null;
 		}
 	});
 
