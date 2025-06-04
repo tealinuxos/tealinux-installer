@@ -278,88 +278,93 @@
 						</button>
 					</div>
 				</div>
-
-				<GlowingText size="[11]" text="Select Partition to Replace" />
-
-				<PartitionsSlider
-					disk={selectedDisk}
-					partitions={selectedDisk.partitions}
-					bind:selectedPartition
-					{partitionTable}
-					bind:disableNext
-				/>
-
-				<GlowingText size="[11]" text="File System" />
-				<div class="flex gap-2">
-					{#key selectedFilesystem}
-						<CardTextArea
-							initialDevice="EXT4"
-							caption="Stable and widely used!"
-							showCaption={true}
-							showIcon={false}
-							onclick={() => decideFilesystem('ext4')}
-							isSelected={selectedFilesystem === 'ext4'}
-						/>
-						<CardTextArea
-							initialDevice="BTRFS"
-							caption="Support snapshots (Advanced)"
-							showCaption={true}
-							showIcon={false}
-							onclick={() => decideFilesystem('btrfs')}
-							isSelected={selectedFilesystem === 'btrfs'}
-						/>
-					{/key}
-				</div>
-
-				<GlowingText size="[11]" text="Swap Option" />
-				<div class="flex gap-2">
-					{#key useSwap}
-						<CardTextArea
-							initialDevice="SWAP"
-							caption="Recommended"
-							showCaption={true}
-							showIcon={false}
-							onclick={() => decideSwap(true)}
-							isSelected={useSwap}
-						/>
-						<CardTextArea
-							initialDevice="NO SWAP"
-							caption="No problem"
-							showCaption={true}
-							showIcon={false}
-							onclick={() => decideSwap(false)}
-							isSelected={!useSwap}
-						/>
-					{/key}
-				</div>
-
 				<div
-					class="flex flex-col p-[15px] gap-[10px] self-stretch rounded-[10.267px] border border-[#3C6350] bg-[#101010]"
+					class="flex flex-col gap-2 transition-all duration-300 {isRefreshing
+						? 'grayscale-75 cursor-not-allowed opacity-50'
+						: ''}"
 				>
-					<div class="flex flex-row space-x-2">
-						<PreviewButton
-							title={Preview.BEFORE}
-							selected={selectedPreview === Preview.BEFORE}
-							onclick={() => (selectedPreview = Preview.BEFORE)}
-						/>
-						<PreviewButton
-							title={Preview.AFTER}
-							selected={selectedPreview === Preview.AFTER}
-							onclick={() => (selectedPreview = Preview.AFTER)}
-						/>
+					<GlowingText size="[11]" text="Select Partition to Replace" />
+
+					<PartitionsSlider
+						disk={selectedDisk}
+						partitions={selectedDisk.partitions}
+						bind:selectedPartition
+						{partitionTable}
+						bind:disableNext
+					/>
+
+					<GlowingText size="[11]" text="File System" />
+					<div class="flex gap-2">
+						{#key selectedFilesystem}
+							<CardTextArea
+								initialDevice="EXT4"
+								caption="Stable and widely used!"
+								showCaption={true}
+								showIcon={false}
+								onclick={() => decideFilesystem('ext4')}
+								isSelected={selectedFilesystem === 'ext4'}
+							/>
+							<CardTextArea
+								initialDevice="BTRFS"
+								caption="Support snapshots (Advanced)"
+								showCaption={true}
+								showIcon={false}
+								onclick={() => decideFilesystem('btrfs')}
+								isSelected={selectedFilesystem === 'btrfs'}
+							/>
+						{/key}
 					</div>
-					<div class="space-y-[10px] w-full">
-						{#if selectedPreview === Preview.BEFORE && selectedDisk}
-							{#key selectedDisk}
-								<DiskPreview disk={selectedDisk} />
-							{/key}
-						{:else if selectedPreview === Preview.AFTER && diskAfter}
-							{#key diskAfter}
-								<DiskPreview disk={diskAfter} />
-							{/key}
-						{:else}
-							<div class="text-center py-4 text-gray-400">No disk data available</div>
-						{/if}
+
+					<GlowingText size="[11]" text="Swap Option" />
+					<div class="flex gap-2">
+						{#key useSwap}
+							<CardTextArea
+								initialDevice="SWAP"
+								caption="Recommended"
+								showCaption={true}
+								showIcon={false}
+								onclick={() => decideSwap(true)}
+								isSelected={useSwap}
+							/>
+							<CardTextArea
+								initialDevice="NO SWAP"
+								caption="No problem"
+								showCaption={true}
+								showIcon={false}
+								onclick={() => decideSwap(false)}
+								isSelected={!useSwap}
+							/>
+						{/key}
+					</div>
+
+					<div
+						class="flex flex-col p-[15px] gap-[10px] self-stretch rounded-[10.267px] border border-[#3C6350] bg-[#101010]"
+					>
+						<div class="flex flex-row space-x-2">
+							<PreviewButton
+								title={Preview.BEFORE}
+								selected={selectedPreview === Preview.BEFORE}
+								onclick={() => (selectedPreview = Preview.BEFORE)}
+							/>
+							<PreviewButton
+								title={Preview.AFTER}
+								selected={selectedPreview === Preview.AFTER}
+								onclick={() => (selectedPreview = Preview.AFTER)}
+							/>
+						</div>
+						<div class="space-y-[10px] w-full">
+							{#if selectedPreview === Preview.BEFORE && selectedDisk}
+								{#key selectedDisk}
+									<DiskPreview disk={selectedDisk} />
+								{/key}
+							{:else if selectedPreview === Preview.AFTER && diskAfter}
+								{#key diskAfter}
+									<DiskPreview disk={diskAfter} />
+								{/key}
+							{:else}
+								<div class="text-center py-4 text-gray-400">No disk data available</div>
+							{/if}
+						</div>
 					</div>
 				</div>
 			</div>
