@@ -153,7 +153,7 @@
 
 						<div class="leading-none space-y-[10px]">
 							<p class="font-[500]">Secondary Graphic Card</p>
-							<p class="font-[200]">{checkUnknown(json.lspci.vga[1])}</p>
+							<p class="font-[200]">{json.lspci.vga[1] || '-'}</p>
 						</div>
 						{#await getTotalStorage() then totalSize}
 							{@const storage = totalSize * 512}
@@ -189,11 +189,11 @@
 						</div>
 						<div class="leading-none space-y-[10px]">
 							<p class="font-[500]">Desktop Environment</p>
-							<p class="font-[200]">{json.desktopEnvironment.name}</p>
+							<p class="font-[200] capitalize">{json.desktopEnvironment.name}</p>
 						</div>
 						<div class="leading-none space-y-[10px]">
 							<p class="font-[500]">Display Server</p>
-							<p class="font-[200]">{json.displayServer.name}</p>
+							<p class="font-[200] capitalize">{json.displayServer.name}</p>
 						</div>
 					</div>
 				</div>
