@@ -59,6 +59,7 @@
 
 
 
+
 <div class="custom-select" bind:this={selectElement} style="width: {width}; height: {height}">
   <div 
     class="selected-value" 
@@ -82,10 +83,7 @@
   </div>
   
   {#if isOpen && !isLoading && !error}
-    <div 
-      class="dropdown-options"
-      style:border={noBorder ? 'none' : '1.3px solid #3C6350'}
-    >
+    <div class="dropdown-options">
       {#each options as option (option.value || option)}
         <div 
           class="option {value && (typeof value === 'object' ? value.value : value) === (typeof option === 'object' ? option.value : option) ? 'selected' : ''}"
@@ -129,6 +127,7 @@
     opacity: 0.7;
   }
   
+ /* Border untuk dropdown-options selalu ada */
   .dropdown-options {
     position: absolute;
     top: calc(100% + 5px);
@@ -137,7 +136,7 @@
     max-height: 200px;
     overflow-y: auto;
     background: #101010;
-    /* Hapus properti border dari sini */
+    border: 1.3px solid #3C6350;
     border-radius: 14px;
     z-index: 1000;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);

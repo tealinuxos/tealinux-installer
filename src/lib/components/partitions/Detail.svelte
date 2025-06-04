@@ -494,10 +494,8 @@
    </div>
   
 
-  <!-- Garis Vertikal -->
   <div class="mx-2 h-10 w-px bg-[#3C6350]"></div>
 
-  <!-- Dropdown satuan -->
 					<ComponentSelect
                         options={[
                             { value: Metric.MiB, name: Metric.MiB },
@@ -507,7 +505,7 @@
                         displayField="name"
                         width="80px"
                         onchange={convertMetric}
-						transparent={true}
+						noBorder={true}
                     />
 </div>
 
@@ -603,7 +601,6 @@
 					bind:value={filesystem}
 					displayField="name"
 					width="100%"
-					noBorder={true}
 				/>
 			{:else}
 				<div class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2">
