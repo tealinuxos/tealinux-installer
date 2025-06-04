@@ -625,7 +625,7 @@
 				<div
 					class="bg-[#101010] text-[#FFFEFB] border-[1.3px] border-[#3C6350] rounded-[14px] p-2 min-h-[46px]"
 				>
-					{mountpoint || null}
+					{mountpoint || "None"}
 				</div>
 			{/if}
 		</div>
@@ -705,7 +705,7 @@
 				</button>
 				<button
 					onclick={createPartition}
-                    disabled={(getSector(selectedUnit, inputtedSize) > actualSize) && !isNaN(inputtedSize)}
+                    disabled={(getSector(selectedUnit, inputtedSize) > actualSize) || isNaN(inputtedSize) || filesystem === null}
 					class="disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 rounded text-[#26A768] border border-[#3C6350] hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)]"
 				>
 					Create
