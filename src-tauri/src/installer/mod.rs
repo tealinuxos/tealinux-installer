@@ -293,6 +293,9 @@ pub async fn start_install(window: Window) {
         },
     );
 
+    // Remove installer desktop entry
+    let _ = std::fs::remove_dir_all("/tealinux-mount/etc/skel/Desktop");
+
     match blueprint.account.as_ref().unwrap().set_host() {
         Ok(_) => (),
         Err(_) => {
@@ -420,10 +423,9 @@ fn post_install(account: Account) -> Result<(), Error> {
         "tealinux-installer-git"
     )
     .run()?;
+
+    // Remove installer autostart entry
     std::fs::remove_file("/tealinux-mount/etc/xdg/autostart/tealinux-installer.desktop")?;
-    std::fs::remove_file(format!("/tealinux-mount/home/{}/Desktop/tealinux-installer-git.desktop", account.username))?;
-    // cmd!("arch-chroot", "/tealinux-mount", "machinectl", "shell", "gdm@", "/bin/bash", "-c", "'dbus-launch gsettings set org.gnome.login-screen logo /usr/share/icons/tealinux-logo.png'").run()?;
-    //
 
     cmd!(
         "arch-chroot",
