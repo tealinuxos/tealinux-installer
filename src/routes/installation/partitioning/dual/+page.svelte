@@ -14,11 +14,6 @@
 	import { goto } from '$app/navigation';
 	import PartitionsSlider from '../../../../lib/components/PartitionsSlider.svelte';
 
-	const {
-		osName = 'Another Operating System',
-		osDescription = 'windows10 on path /path/path/path'
-	} = $props();
-
 	const Method = {
 		SINGLE: 'single',
 		DUAL: 'dual',
@@ -40,10 +35,11 @@
 	let selectedPartition = $state(null);
 	let partitionTable = $state(null);
 	let swapSize = $state(2048);
-	let otherOs = $state(null);
 	let isRefreshing = $state(false);
 	let useSwap = $state(true);
 	let disableNext = $state(true);
+    let information = $state("Looking for other installed operating system...");
+    let otherExist = $state(false);
 
 	const getBlueprintJSON = async () => {
 		let blueprint = await getBlueprint();
@@ -87,8 +83,25 @@
 	};
 
 	const refreshOtherOs = async (path) => {
+
+        information = "Looking for other installed operating system....";
+
 		isRefreshing = true;
-		otherOs = await getOtherOsJSON(path);
+
+		let others = await getOtherOsJSON(path);
+
+        if (others && others.length) {
+            if (others.length === 1) {
+                information = `Discovered ${others[0].name} on ${others[0].path}`;
+            } else {
+                information = `Discovered ${others[0].name} on ${others[0].path} along with ${others.length - 1} others`;
+            }
+            otherExist = true;
+        } else {
+            information = "No additional operating systems detected :(";
+            otherExist = false;
+        }
+
 		isRefreshing = false;
 	};
 
@@ -226,36 +239,14 @@
 							<span
 								class="text-[#4CDA95] font-['Plus_Jakarta_Sans'] text-[16px] font-bold leading-[140%]"
 							>
-								{osName}
+                                {information}
 							</span>
-							{#key otherOs}
-								{#if !isRefreshing}
-									{#each otherOs as os}
-										<span
-											class="text-white font-['Plus_Jakarta_Sans'] text-[13px] font-normal leading-[140%] mt-1"
-										>
-											{os.name}
-										</span>
-									{:else}
-										<span
-											class="text-white font-['Plus_Jakarta_Sans'] text-[13px] font-normal leading-[140%] mt-1"
-										>
-											No other operating system found!
-										</span>
-									{/each}
-								{:else}
-									<span
-										class="text-white font-['Plus_Jakarta_Sans'] text-[13px] font-normal leading-[140%] mt-1"
-									>
-										Refreshing...
-									</span>
-								{/if}
-							{/key}
 						</div>
 
 						<button
 							onclick={() => refreshOtherOs(selectedDisk.diskPath)}
-							class="flex w-[131.389px] h-[43px] justify-center items-center gap-[7.963px] rounded-[14px] border-[0.239px] border-[#3C6350] bg-[#101010]"
+                            disabled={isRefreshing}
+							class="disabled:opacity-50 flex w-[131.389px] h-[43px] justify-center items-center gap-[7.963px] rounded-[14px] border-[0.239px] border-[#3C6350] bg-[#101010]"
 						>
 							<svg
 								width="17"
@@ -279,7 +270,7 @@
 					</div>
 				</div>
 				<div
-					class="flex flex-col gap-2 transition-all duration-300 {isRefreshing
+					class="flex flex-col gap-2 transition-all duration-300 {isRefreshing || !otherExist
 						? 'grayscale-75 cursor-not-allowed opacity-50'
 						: ''}"
 				>
