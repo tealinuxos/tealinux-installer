@@ -5,6 +5,9 @@
 	import { goto } from '$app/navigation';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
+	import { afterNavigate } from '$app/navigation';
+
+	let prevRoute = '';
 
 	let fullname, username, hostname, password, confirmPassword, autologin;
 	let isAdministrator = false;
@@ -94,6 +97,10 @@
 				return '';
 		}
 	}
+
+	afterNavigate(({ from }) => {
+		prevRoute = from?.url.pathname;
+	});
 
 	onMount(() => {
 		getBlueprint().then((blueprint) => {
