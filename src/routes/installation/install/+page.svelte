@@ -68,21 +68,46 @@
 	</div>
 {/await} -->
 
-	<div>
-		<span class=" font-poppinsemibold text-3xl tracking-[-5%]">{message}</span>
-		<div class="flex flex-col justify-center w-[90dvw] items-center h-10 mt-5">
-			<div
-				class="relative flex h-full items-center w-[100%] mx-auto bg-[#white] border border-[#B1B1B1] rounded-[128px]"
-			>
+	{#await startInstall()}
+		<div>
+			<span class=" font-poppinsemibold text-3xl tracking-[-5%]">{message}</span>
+			<div class="flex flex-col justify-center w-[90dvw] items-center h-10 mt-5">
 				<div
-					class="absolute bg-[#26A768] h-full rounded-[128px] flex items-center"
-					style="width: {percentage}%"
+					class="relative flex h-full items-center w-[100%] mx-auto bg-[#white] border border-[#B1B1B1] rounded-[128px]"
 				>
-					<span class="absolute right-[2%] font-poppinsemibold font-bold text-2xl"
-						>{percentage}%</span
+					<div
+						class="absolute bg-[#26A768] h-full rounded-[128px] flex items-center"
+						style="width: {percentage}%"
 					>
+						<span class="absolute right-[2%] font-poppinsemibold font-bold text-2xl"
+							>{percentage}%</span
+						>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
+	{:then}
+		<div class="flex flex-col">
+			More actions
+
+			<span class=" font-poppinmedium font-semibold text-3xl tracking-[-5%]"
+				>Installation Completed</span
+			>
+
+			<div class="flex gap-x-8 justify-center mt-4">
+				<!-- <button -->
+
+				<!-- 	class="bg-greenTealinux text-white font-poppinmedium font-medium p-2 rounded-md min-w-20" -->
+
+				<!-- 	on:click={exitOk}>Exit</button -->
+
+				<!-- > -->
+
+				<button
+					class="bg-greenTealinux text-white font-poppinmedium font-medium p-2 rounded-md min-w-20"
+					onclick={reboot}>Reboot</button
+				>
+			</div>
+		</div>
+	{/await}
 </section>
