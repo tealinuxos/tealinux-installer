@@ -1,4 +1,6 @@
+use crate::installer::blueprint::OriginalSector;
 use crate::installer::blueprint::Partition;
+
 use duct::cmd;
 use serde::{Deserialize, Serialize};
 use std::vec::Vec;
@@ -44,6 +46,9 @@ pub async fn autogen_partition_select_disk(
                     println!("{}", errstr.clone());
                     return Err(errstr.clone());
                 }
+
+                // this is truely unused, for formality
+                blueprint.storage.clone().unwrap().original_sector = Option::None;
 
                 super::write_blueprint(blueprint).unwrap();
                 return Ok(());
@@ -91,6 +96,9 @@ pub async fn autogen_partition_select_disk(
                 } else {
                     println!("failed to generate bootloader for autopartitioning.");
                 }
+
+                // now is none, but used later in libs internal
+                blueprint.storage.clone().unwrap().original_sector = Option::None;
 
                 super::write_blueprint(blueprint).unwrap();
                 return Ok(());
