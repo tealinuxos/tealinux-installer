@@ -21,7 +21,7 @@
 	let currentIndex = $state(selectedPartition);
 	let newPartitionIndex = $state(1);
 
-	const espSize = 2097152;
+	let espSize = 2097152;
 
     const Metric = {
         MiB: "MiB",
@@ -30,7 +30,7 @@
 
 	let inputtedSize = $state(0);
 	let actualSize = $state(0);
-    let selectedMetric = $state(Metric.MiB)
+    let selectedUnit = $state(Metric.MiB)
     let filesystem = $state(modifiedPartition[index].filesystem || null);
     let mountpoint = $state(modifiedPartition[index].mountpoint || null);
     let format = $state(modifiedPartition[index].format || false);
@@ -43,9 +43,9 @@
 
 	let flagList = $state(['hidden', 'boot', 'efi', 'esp', 'bios_grub']);
 
-	const getSector = (selectedMetric, size) => {
-        if (selectedMetric === Metric.MiB) return Math.floor((Number(size) * 1024 * 1024) / 512);
-        if (selectedMetric === Metric.GiB) return Math.floor((Number(size) * 1024 * 1024 * 1024) / 512);
+	const getSector = (selectedUnit, size) => {
+        if (selectedUnit === Metric.MiB) return Math.floor((Number(size) * 1024 * 1024) / 512);
+        if (selectedUnit === Metric.GiB) return Math.floor((Number(size) * 1024 * 1024 * 1024) / 512);
 	};
 
 	const getFlagList = (existFlags) => {
@@ -78,7 +78,7 @@
 	const createPartition = () => {
 		modifiedPartition = [];
 
-		let inputtedSizeSector = getSector(selectedMetric, inputtedSize);
+		let inputtedSizeSector = getSector(selectedUnit, inputtedSize);
 
 		let remainderSize = actualSize - inputtedSizeSector;
 
@@ -86,52 +86,74 @@
 			if (mountpoint === '/') {
 				if (firmwareType === 'UEFI') {
 					if (bootPartitionIndex === null) {
-						newEspPartition = {
-							...newAllocated,
-							number: newAllocated.number,
-							path: `#${newPartitionIndex}`,
-							size: espSize,
-							end: newAllocated.start + espSize - 1,
-							filesystem: 'fat32',
-							label: 'EFI',
-							format: true,
-							mountpoint: '/boot/efi',
-							flags: ['boot', 'esp']
-						};
+                        alert(tempModifiedPartition[index].size)
+                        if (inputtedSizeSector >= 41943040) {
+                            espSize = 2097152;
+                            newEspPartition = {
+                                ...newAllocated,
+                                number: newAllocated.number,
+                                path: `#${newPartitionIndex}`,
+                                size: espSize,
+                                end: newAllocated.start + espSize - 1,
+                                filesystem: 'fat32',
+                                label: 'EFI',
+                                format: true,
+                                mountpoint: '/boot/efi',
+                                flags: ['boot', 'esp']
+                            };
 
-						highestNumber += 1;
-						newPartitionIndex += 1;
-						tempModifiedPartition[index] = newEspPartition;
+                            highestNumber += 1;
+                            newPartitionIndex += 1;
+                            tempModifiedPartition[index] = newEspPartition;
 
-						newAllocated = {
-							...newAllocated,
-							number: newEspPartition.number + 1,
-							path: `#${newPartitionIndex}`,
-							size: inputtedSizeSector - espSize - 4096,
-							start: newEspPartition.end + 1,
-							end: newAllocated.size - espSize + newEspPartition.end - 4096,
-							format: true,
-							filesystem,
-							mountpoint,
-							label,
-							flags
-						};
+                            newAllocated = {
+                                ...newAllocated,
+                                number: newAllocated.number + 1,
+                                path: `#${newPartitionIndex}`,
+                                size: inputtedSizeSector - espSize - (currentIndex === tempModifiedPartition.length - 1 ? 4096 : 0),
+                                start: newAllocated.end + 1,
+                                end: newAllocated.size - espSize + newAllocated.end - (currentIndex === tempModifiedPartition.length - 1 ? 4096 : 0),
+                                format: true,
+                                filesystem,
+                                mountpoint,
+                                label,
+                                flags
+                            };
 
-						highestNumber += 1;
-						newPartitionIndex += 1;
+                            currentIndex += 1;
 
-						tempModifiedPartition.splice(index + 1, 0, newAllocated);
-						bootPartitionIndex = index;
-						currentIndex += 1;
+                            bootPartitionIndex = index;
+                            highestNumber += 1;
+                            newPartitionIndex += 1;
 
-						if (partitionTable === 'gpt') {
+                            tempModifiedPartition.splice(index + 1, 0, newAllocated);
+
+                        } else {
+                            espSize = 0;
+
+                            newAllocated = {
+                                ...newAllocated,
+                                path: `#${newPartitionIndex}`,
+                                size: inputtedSizeSector - (currentIndex === tempModifiedPartition.length - 1 ? 4096 : 0),
+                                end: newAllocated.size - espSize + newAllocated.start - (currentIndex === tempModifiedPartition.length - 1 ? 4096 : 0),
+                                format: true,
+                                filesystem,
+                                mountpoint,
+                                label,
+                                flags
+                            };
+
+                            tempModifiedPartition[index] = newAllocated;
+                        }
+
+						if (partitionTable === 'gpt' && currentIndex === tempModifiedPartition.length - 1) {
 							newGap = {
 								...newAllocated,
 								path: null,
 								number: 0,
-								size: actualSize - newAllocated.size - newEspPartition.size - 2048,
+								size: actualSize - newAllocated.size - (newEspPartition?.size ?? 0) - 2048,
 								start: newAllocated.end + 1,
-								end: actualSize - newAllocated.size - newEspPartition.size + newAllocated.end - 2048,
+								end: actualSize - newAllocated.size - (newEspPartition?.size ?? 0) + newAllocated.end - 2048,
 								format: false,
 								filesystem: null,
 								mountpoint: null,
@@ -166,7 +188,7 @@
 
 						highestNumber += 1;
 
-						if (partitionTable === 'gpt') {
+						if (partitionTable === 'gpt' && currentIndex === tempModifiedPartition.length - 1) {
 							newGap = {
 								...tempModifiedPartition[index],
 								path: null,
@@ -236,9 +258,9 @@
 								...newAllocated,
 								path: null,
 								number: 0,
-								size: actualSize - newAllocated.size - newEspPartition.size - 2048,
+								size: actualSize - newAllocated.size - (newEspPartition?.size ?? 0) - 2048,
 								start: newAllocated.end + 1,
-								end: actualSize - newAllocated.size - newEspPartition.size + newAllocated.end - 2048,
+								end: actualSize - newAllocated.size - (newEspPartition?.size ?? 0) + newAllocated.end - 2048,
 								format: false,
 								filesystem: null,
 								mountpoint: null,
@@ -255,7 +277,48 @@
 								end: tempModifiedPartition[index + 1].end + 2048
 							};
 						}
-					}
+					} else {
+                        
+						tempModifiedPartition[index] = {
+							...newAllocated,
+							number: highestNumber + 1,
+							path: `#${newPartitionIndex}`,
+							size: inputtedSizeSector - 4096,
+							end: newAllocated.start + inputtedSizeSector - 4097,
+							filesystem,
+							mountpoint,
+							format: true,
+							label,
+							flags
+						};
+
+						highestNumber += 1;
+
+						if (partitionTable === 'gpt' && currentIndex === tempModifiedPartition.length - 1) {
+							newGap = {
+								...tempModifiedPartition[index],
+								path: null,
+								number: 0,
+								size: actualSize - tempModifiedPartition[index].size - 2048,
+								start: tempModifiedPartition[index].end + 1,
+								end: actualSize - tempModifiedPartition[index].size + tempModifiedPartition[index].end - 2048,
+								format: false,
+								filesystem: null,
+								mountpoint: null,
+								label: null,
+								flags: null
+							};
+
+							currentIndex += 1;
+							tempModifiedPartition.splice(index + 1, 0, newGap);
+						} else {
+							tempModifiedPartition[index + 1] = {
+								...tempModifiedPartition[index + 1],
+								size: tempModifiedPartition[index + 1].size + 2048,
+								end: tempModifiedPartition[index + 1].end + 2048
+							};
+						}
+                    }
 				}
 			} else {
 				if (mountpoint === '/boot/efi') {
@@ -276,7 +339,7 @@
 
 				highestNumber += 1;
 
-				if (partitionTable === 'gpt') {
+				if (partitionTable === 'gpt' && currentIndex === tempModifiedPartition.length - 1) {
 					newGap = {
 						...tempModifiedPartition[index],
 						path: null,
@@ -309,7 +372,7 @@
 	};
 
     const ignoreNonNumeric = (event) => {
-        inputtedSize = event.target.value.replace(/[^0-9]/g, '');
+        inputtedSize = event.target.value.replace(/[^0-9.]/g, '');
     };
 
     const mibToGib = (num) => {
@@ -323,17 +386,17 @@
     let previous = $state(Metric.MiB);
 
     const convertMetric = () => {
-        if (selectedMetric !== previous) {
-            if (selectedMetric === Metric.MiB) {
-                selectedMetric = Metric.MiB;
+        if (selectedUnit !== previous) {
+            if (selectedUnit === Metric.MiB) {
+                selectedUnit = Metric.MiB;
                 inputtedSize = gibToMib(inputtedSize);
-                previous = selectedMetric;
+                previous = selectedUnit;
             }
 
-            if (selectedMetric === Metric.GiB) {
-                selectedMetric = Metric.GiB;
+            if (selectedUnit === Metric.GiB) {
+                selectedUnit = Metric.GiB;
                 inputtedSize = mibToGib(inputtedSize);
-                previous = selectedMetric;
+                previous = selectedUnit;
             }
         }
     }
@@ -434,7 +497,7 @@
                             { value: Metric.MiB, name: Metric.MiB },
                             { value: Metric.GiB, name: Metric.GiB }
                         ]}
-                        bind:value={selectedMetric}
+                        bind:value={selectedUnit}
                         displayField="name"
                         width="100%"
                         onchange={convertMetric}
@@ -642,7 +705,8 @@
 				</button>
 				<button
 					onclick={createPartition}
-					class="px-4 py-2 rounded text-[#26A768] border border-[#3C6350] hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)]"
+                    disabled={(getSector(selectedUnit, inputtedSize) > actualSize) && !isNaN(inputtedSize)}
+					class="disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 rounded text-[#26A768] border border-[#3C6350] hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)]"
 				>
 					Create
 				</button>

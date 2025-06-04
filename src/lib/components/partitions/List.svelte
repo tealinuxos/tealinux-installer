@@ -42,30 +42,34 @@
 		) {
 			bootPartitionIndex = null;
 		}
+        
+        let wasUnallocated = modifiedPartition[selectedPartition].path.includes("#");
+        let highestUnallocated = Math.max(...modifiedPartition.map(p => p.path?.includes("#") ?? false ? Number(p.path.slice(1)) : 0));
 
-		modifiedPartition = modifiedPartition.map((partition, i) => {
-			if (selectedPartition === i) {
-				return {
-					...partition,
-					number: 0,
-					path: null,
-					filesystem: null,
-					format: false,
-					mountpoint: null,
-					label: null,
-					flags: []
-				};
-			}
-			if (partition.path?.includes('#')) {
-				if (partition.path && partition.path.includes('#')) {
-					const num = parseInt(partition.path.replace('#', ''));
-					if (num > 1) {
-						return { ...partition, path: `#${num - 1}` };
-					}
-				}
-			}
-			return partition;
-		});
+        if (wasUnallocated) {
+            modifiedPartition = modifiedPartition.map(partition => {
+                if (partition.path?.includes('#')) {
+                    if (partition.path && partition.path.includes('#')) {
+                        const num = parseInt(partition.path.replace('#', ''));
+                        if (num > 1 && num !== highestUnallocated - 1) {
+                            return { ...partition, path: `#${num - 1}` };
+                        }
+                    }
+                }
+                return partition;
+            });
+        }
+
+        modifiedPartition[selectedPartition] = {
+            ...modifiedPartition[selectedPartition],
+            number: 0,
+            path: null,
+            filesystem: null,
+            format: false,
+            mountpoint: null,
+            label: null,
+            flags: []
+        }
 
 		tempModifiedPartition = modifiedPartition;
 		showEdit = false;
@@ -125,21 +129,21 @@
 							<td class="p-3">{p?.size ? prettySize(p.size) : ''}</td>
 							<td class="p-3">
 								{#if p.format}
-									Yes
-								{:else}
 									<div class="relative inline-block group">
-										<span>No</span>
+										<span>Yes</span>
 										<svg
-											class="w-4 h-4 ml-1 inline-block text-[#26A768]"
+											class="w-4 h-4 ml-1 inline-block text-[#ffcf30]"
 											viewBox="0 0 24 24"
 											fill="currentColor"
 										>
 											<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
 										</svg>
-										<div class="absolute z-10 hidden group-hover:block bg-[#3C6350] text-white text-xs rounded p-2 whitespace-nowrap bottom-full left-1/2 transform -translate-x-1/2 mb-1">
-												This partition will not be reformatted
+										<div class="absolute z-10 hidden group-hover:block bg-[#ffcf30] text-black font-bold text-xs rounded p-2 whitespace-nowrap bottom-full left-1/2 transform -translate-x-1/2 mb-1">
+										    The data on this partition will be erased!
 										</div>
 									</div>
+								{:else}
+									No
 								{/if}
 							</td>
 							<td class="p-3">
