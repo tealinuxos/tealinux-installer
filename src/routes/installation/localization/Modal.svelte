@@ -92,7 +92,7 @@
         on:click={() => (show = false)}
     ></div>
     <div
-        class="flex flex-col min-w-[434px] max-h-full justify-center items-center p-4 bg-black rounded-[4px] border border-[#3C6350] shadow-[0_0_10px_rgba(38,167,104,0.25)] overflow-auto z-90"
+        class="flex flex-col min-w-[434px] max-h-full justify-center items-center p-4 bg-black rounded-[10px] border border-[#3C6350] shadow-[0_0_30px_rgba(38,167,104,0.25)] overflow-auto z-90"
     >
         <div class="w-full p-6 z-10">
             <div class="relative flex items-center w-full">
@@ -114,7 +114,7 @@
                 />
 
                 <!-- ESC icon -->
-                <div class="absolute right-3 text-[#26A768] cursor-pointer" on:click={() => (show = false)}>
+                <div class="absolute right-3 text-[#26A768] cursor-pointer" on:click={() => (keyword = '')}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
