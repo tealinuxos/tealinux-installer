@@ -11,7 +11,8 @@
 		disk,
 		selectedPartition = $bindable(),
 		partitionTable,
-		disableNext = $bindable()
+		disableNext = $bindable(),
+        disabled = true
 	} = $props();
 
 	let colors = $state([]);
@@ -120,7 +121,7 @@
 							: partition.filesystem}
 
 						<div
-							class="flex items-start pr-1 gap-x-[2px] mx-2 p-1 rounded cursor-pointer"
+							class="flex items-start pr-1 gap-x-[2px] mx-2 p-1 rounded { disabled ? 'cursor-not-allowed' : 'cursor-pointer' }"
 							style="{
 								i === currentSlide 
 									? 'border-radius: 9.489px; border: 1.423px solid #26A768; background: #032A17; color: white'

@@ -58,7 +58,7 @@
 		selectedMethod = method;
 		$partitionMethod = method;
 
-		if (method !== Method.MANUAL) {
+		if (method !== Method.MANUAL && method !== Method.DUAL) {
 			showAfter = true;
 			selectedPreview = Preview.AFTER;
 		} else {
@@ -144,6 +144,8 @@
 	$effect(() => {
 		if (selectedDisk && partitionTable) {
 			diskAfter = getDiskAfter(selectedDisk, 'ext4', partitionTable, 0);
+            selectedPreview = Preview.BEFORE;
+            selectedMethod = null;
 		}
 	});
 
