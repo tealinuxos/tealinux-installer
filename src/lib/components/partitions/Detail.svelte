@@ -1,4 +1,5 @@
 <script>
+	import { dictionary } from './../../../../.svelte-kit/generated/client/app.js';
 	import { prettySize } from '$lib/essentials.js';
 	import { onMount } from 'svelte';
 	import SelectComponent from '../SelectComponent.svelte';
@@ -478,32 +479,35 @@
 	<!-- Size and Format Section -->
 	<div class="flex w-full justify-between items-center">
 		{#if newPartition && !readOnly}
-			<div
-				class="flex items-center w-full justify-between p-2 rounded-[14px] border-[1.3px] border-[#3C6350]"
-			>
-				<div>
-					<span class="text-[#FFFEFB]">New Size</span>
-				</div>
+<div class="flex items-center w-full px-4 py-1 border border-[#3C6350] rounded-[14px] bg-transparent text-white">
+  <!-- Label -->
+   <div class="flex w-full gap-2">
+		<span class="text-sm ">Size</span>
+	<input
+		type="text"
+		bind:value={inputtedSize}
+		class="w-full bg-transparent  text-white focus:outline-none text-sm"
+		oninput={ignoreNonNumeric}
+	/>
+   </div>
 
-				<div class="gap-0 flex flex-row">
-					<input
-						type="text"
-						bind:value={inputtedSize}
-						class="w-16 bg-transparent text-white focus:outline-none"
-                        oninput={ignoreNonNumeric}
-					/>
-                    <ComponentSelect
+  <div class="mx-2 pt-2 h-8 w-px bg-[#3C6350]"></div>
+
+			<ComponentSelect
                         options={[
                             { value: Metric.MiB, name: Metric.MiB },
                             { value: Metric.GiB, name: Metric.GiB }
                         ]}
                         bind:value={selectedUnit}
                         displayField="name"
-                        width="100%"
+                        width="80px"
                         onchange={convertMetric}
-                    />
-				</div>
-			</div>
+						noBorder={true}
+            />
+</div>
+
+
+
 		{:else}
 			<div
 				class="flex items-center w-[150px] justify-between p-2 rounded-[14px] border-[1.3px] border-[#3C6350]"
