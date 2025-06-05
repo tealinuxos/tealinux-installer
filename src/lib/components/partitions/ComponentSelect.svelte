@@ -10,11 +10,16 @@
     loadingText = "Loading...",
     defaultText = "Select an option",
     isLoading = false,
-    error = null
+    class: customClass = "", 
+    error = null,
+      noBorder = false  // Prop baru untuk mengontrol transparansi
   } = $props();
 
   let isOpen = $state(false);
   let selectElement = $state(null);
+  
+
+
 
   function handleClickOutside(event) {
     if (selectElement && !selectElement.contains(event.target)) {
@@ -52,11 +57,14 @@
   });
 </script>
 
+
+
+
 <div class="custom-select" bind:this={selectElement} style="width: {width}; height: {height}">
   <div 
     class="selected-value" 
     on:click={toggleDropdown}
-    style:border-color={isOpen ? '#26A768' : '#3C6350'}
+    style:border={noBorder ? 'none' : isOpen ? '1.3px solid #26A768' : '1.3px solid #3C6350'}
     class:disabled={isLoading || error}
   >
     <div class="selected-text">
@@ -64,7 +72,7 @@
     </div>
     
     {#if !isLoading && !error}
-      <div class="icon" class:rotate={isOpen}>
+      <div class="icon ml-2" class:rotate={isOpen}>
         <svg width="14" height="9" viewBox="0 0 14 9" fill="none">
           <path d="M1 1.33325L7 7.33325L13 1.33325" stroke="#26A768" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -89,7 +97,7 @@
 </div>
 
 <style>
-  .custom-select {
+.custom-select {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -104,8 +112,7 @@
     justify-content: space-between;
     align-items: center;
     border-radius: 14px;
-    border: 1.3px solid #3C6350;
-    background: #101010;
+    background: #101010; /* Hapus properti border dari sini */
     cursor: pointer;
     transition: border-color 0.2s ease;
     color: #FFFEFB;
@@ -120,6 +127,7 @@
     opacity: 0.7;
   }
   
+ /* Border untuk dropdown-options selalu ada */
   .dropdown-options {
     position: absolute;
     top: calc(100% + 5px);
@@ -133,6 +141,7 @@
     z-index: 1000;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
+  
   
   .option {
     padding: 10px 15px;

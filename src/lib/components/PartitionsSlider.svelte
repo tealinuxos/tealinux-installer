@@ -15,23 +15,20 @@
 	} = $props();
 
 	let colors = $state([]);
-	let currentSlide = $state(0); // Track the current slide index
+	let currentSlide = $state(0);
 	let message = $state('');
 
-	// Function to navigate to the previous slide
 	function prevSlide() {
 		currentSlide = (currentSlide - 1 + partitions.length) % partitions.length;
 	}
 
-	// Function to navigate to the next slide
 	function nextSlide() {
 		currentSlide = (currentSlide + 1) % partitions.length;
 	}
 
 	const getColors = (disk) => {
 		let generated_colors = [];
-
-		let length = disk.partitions?.length ?? null;
+		let length = disk.partitions?.length ?? 0;
 
 		for (let i = 0; i < length; i++) {
 			generated_colors.push(
@@ -63,7 +60,9 @@
 	});
 
 	$effect(() => {
-		selectedPartition = disk.partitions ? disk.partitions[currentSlide] : null;
+		if (disk.partitions) {
+			selectedPartition = disk.partitions[currentSlide];
+		}
 	});
 
 	onMount(() => {
@@ -76,7 +75,7 @@
 		<GlowingText size="lg" text={title} />
 	{/if}
 
-	{#if partitions}
+	{#if partitions.length > 0}
 		<!-- Display only the current slide -->
 		{@const partition = partitions[currentSlide]}
 
@@ -86,7 +85,6 @@
 				text={`${partition.partitionPath || 'Unallocated'} ${partition.name ? ` - ${partition.name}` : ''}`}
 			/>
 			<p class="text-xs font-[200]">
-				<!-- {partitions.disk} -->
 				{partitionTable ? partitionTable : 'Unknown Partition Table'}
 			</p>
 		</div>
@@ -100,13 +98,11 @@
 							{@const diskSize = disk.size.slice(0, -1)}
 							{@const partitionSize = partition.size.slice(0, -1)}
 							{@const percentage = (partitionSize / diskSize) * 100}
-
 							{@const color = i === currentSlide ? '#86EFAC' : colors[i]}
 
 							<div
 								style="width: {percentage}%; background-color: {color}"
-								class="h-full {i === currentSlide ? 'scale-y-125 border border-black' : ''}
-                                "
+								class="h-full {i === currentSlide ? 'scale-y-125 border border-black' : ''}"
 							></div>
 						{/each}
 					</div>
@@ -116,26 +112,28 @@
 					{#each partitions as partition, i}
 						{@const color = colors[i]}
 						{@const prettySize = prettyBytes(parseInt(partition.size) * 512)}
-						{@const path =
-							partition.partitionPath == null ? 'Unallocated' : partition.partitionPath.slice(5)}
-						{@const filesystem =
-							partition.filesystem == null
-								? path == 'Unallocated'
-									? 'Unallocated'
-									: 'Unknown'
-								: partition.filesystem}
+						{@const path = partition.partitionPath == null ? 'Unallocated' : partition.partitionPath.slice(5)}
+						{@const filesystem = partition.filesystem == null 
+							? path == 'Unallocated' 
+								? 'Unallocated' 
+								: 'Unknown' 
+							: partition.filesystem}
+
 						<div
-							class="flex items-start pr-1 gap-x-[2px] mx-2 p-1 rounded {i === currentSlide
-								? 'bg-green-300 text-black'
-								: 'bg-gray-900'} cursor-pointer"
-							onclick={() => changeSelectedPartition(i)}
+							class="flex items-start pr-1 gap-x-[2px] mx-2 p-1 rounded cursor-pointer"
+							style="{
+								i === currentSlide 
+									? 'border-radius: 9.489px; border: 1.423px solid #26A768; background: #032A17; color: white'
+									: 'border-radius: 9.489px; border: 1.423px solid #3C6350; background: #101010; color: white'
+							}"
+							on:click={() => changeSelectedPartition(i)}
 						>
 							<div
 								style="background-color: {color}"
-								class="border-black border-1 w-3 h-3 rounded-full mt-1"
+								class="w-3 h-3 rounded-full mt-1 border border-gray-600"
 							></div>
 							<div class="flex flex-col text-[11px] font-jakarta">
-								<span class="pl-1 font-semibold tracking-wide">{path} </span>
+								<span class="pl-1 font-semibold tracking-wide">{path}</span>
 								<span class="pl-1 uppercase whitespace-nowrap">{prettySize} {filesystem}</span>
 							</div>
 						</div>
@@ -143,13 +141,12 @@
 				</div>
 				{#key message}
 					<div class="flex items-center justify-between w-full gap-4">
-						<!-- Slider indicators (centered) -->
-						{message}
+						<p class="text-sm">{message}</p>
 					</div>
 				{/key}
 			</div>
 		</div>
 	{:else}
-		No partition data available
+		<p>No partition data available</p>
 	{/if}
 </div>
