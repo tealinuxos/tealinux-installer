@@ -494,7 +494,7 @@
    </div>
   
 
-  <div class="mx-2 h-10 w-px bg-[#3C6350]"></div>
+  <div class="mx-2 h-8 w-px bg-[#3C6350]"></div>
 
 					<ComponentSelect
                         options={[
