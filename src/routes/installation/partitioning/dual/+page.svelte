@@ -345,35 +345,7 @@
 				>
 					<GlowingText size="[11]" text="Select Partition to Replace" />
 
-					<PartitionsSlider
-						disk={selectedDisk}
-						partitions={selectedDisk.partitions}
-						bind:selectedPartition
-						{partitionTable}
-						bind:disableNext
-					/>
 
-					<GlowingText size="[11]" text="File System" />
-					<div class="flex gap-2">
-						{#key selectedFilesystem}
-							<CardTextArea
-								initialDevice="EXT4"
-								caption="Stable and widely used!"
-								showCaption={true}
-								showIcon={false}
-								onclick={() => decideFilesystem('ext4')}
-								isSelected={selectedFilesystem === 'ext4'}
-							/>
-							<CardTextArea
-								initialDevice="BTRFS"
-								caption="Support snapshots (Advanced)"
-								showCaption={true}
-								showIcon={false}
-								onclick={() => decideFilesystem('btrfs')}
-								isSelected={selectedFilesystem === 'btrfs'}
-							/>
-						{/key}
-					</div>
 					<div class="space-y-[6px] w-full">
 						{#if selectedPreview === Preview.BEFORE && selectedDisk}
 							{#key selectedDisk}
