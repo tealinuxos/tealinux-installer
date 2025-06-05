@@ -58,7 +58,7 @@
 		selectedMethod = method;
 		$partitionMethod = method;
 
-		if (method !== Method.MANUAL) {
+		if (method !== Method.MANUAL && method !== Method.DUAL) {
 			showAfter = true;
 			selectedPreview = Preview.AFTER;
 		} else {
