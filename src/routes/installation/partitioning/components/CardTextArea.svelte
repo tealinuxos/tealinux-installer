@@ -11,7 +11,8 @@
     showIcon = true,
     showCaption = false,
     onclick,
-    isSelected
+    isSelected,
+    disabled
   } = $props();
 
   // State
@@ -35,9 +36,10 @@
 
 <!-- UI -->
 <button
-  class="flex items-center justify-between h-[48px] px-3 py-3 rounded-lg w-full"
+  class="flex items-center justify-between h-[48px] px-3 py-3 rounded-lg w-full { disabled ? 'cursor-not-allowed' : 'cursor-pointer' }"
   style="border: 1.3px solid {borderColor}; background: {backgroundColor};"
   onclick={onclick}
+  { disabled }
 >
   <!-- Left Section -->
   <div class="flex flex-col justify-center">

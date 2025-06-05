@@ -282,6 +282,7 @@
 						bind:selectedPartition
 						{partitionTable}
 						bind:disableNext
+                        disabled={isRefreshing || !otherExist}
 					/>
 
 					<GlowingText size="[11]" text="File System" />
@@ -294,6 +295,7 @@
 								showIcon={false}
 								onclick={() => decideFilesystem('ext4')}
 								isSelected={selectedFilesystem === 'ext4'}
+                                disabled={isRefreshing || !otherExist}
 							/>
 							<CardTextArea
 								initialDevice="BTRFS"
@@ -302,6 +304,7 @@
 								showIcon={false}
 								onclick={() => decideFilesystem('btrfs')}
 								isSelected={selectedFilesystem === 'btrfs'}
+                                disabled={isRefreshing || !otherExist}
 							/>
 						{/key}
 					</div>
@@ -316,6 +319,7 @@
 								showIcon={false}
 								onclick={() => decideSwap(true)}
 								isSelected={useSwap}
+                                disabled={isRefreshing || !otherExist}
 							/>
 							<CardTextArea
 								initialDevice="NO SWAP"
@@ -324,6 +328,7 @@
 								showIcon={false}
 								onclick={() => decideSwap(false)}
 								isSelected={!useSwap}
+                                disabled={isRefreshing || !otherExist}
 							/>
 						{/key}
 					</div>

@@ -11,7 +11,8 @@
 		disk,
 		selectedPartition = $bindable(),
 		partitionTable,
-		disableNext = $bindable()
+		disableNext = $bindable(),
+        disabled = true
 	} = $props();
 
 	let colors = $state([]);
@@ -127,7 +128,7 @@
 						<div
 							class="flex items-start pr-1 gap-x-[2px] mx-2 p-1 rounded {i === currentSlide
 								? 'bg-green-300 text-black'
-								: 'bg-gray-900'} cursor-pointer"
+								: 'bg-gray-900'} {disabled ? 'cursor-not-allowed' : 'cursor-pointer'}"
 							onclick={() => changeSelectedPartition(i)}
 						>
 							<div
