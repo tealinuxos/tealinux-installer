@@ -72,7 +72,7 @@
     </div>
     
     {#if !isLoading && !error}
-      <div class="icon" class:rotate={isOpen}>
+      <div class="icon ml-2" class:rotate={isOpen}>
         <svg width="14" height="9" viewBox="0 0 14 9" fill="none">
           <path d="M1 1.33325L7 7.33325L13 1.33325" stroke="#26A768" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
