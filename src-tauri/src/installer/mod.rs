@@ -29,6 +29,7 @@ pub use self::blueprint::Partition;
 pub use self::blueprint::Storage;
 
 use tea_partition_generator::mkpart::Partgen;
+use tea_partition_generator::tealinux_build_env;
 
 fn wait() {
     let delay = Duration::from_secs(1);
@@ -38,6 +39,12 @@ fn wait() {
 #[tauri::command]
 pub async fn start_install(window: Window) {
     // Reading JSON into Blueprint
+
+    let _build_env = tealinux_build_env::tealinux_build_env();
+    if _build_env.unwrap() == tealinux_build_env::BuildType::Dev {
+        // deny run start_install on dev env
+        return ();
+    }
 
     let _ = window.emit(
         "INSTALL",
@@ -311,9 +318,13 @@ pub async fn start_install(window: Window) {
 
     match blueprint.account.as_ref().unwrap().add_user() {
         Ok(_) => {
-            if blueprint.account.as_ref().unwrap().autologin
-            {
-                match blueprint.account.as_ref().unwrap().set_cosmic_automatic_login() {
+            if blueprint.account.as_ref().unwrap().autologin {
+                match blueprint
+                    .account
+                    .as_ref()
+                    .unwrap()
+                    .set_cosmic_automatic_login()
+                {
                     Ok(_) => (),
                     Err(_) => {
                         let _ = window.emit(
@@ -325,7 +336,7 @@ pub async fn start_install(window: Window) {
                     }
                 }
             }
-        },
+        }
         Err(_) => {
             let _ = window.emit(
                 "ERROR",
