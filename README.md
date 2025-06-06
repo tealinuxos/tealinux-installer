@@ -45,9 +45,6 @@ Running the project:
 
 ```bash
 bunx tauri dev
-
-# with sudo privileges
-sudo -E bunx tauri dev
 ```
 
 ## Building
@@ -70,13 +67,13 @@ this environment evaluation is executed only on build time, the resulted binary 
 example
 ```bash
 # create final executable
-TEALINUX_BUILD=prod sudo -E bunx tauri build
+TEALINUX_BUILD=prod bunx tauri build
 
 # or run dev instead
-TEALINUX_BUILD=dev sudo -E bunx tauri dev
+TEALINUX_BUILD=dev bunx tauri dev
 
 # if you doing backend development
-TEALINUX_BUILD=prod sudo -E bunx tauri dev
+TEALINUX_BUILD=prod bunx tauri dev
 ```
 
 
