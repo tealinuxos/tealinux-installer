@@ -47,7 +47,7 @@
 		let json = await getRead();
 
 		json = json?.disk
-                ? json.length
+                ? json.disk.length
                     ? json.disk
                     : null
                 : null
