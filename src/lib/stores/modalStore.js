@@ -7,7 +7,8 @@ export const modalStore = writable({
 	type: 'info', // 'info', 'success', 'error', 'warning'
 	onConfirm: null,
 	onCancel: null,
-	showCancel: false
+	showCancel: false,
+    countdown: 0
 });
 
 export function showModal(options) {
@@ -18,7 +19,8 @@ export function showModal(options) {
 		type: options.type || 'info',
 		onConfirm: options.onConfirm || null,
 		onCancel: options.onCancel || null,
-		showCancel: options.showCancel || false
+		showCancel: options.showCancel || false,
+        countdown: options.countdown || 0
 	});
 }
 
