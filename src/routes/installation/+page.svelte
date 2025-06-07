@@ -46,7 +46,12 @@
 	const getStorageJSON = async () => {
 		let json = await getRead();
 
-		json = json.disk;
+		json = json?.disk
+                ? json.length
+                    ? json.disk
+                    : null
+                : null
+            ?? null;
 
 		return json;
 	};
