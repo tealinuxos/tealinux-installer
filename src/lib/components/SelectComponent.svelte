@@ -10,6 +10,7 @@
     height = '46.656px',
     loadingText = "Loading...",
     defaultText = "Select an option",
+    notFoundText= "No option",
     simpleMode = false,
     isLoading = false,
     error = null
@@ -38,7 +39,7 @@
   function getDisplayText(option) {
     if (isLoading) return loadingText;
     if (error) return errorText;
-    if (!option) return defaultText;
+    if (!option) return notFoundText;
     
     if (typeof option === 'object') {
       const display = displayField ? option[displayField] : option.name || option.value;
@@ -68,9 +69,9 @@
 <div class="custom-select" bind:this={selectElement} style="width: {width}; height: {height}">
   <div 
     class="selected-value" 
-    onclick={toggleDropdown}
+    onclick={() => { if (options) toggleDropdown }}
     style:border-color={isOpen ? '#26A768' : '#3C6350'}
-    class:disabled={isLoading || error}
+    class:disabled={isLoading || error || !options}
   >
     <div class="selected-text">
       {getDisplayText(value)}

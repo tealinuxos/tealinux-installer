@@ -12,7 +12,7 @@
 	const getColors = (disk) => {
 		let generated_colors = [];
 
-        if (disk.partitions) {
+        if (disk?.partitions ?? false) {
             let length = disk.partitions.length;
 
             for (let i = 0; i < length; i++) {
@@ -27,11 +27,11 @@
             return generated_colors;
         }
 
-        return "#454545";
+        return [ "#454545" ];
 	};
 
 	onMount(() => {
-        noPartitionTable = disk?.label ? false : true ?? false;
+        noPartitionTable = disk?.label ? false : true ?? true;
 		colors = colors ? colors : getColors(disk);
 	});
 </script>
@@ -41,7 +41,7 @@
 	<div class="flex mb-2 h-5 w-full overflow-hidden">
 		<div class="h-full flex overflow-hidden w-full">
             {#key noPartitionTable}
-            {#if noPartitionTable}
+            {#if noPartitionTable || !disk}
                 <div style="width: 100%; background-color: #525252" class="h-full"></div>
             {:else}
                 {#each disk.partitions as partition, i}
@@ -68,14 +68,18 @@
 	<!-- information -->
 	<div class="flex flex-wrap gap-y-2 max-h-[35px] overflow-y-auto mb-4 w-fit">
         {#key noPartitionTable}
-        {#if noPartitionTable}
+        {#if noPartitionTable || !disk}
             <div class="flex items-start pr-2 gap-x-[2px]">
                 <div style="background-color: #545454" class="w-2 h-2 rounded-full mt-1"></div>
                 <div class="flex flex-col text-[11px] font-jakarta">
                     <span class="pl-1 font-semibold tracking-wide">
                     </span
                     >
-                    <span class="pl-1 uppercase whitespace-nowrap">{prettySize(Number(disk?.size.slice(0, -1)))} Unallocated</span>
+                    {#if disk}
+                        <span class="pl-1 uppercase whitespace-nowrap">{prettySize(Number(disk?.size.slice(0, -1) ?? 0))} Unallocated</span>
+                    {:else}
+                        <span class="pl-1 uppercase whitespace-nowrap">No Partition</span>
+                    {/if}
                 </div>
             </div>
         {:else}
