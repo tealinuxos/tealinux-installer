@@ -221,7 +221,7 @@
 <TwoSide>
 	{#snippet left()}
 		<div class="mx-[35px] space-y-[15px]">
-			<h1 class="font-jakarta font-[800] text-[28px]">
+			<h1 class="font-archivo font-[600] text-[28px]">
 				Set up your <span class="text-green-tealinux">keyboard</span><br />
 				<span class="text-green-tealinux">layout</span>,
 				<span class="text-green-tealinux">timezone</span>,
