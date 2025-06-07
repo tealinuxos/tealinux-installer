@@ -55,11 +55,13 @@
 		let storage = await getStorageJSON();
 		let total = 0;
 
-		for (let i of storage.keys()) {
-			let size = storage[i].size.slice(0, -1);
+        if (storage && storage.length) {
+            for (let i of storage.keys()) {
+                let size = storage[i].size.slice(0, -1);
 
-			total += parseInt(size);
-		}
+                total += parseInt(size);
+            }
+        }
 
 		return total;
 	};
@@ -114,7 +116,7 @@
 					<h1 class="font-archivo font-[600] text-[40px] tracking-[-1.8px]">TeaLinux OS</h1>
 				</div>
 				<p class="font-jakarta text-sm font-[200] tracking-[-0.56px] text-center">
-                    Nikmatnya sebuah racikan
+                    <i>"Nikmatnya sebuah racikan"</i>
 				</p>
 			</div>
 		{/snippet}
@@ -157,7 +159,7 @@
 						</div>
 						{#await getTotalStorage() then totalSize}
 							{@const storage = totalSize * 512}
-							{@const storageGB = storage === 0 ? 'No disk' : prettyBytes(totalSize * 512)}
+							{@const storageGB = storage === 0 ? '-' : prettyBytes(totalSize * 512)}
 							<div class="leading-none space-y-[10px]">
 								<p class="font-[500]">Disk Capacity</p>
 								<p class="font-[200]">{storageGB}</p>

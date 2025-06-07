@@ -207,6 +207,8 @@
 						selectedDisk = e.detail;
 						updateDiskPreview(e.detail);
 					}}
+                    defaultText="Select a destination disk"
+                    notFoundText="No storage device detected"
 					displayField="diskPath"
 					sizeField="size"
 					formatter={prettySize}
