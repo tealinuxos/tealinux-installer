@@ -39,7 +39,8 @@
   function getDisplayText(option) {
     if (isLoading) return loadingText;
     if (error) return errorText;
-    if (!option) return notFoundText;
+    if (!options) return notFoundText;
+    if (!option) return defaultText;
     
     if (typeof option === 'object') {
       const display = displayField ? option[displayField] : option.name || option.value;
@@ -69,7 +70,7 @@
 <div class="custom-select" bind:this={selectElement} style="width: {width}; height: {height}">
   <div 
     class="selected-value" 
-    onclick={() => { if (options) toggleDropdown }}
+    onclick={() => { if (options) toggleDropdown() }}
     style:border-color={isOpen ? '#26A768' : '#3C6350'}
     class:disabled={isLoading || error || !options}
   >
