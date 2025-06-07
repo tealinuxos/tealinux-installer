@@ -127,7 +127,7 @@
 	<TwoSide>
 		{#snippet left()}
 			<div class="mx-[35px] space-y-[15px]">
-				<h1 class="font-jakarta font-[800] text-[28px]">
+				<h1 class="font-archivo font-[600] text-[28px]">
 					Configure <span class="text-green-tealinux">Single Boot</span><br />
 				</h1>
 				<p class="font-jakarta text-sm font-[200]">
