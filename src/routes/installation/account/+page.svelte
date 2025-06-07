@@ -6,6 +6,7 @@
 	import Navigation from '$lib/components/Navigation.svelte';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
 	import { afterNavigate } from '$app/navigation';
+	import { partitionMethod } from '$lib/stores/informationStore.js';
 
 	let prevRoute = '';
 
@@ -15,6 +16,8 @@
 	let passwordVisible = false;
 	let passwordConfirmVisible = false;
 	let showPasswordIndicator = false;
+
+	const partitioningMethod = $partitionMethod;
 
 	function togglePasswordVisibility() {
 		passwordVisible = !passwordVisible;
@@ -442,10 +445,9 @@
 <Navigation
 	currentStep={5}
 	currentTitle="User"
-	prevPath="/installation/partitioning"
+	prevPath={`/installation/partitioning/${partitioningMethod}`}
 	nextPath="/installation/summary"
 	nextAction={handleSetAccount}
-	prevAction={refreshDisk}
 	disableNext={!passwordsMatch ||
 		!fullname ||
 		!username ||
