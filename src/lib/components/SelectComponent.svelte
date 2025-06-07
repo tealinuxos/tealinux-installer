@@ -52,8 +52,8 @@
   function formatSize(size) {
     if (!size || typeof size !== 'string') return '';
     try {
-      const sizeInBytes = Number(size.slice(0, -1)) * 512;
-      return formatter ? formatter(sizeInBytes) : `${(sizeInBytes / (1024 ** 3)).toFixed(2)} GB`;
+      const sizeInBytes = Number(size.slice(0, -1));
+      return formatter ? formatter(sizeInBytes) : `${(sizeInBytes * 512 / (1024 ** 3)).toFixed(2)} GB`;
     } catch {
       return '';
     }

@@ -13,6 +13,7 @@
 	import SelectComponent from '$lib/components/SelectComponent.svelte';
 	import { goto } from '$app/navigation';
 	import { getDiskAfter } from './utils.js';
+    import { prettySize } from '$lib/essentials.js';
 
 	let Method = {
 		SINGLE: 'single',
@@ -160,9 +161,6 @@
 		partitionTable = selectedDisk?.label ?? 'gpt';
 	});
 
-	const prettySize = (bytes) => {
-		return prettyBytes(bytes);
-	};
 	const changeSelectedDisk = (disk) => {
 		selectedDisk = disk;
 		updateDiskPreview(disk);
