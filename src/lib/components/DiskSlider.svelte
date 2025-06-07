@@ -35,7 +35,7 @@
 				{' '}
 				<span class="text-xs font-[400]">{disk.model}</span>
 			</p>
-			<p class="text-xs font-[200]">
+			<p class="text-xs font-[200] uppercase font-bold">
 				{disk.label}
 			</p>
 		</div>
