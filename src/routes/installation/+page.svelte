@@ -116,7 +116,7 @@
 					<h1 class="font-archivo font-[600] text-[40px] tracking-[-1.8px]">TeaLinux OS</h1>
 				</div>
 				<p class="font-jakarta text-sm font-[200] tracking-[-0.56px] text-center">
-                    Nikmatnya sebuah racikan
+                    <i>"Nikmatnya sebuah racikan"</i>
 				</p>
 			</div>
 		{/snippet}
