@@ -1,6 +1,9 @@
-# Tealinux Installer
+<div align=center>
+  <h1>Tealinux Installer</h1>
+  <p>A Linux installer made exclusively for TealinuxOS, built with Tauri and SvelteKit.</p>
+</div>
 
-Tauri & SvelteKit
+![image](https://github.com/user-attachments/assets/e6674518-4bfe-490b-b903-cf2b9a94b866)
 
 ## Prequisites
 - [`rust`](https://www.rust-lang.org/)
