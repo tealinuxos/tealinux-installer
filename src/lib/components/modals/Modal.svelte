@@ -2,17 +2,50 @@
 	import { modalStore, closeModal } from '$lib/stores/modalStore';
 
 	let modal;
-	$: modal = $modalStore;
+
+	$: {
+        modal = $modalStore;
+        onMount();
+    }
+
+    let interval = null;
+    let disabled = true;
+    let countdown = null;
 
 	const handleConfirm = () => {
-		if (modal.onConfirm) modal.onConfirm();
-		closeModal();
+        clearInterval(interval);
+        interval = null;
+        if (modal.onConfirm) modal.onConfirm();
+        closeModal();
 	};
 
 	const handleCancel = () => {
+        clearInterval(interval);
+        interval = null;
 		if (modal.onCancel) modal.onCancel();
 		closeModal();
 	};
+
+    const onMount = () => {
+        countdown = modal?.countdown ?? 0;
+        disabled = true;
+        if (!interval && countdown !== 0) {
+            disabled = true;
+            interval = setInterval(() => {
+                if (countdown > 0) {
+                    countdown -= 1;
+                } 
+                else if (countdown === 0) {
+                    clearInterval(interval);
+                    disabled = false;
+                    interval = null;
+                    countdown = -1;
+                }
+            }, 1000)
+        }
+
+        if (!countdown) disabled = false;
+    };
 </script>
 
 {#if modal.isOpen}
@@ -65,17 +98,20 @@
 					{#if modal.showCancel}
 						<button
 							on:click={handleCancel}
-							class="text-[#A72626] font-['Poppins'] text-[20px] font-light leading-none lowercase px-[15px] py-[8px] flex flex-col items-center gap-[18px] rounded-[23px] border-[1.3px] border-[#F00] bg-[#101010] active:shadow-[0_0_9px_0_#FF453A]"
+							class="text-[#A72626] font-['Poppins'] text-[20px] font-light leading-none capitalize px-[15px] py-[8px] flex flex-col items-center gap-[18px] rounded-[23px] border-[1.3px] border-[#F00] bg-[#101010] active:shadow-[0_0_9px_0_#FF453A]"
 						>
-							cancel
+							Cancel
 						</button>
 					{/if}
-					<button
-						on:click={handleConfirm}
-						class="text-[#A72626] font-['Poppins'] text-[20px] font-light leading-none lowercase px-[15px] py-[8px] flex flex-col items-center gap-[18px] rounded-[23px] border-[1.3px] border-[#F00] bg-[#101010] active:shadow-[0_0_9px_0_#FF453A]"
-					>
-						confirm
-					</button>
+                    {#key countdown}
+                        <button
+                            on:click={handleConfirm}
+                            disabled={disabled}
+                            class="text-[#A72626] font-['Poppins'] text-[20px] font-light leading-none capitalize px-[15px] py-[8px] flex flex-col items-center gap-[18px] rounded-[23px] border-[1.3px] border-[#F00] bg-[#101010] active:shadow-[0_0_9px_0_#FF453A]"
+                        >
+                            Confirm { countdown >= 0 ? `(${countdown})` : ''}
+                        </button>
+                    {/key}
 				</div>
 			</div>
 		</div>
