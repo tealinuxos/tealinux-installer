@@ -5,7 +5,7 @@
 	import { onMount } from 'svelte';
 	// import Error from '$lib/components/modals/Error.svelte';
 
-	let percentage = $state(100);
+	let percentage = $state(0);
 	let message = $state('');
 	let errorMessage = $state(null);
 
