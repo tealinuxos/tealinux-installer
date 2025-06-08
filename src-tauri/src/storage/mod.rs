@@ -212,6 +212,33 @@ pub fn get_path_from_number(disk_path: &str, number: usize) -> Result<String, Er
     Ok(result)
 }
 
+pub fn get_number_from_path(disk_path: &str, path: &str) -> Option<u64>
+{
+    let disk = get_read().disk;
+
+    let mut result: Option<u64> = None;
+
+    for i in disk
+    {
+        if i.disk_path.is_some_and(|path| path.eq(disk_path))
+        {
+            if let Some(partitions) = i.partitions
+            {
+                for j in partitions
+                {
+                    if j.partition_path.is_some_and(|p| p.as_str() == path)
+                    {
+                        result = j.number.map(|n| n.parse::<u64>().ok()).flatten();
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    result
+}
+
 pub fn get_path_from_sector(disk_path: &str, start: &str, end: &str) -> Option<String>
 {
     let disk = get_read().disk;

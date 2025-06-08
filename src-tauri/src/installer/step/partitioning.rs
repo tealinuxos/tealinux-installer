@@ -5,7 +5,7 @@ use crate::read::{get_read, Read};
 use crate::storage::btrfs::{create_subvolume, mount_subvolume};
 use crate::storage::{
     create_new_partition_table, create_new_partition_table_with_partition, format,
-    format_unallocated, mount, umount,
+    format_unallocated, mount, umount, get_number_from_path
 };
 use duct::cmd;
 use std::fs::{create_dir, create_dir_all};
@@ -111,7 +111,6 @@ fn partitioning_new_partition_table(blueprint: &BluePrint) -> Result<(), Error> 
     let formatted_partitions =
         get_formatted_partitions(disk_path.as_ref().unwrap(), partitions.as_ref().unwrap())?;
 
-
     let formatted_partitions_json = serde_json::to_string(&formatted_partitions).expect("Failed to parse Vec<Partition> into String!");
 
     blueprint_set_partition(formatted_partitions_json)?;
@@ -200,9 +199,24 @@ fn get_formatted_partitions(
         }
 
         temp_partitions.push(Partition {
-            path,
+            path: path.to_owned(),
             ..partition.to_owned()
-        })
+        });
+
+        if let Some(flags) = &partition.flags
+        {
+            for flag in flags
+            {
+                let number = get_number_from_path(disk_path, path.as_ref().unwrap())
+                    .map(|n| n.to_string());
+
+                if let Some(number) = number
+                {
+                    cmd!("parted", disk_path, "set", number, flag, "on").run()?;
+                }
+            }
+        }
+
     }
 
     Ok(temp_partitions)
