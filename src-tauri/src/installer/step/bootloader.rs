@@ -79,8 +79,6 @@ pub fn install_bootloader(blueprint: &BluePrint) -> Result<(), Error>
                     get_boot_mountpoint(blueprint)
                 };
 
-                let path = path.map(|p| format!("/dev/{}", p));
-
                 bootloader::install_grub_bootloader(FirmwareKind::UEFI, None, path)?;
             }
             FirmwareKind::BIOS => {
