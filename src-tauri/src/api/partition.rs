@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use serde_json;
 use std::collections::HashMap;
 use tea_partition_generator::core::{PartitionGenerator, TeaPartitionGenerator};
+use std::io::Error;
 
 // this is lsblk stuff
 #[derive(Serialize, Deserialize, Debug)]
@@ -47,15 +48,17 @@ struct Disklists {
 
 // end lsblk stuff
 
-#[tauri::command]
-pub async fn blueprint_set_partition(partition: String) {
-    let partition: Vec<Partition> = serde_json::from_str(&partition).unwrap();
+pub fn blueprint_set_partition(partition: String) -> Result<(), Error>
+{
+    let partitions: Vec<Partition> = serde_json::from_str(&partition)?;
 
-    let mut blueprint = super::get_blueprint().unwrap();
+    let mut blueprint = super::get_blueprint()?;
 
-    // blueprint.disk = Some(partition);
+    blueprint.storage.as_mut().unwrap().partitions = Some(partitions);
 
-    super::write_blueprint(blueprint).unwrap();
+    super::write_blueprint(blueprint)?;
+
+    Ok(())
 }
 
 #[tauri::command]
