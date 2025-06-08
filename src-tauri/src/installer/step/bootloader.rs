@@ -59,8 +59,6 @@ pub fn install_bootloader(blueprint: &BluePrint) -> Result<(), Error>
             }
         };
 
-        println!("bootlaoder path: {:?}", bootloader_path);
-
         match firmware.firmware_type
         {
             FirmwareKind::UEFI => {
@@ -81,7 +79,7 @@ pub fn install_bootloader(blueprint: &BluePrint) -> Result<(), Error>
                     get_boot_mountpoint(blueprint)
                 };
 
-                println!("detected uefi, path is {:?}", path);
+                let path = path.map(|p| format!("/dev/{}", p));
 
                 bootloader::install_grub_bootloader(FirmwareKind::UEFI, None, path)?;
             }
@@ -104,7 +102,7 @@ pub fn install_bootloader(blueprint: &BluePrint) -> Result<(), Error>
                     get_boot_path(blueprint)
                 };
 
-                println!("detected mbr, path is {:?}", path);
+                let path = path.map(|p| format!("/dev/{}", p));
 
                 bootloader::install_grub_bootloader(FirmwareKind::BIOS, path, None)?;
             }
