@@ -15,6 +15,7 @@ impl From<tea_partition_generator::blueprint::Partition> for crate::installer::P
             start: data.start,
             end: data.end,
             size: data.size,
+            flags: data.flags
         }
     }
 }
@@ -71,6 +72,7 @@ impl From<crate::installer::Partition> for tea_partition_generator::blueprint::P
             start: data.start,
             end: data.end,
             size: data.size,
+            flags: data.flags
         }
     }
 }
