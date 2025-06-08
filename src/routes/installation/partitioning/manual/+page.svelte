@@ -175,27 +175,67 @@
 	};
 
 	const handleSetStorage = async () => {
-		let partitionWithBoot = modifiedPartition.find((p) => p.mountpoint?.includes('boot') ?? false);
-		let partitionWithRoot = modifiedPartition.find((p) => p.mountpoint?.includes('/') ?? false);
 
-		if (partitionWithBoot && partitionWithRoot) {
-			let bootloaderPath = partitionWithBoot.path;
-			let bootloader = {
-				firmwareType,
-				path: bootloaderPath
-			};
+        let partitionWithRoot = modifiedPartition.find((p) => p.mountpoint?.includes('/') ?? false);
 
-			let filteredPartition = modifiedPartition.map((p) => {
-				return p.path ? (p.path.includes('#') ? { ...p, path: null } : p) : p;
-			});
+        let filteredPartition = modifiedPartition.map((p) => {
+            return p.path ? (p.path.includes('#') ? { ...p, path: null } : p) : p;
+        });
 
-			storage.partitions = filteredPartition;
+        storage.partitions = filteredPartition;
 
-			await invoke('blueprint_set_bootloader', { bootloader: JSON.stringify(bootloader) });
-			await invoke('blueprint_set_storage', { storage: JSON.stringify(storage) });
-		} else {
-			alert('Root or EFI partition does not exist');
-		}
+        if (storage.partitionTable === "gpt") {
+
+            if (firmwareType === "UEFI") {
+                
+                let partitionWithBoot = filteredPartition.find((p) => p.mountpoint?.includes('boot') ?? false);
+
+                if (partitionWithBoot && partitionWithRoot) {
+                    let bootloaderPath = partitionWithBoot.path;
+                    let bootloader = {
+                        firmwareType,
+                        path: bootloaderPath
+                    };
+
+                    await invoke('blueprint_set_bootloader', { bootloader: JSON.stringify(bootloader) });
+                    await invoke('blueprint_set_storage', { storage: JSON.stringify(storage) });
+                } else {
+                    alert('Root or EFI partition does not exist');
+                }
+            } else {
+                
+                let partitionWithBiosGrubFlags = filteredPartition.find((p) => p?.flags?.includes('bios_grub') ?? false);
+
+                if (partitionWithBiosGrubFlags && partitionWithRoot) {
+                    let bootloaderPath = partitionWithBiosGrubFlags.path;
+                    let bootloader = {
+                        firmwareType,
+                        path: bootloaderPath
+                    };
+
+                    await invoke('blueprint_set_bootloader', { bootloader: JSON.stringify(bootloader) });
+                    await invoke('blueprint_set_storage', { storage: JSON.stringify(storage) });
+                } else {
+                    alert('Root or bootloader partition does not exist');
+                }
+            }
+            
+        } else {
+            
+            if (partitionWithRoot) {
+
+                let bootloaderPath = partitionWithRoot.path;
+                let bootloader = {
+                    firmwareType,
+                    path: bootloaderPath
+                };
+
+                await invoke('blueprint_set_bootloader', { bootloader: JSON.stringify(bootloader) });
+                await invoke('blueprint_set_storage', { storage: JSON.stringify(storage) });
+            } else {
+                alert('Root partition does not exist');
+            }
+        }
 	};
 
     // Next button state
