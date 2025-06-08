@@ -11,6 +11,13 @@ use super::installer::BluePrint;
 pub mod filesystem;
 pub mod btrfs;
 
+pub fn wipe(path: &str) -> Result<(), Error>
+{
+    let _wipefs = cmd!("wipefs", "--all", path).run()?;
+
+    Ok(())
+}
+
 pub fn format(filesystem: &str, path: &str, label: Option<&str>) -> Result<(), Error>
 {
     let command = {
@@ -146,20 +153,33 @@ pub fn umount_all() -> Result<(), Error>
     Ok(())
 }
 
-pub fn format_unallocated(disk_path: &str, start: u64, end: u64, filesystem: &str, label: Option<String>) -> Result<Option<String>, Error>
+pub fn format_unallocated(disk_path: &str, start: u64, end: u64, filesystem: Option<&str>, label: Option<String>) -> Result<Option<String>, Error>
 {
     let start = format!("{}s", start);
     let end = format!("{}s", end);
 
-    cmd!("parted", "--script", "--fix", disk_path, "mkpart", "primary", filesystem, &start, &end).run()?;
+    if let Some(filesystem) = filesystem
+    {
+        cmd!("parted", "--script", "--fix", disk_path, "mkpart", "primary", filesystem, &start, &end).run()?;
+    }
+    else
+    {
+        cmd!("parted", "--script", "--fix", disk_path, "mkpart", "primary", &start, &end).run()?;
+    }
 
     let path = self::get_path_from_sector(disk_path, &start, &end);
 
-    println!("expected path: {:?}", path);
+    if filesystem.is_none() && path.is_some()
+    {
+        wipe(path.as_ref().unwrap())?;
+    }
 
     if let Some(path) = path.as_ref()
     {
-        format(filesystem, path, label.as_deref())?;
+        if let Some(filesystem) = filesystem
+        {
+            format(filesystem, path, label.as_deref())?;
+        }
     }
 
     Ok(path)
@@ -190,6 +210,33 @@ pub fn get_path_from_number(disk_path: &str, number: usize) -> Result<String, Er
     }
 
     Ok(result)
+}
+
+pub fn get_number_from_path(disk_path: &str, path: &str) -> Option<u64>
+{
+    let disk = get_read().disk;
+
+    let mut result: Option<u64> = None;
+
+    for i in disk
+    {
+        if i.disk_path.is_some_and(|path| path.eq(disk_path))
+        {
+            if let Some(partitions) = i.partitions
+            {
+                for j in partitions
+                {
+                    if j.partition_path.is_some_and(|p| p.as_str() == path)
+                    {
+                        result = j.number.map(|n| n.parse::<u64>().ok()).flatten();
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    result
 }
 
 pub fn get_path_from_sector(disk_path: &str, start: &str, end: &str) -> Option<String>
