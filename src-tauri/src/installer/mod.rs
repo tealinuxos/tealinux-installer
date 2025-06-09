@@ -425,7 +425,10 @@ fn environment_specific_config(desktop_environment: String, account: &Account) -
             }
         },
         "kde" => {
-            todo!();
+            if account.autologin
+            {
+                account.set_sddm_automatic_login()?;
+            }
         }
         _ => {
                 
