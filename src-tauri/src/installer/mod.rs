@@ -2,6 +2,7 @@ pub mod blueprint;
 mod payload;
 pub mod step;
 
+use crate::read::get_read;
 use self::payload::Payload;
 use super::read::online::Online;
 use super::storage::umount_all_target;
@@ -39,6 +40,9 @@ fn wait() {
 
 #[tauri::command]
 pub async fn start_install(window: Window) {
+
+    let read = get_read();
+
     // Reading JSON into Blueprint
 
     let _build_env = tealinux_build_env::tealinux_build_env();
@@ -296,7 +300,13 @@ pub async fn start_install(window: Window) {
     }
 
     // Account
+    
+    let account = match blueprint.account {
+        Some(account) => account,
+        None => Account::new("", "", "", "", false),
+    };
 
+    
     let _ = window.emit(
         "INSTALL",
         Payload {
@@ -305,10 +315,7 @@ pub async fn start_install(window: Window) {
         },
     );
 
-    // Remove installer desktop entry
-    let _ = std::fs::remove_dir_all("/tealinux-mount/etc/skel/Desktop");
-
-    match blueprint.account.as_ref().unwrap().set_host() {
+    match account.set_host() {
         Ok(_) => (),
         Err(_) => {
             let _ = window.emit(
@@ -321,27 +328,8 @@ pub async fn start_install(window: Window) {
         }
     }
 
-    match blueprint.account.as_ref().unwrap().add_user() {
-        Ok(_) => {
-            if blueprint.account.as_ref().unwrap().autologin {
-                match blueprint
-                    .account
-                    .as_ref()
-                    .unwrap()
-                    .set_cosmic_automatic_login()
-                {
-                    Ok(_) => (),
-                    Err(_) => {
-                        let _ = window.emit(
-                            "ERROR",
-                            self::payload::Error {
-                                message: "Failed to configure user".into(),
-                            },
-                        );
-                    }
-                }
-            }
-        }
+    match account.add_user() {
+        Ok(_) => (),
         Err(_) => {
             let _ = window.emit(
                 "ERROR",
@@ -391,6 +379,10 @@ pub async fn start_install(window: Window) {
         }
     }
 
+    let desktop_environment = read.desktop_environment.name;
+
+    environment_specific_config(desktop_environment, &account);
+
     // Finishing up
 
     let _ = window.emit(
@@ -401,14 +393,7 @@ pub async fn start_install(window: Window) {
         },
     );
 
-    let _ = Account::remove_user("liveuser");
-
-    let account = match blueprint.account {
-        Some(account) => account,
-        None => Account::new("", "", "", "", false),
-    };
-
-    let _ = post_install(account);
+    let _ = post_install(&account);
 
     // Umount previously mounted partition
 
@@ -429,10 +414,39 @@ pub async fn start_install(window: Window) {
     );
 }
 
-fn post_install(account: Account) -> Result<(), Error> {
+fn environment_specific_config(desktop_environment: String, account: &Account) -> Result<(), Error>
+{
+    match desktop_environment.to_lowercase().as_ref()
+    {
+        "cosmic" => {
+            if account.autologin
+            {
+                account.set_cosmic_automatic_login()?;
+            }
+        },
+        "kde" => {
+            todo!();
+        }
+        _ => {
+                
+        }
+    }
 
+    Ok(())
+}
+
+fn post_install(account: &Account) -> Result<(), Error> {
+
+    // Change shell to fish
     shell::change_shell(&account.username, "/usr/bin/fish")?;
 
+    // Remove liveuser
+    let _ = Account::remove_user("liveuser");
+
+    // Remove installer desktop entry
+    let _ = std::fs::remove_dir_all("/tealinux-mount/etc/skel/Desktop");
+
+    // Remove installer
     cmd!(
         "arch-chroot",
         "/tealinux-mount",
