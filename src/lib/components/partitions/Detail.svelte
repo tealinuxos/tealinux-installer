@@ -87,7 +87,6 @@
 			if (mountpoint === '/') {
 				if (firmwareType === 'UEFI') {
 					if (bootPartitionIndex === null) {
-                        alert(tempModifiedPartition[index].size)
                         if (inputtedSizeSector >= 41943040) {
                             espSize = 2097152;
                             newEspPartition = {
@@ -107,13 +106,15 @@
                             newPartitionIndex += 1;
                             tempModifiedPartition[index] = newEspPartition;
 
+                            let tempSize = inputtedSizeSector - espSize - (currentIndex === tempModifiedPartition.length - 1 ? 4096 : 0);
+
                             newAllocated = {
                                 ...newAllocated,
-                                number: newAllocated.number + 1,
+                                number: newEspPartition.number + 1,
                                 path: `#${newPartitionIndex}`,
-                                size: inputtedSizeSector - espSize - (currentIndex === tempModifiedPartition.length - 1 ? 4096 : 0),
-                                start: newAllocated.end + 1,
-                                end: newAllocated.size - espSize + newAllocated.end - (currentIndex === tempModifiedPartition.length - 1 ? 4096 : 0),
+                                size: tempSize,
+                                start: newEspPartition.end + 1,
+                                end: newEspPartition.end + tempSize,
                                 format: true,
                                 filesystem,
                                 mountpoint,
