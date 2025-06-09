@@ -44,7 +44,7 @@
             }, 1000)
         }
 
-        if (!countdown) disabled = false;
+        if (!countdown || countdown === -1) disabled = false;
     };
 </script>
 
