@@ -110,7 +110,7 @@
                 path: null,
                 size: Number(disk.size.slice(0, -1)),
                 start: 2048,
-                end: Number(disk.size.slice(0, -1)),
+                end: Number(disk.size.slice(0, -1)) - 1,
                 filesystem: null,
                 label: null,
                 format: false,
