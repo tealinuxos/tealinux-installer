@@ -132,7 +132,7 @@
 	{/snippet}
 	{#snippet right()}
 		<div
-			class="flex flex-col h-[562px] p-6 space-y-[15px] mb-[15px] bg-black/30 border-[0.5px] border-gray-900 rounded-[10px] font-jakarta justify-center"
+			class="flex flex-col h-[600px] p-6 space-y-[15px] mb-[15px] bg-black/30 border-[0.5px] border-gray-900 rounded-[10px] font-jakarta justify-center"
 		>
 			<form class="flex flex-col h-[85dvh] space-y-4">
 				<!-- Full Name -->
@@ -303,7 +303,7 @@
 					</div>
 
 					<!-- Password Strength Indicator -->
-					{#if showPasswordIndicator}
+					
 						<div class="flex items-center mt-2 ml-[48px]">
 							<div class="flex-1 h-[4px] bg-gray-700 rounded-full overflow-hidden">
 								<div
@@ -315,7 +315,7 @@
 							</div>
 							<span class="ml-3 text-xs text-white font-medium">{getStrengthText(password)}</span>
 						</div>
-					{/if}
+					
 				</div>
 				<!-- Confirm Password -->
 				<div class="w-[400px] mx-auto">
@@ -434,7 +434,7 @@
 								/>
 							</svg>
 						</div>
-						<label for="automaticLogin" class="ml-2 text-sm text-white">Automatic Login</label>
+						<label for="automaticLogin" class="ml-2 text-sm text-[#2ecc71]">Automatic Login</label>
 					</div>
 				</div>
 			</form>
