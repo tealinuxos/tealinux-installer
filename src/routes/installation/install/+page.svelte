@@ -5,7 +5,10 @@
 	import Button from '$lib/components/ui/Button.svelte';
 
 	let percentage = $state(0);
-	let message = $state('');
+
+	let message = $state('Starting installation...');
+
+
 	let errorMessage = $state(null);
 	let isFinalizing = $state(false);
 
