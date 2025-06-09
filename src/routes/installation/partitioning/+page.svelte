@@ -171,7 +171,7 @@
 <TwoSide>
 	{#snippet left()}
 		<div class="mx-[35px] space-y-[15px]">
-			<h1 class="font-jakarta font-[800] text-[28px]">
+			<h1 class="font-archivo font-[600] text-[28px]">
 				Choose your <span class="text-green-tealinux">disk</span> and
 				<br />
 				<span class="text-green-tealinux">installation method</span>
