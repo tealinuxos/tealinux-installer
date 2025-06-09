@@ -143,7 +143,7 @@ fn get_formatted_partitions(
     let mut deleted_partitions: Vec<u64> = Vec::new();
 
     for partition in partitions {
-        let mut path: Option<String> = None;
+        let mut path: Option<String> = partition.path.clone();
 
         if partition.format {
             println!("asked to format");
@@ -207,12 +207,15 @@ fn get_formatted_partitions(
         {
             for flag in flags
             {
-                let number = get_number_from_path(disk_path, path.as_ref().unwrap())
-                    .map(|n| n.to_string());
-
-                if let Some(number) = number
+                if path.is_some()
                 {
-                    cmd!("parted", disk_path, "set", number, flag, "on").run()?;
+                    let number = get_number_from_path(disk_path, path.as_ref().unwrap())
+                        .map(|n| n.to_string());
+
+                    if let Some(number) = number
+                    {
+                        cmd!("parted", disk_path, "set", number, flag, "on").run()?;
+                    }
                 }
             }
         }
