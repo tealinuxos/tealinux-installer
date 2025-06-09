@@ -1,6 +1,7 @@
 <script>
 	import { invoke } from '@tauri-apps/api/core';
 	import { listen } from '@tauri-apps/api/event';
+    import Error from '$lib/components/modals/Error.svelte';
 	import { onMount } from 'svelte';
 
 	let percentage = $state(0);
@@ -37,6 +38,16 @@
 		rebootChecked = !rebootChecked;
 	};
 </script>
+
+{#if errorMessage !== null}
+    <Error errorMessage={errorMessage} />
+    <Error
+        title="Installation Failed!"
+        message={errorMessage}
+        cancelValue="Exit"
+        confirmValue="Reboot"
+    />
+{/if}
 
 <section class="flex flex-col justify-between h-screen items-center text-center p-8 text-white font-archivo">
 	
