@@ -34,7 +34,7 @@ pub struct Read
     online: Online,
     lspci: Pci,
     firmware: FirmwareKind,
-    desktop_environment: DesktopEnvironment,
+    pub desktop_environment: DesktopEnvironment,
     operating_system: OperatingSystem,
     kernel: Kernel,
     display_server: DisplayServer

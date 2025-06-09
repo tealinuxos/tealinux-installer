@@ -4,7 +4,7 @@ use serde::{ Serialize, Deserialize };
 #[serde(rename_all="camelCase")]
 pub struct DesktopEnvironment
 {
-    name: String
+    pub name: String
 }
 
 impl DesktopEnvironment
