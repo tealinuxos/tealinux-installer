@@ -179,6 +179,15 @@ pub async fn start_install(window: Window) {
         }
     }
 
+    // check whatever its dualboot auto partition & we need to locate where the "origin" efi partition is.
+    if blueprint.storage.clone().unwrap().install_method == MethodKind::DUAL
+        && get_firmware_type() == FirmwareKind::UEFI
+    {
+        dual_boot_efi_mount::dualboot_efi_mount_open(
+            blueprint.storage.clone().unwrap().disk_path.unwrap(),
+        );
+    }
+
     // Generate FSTAB
 
     let _ = window.emit(
@@ -277,14 +286,7 @@ pub async fn start_install(window: Window) {
 
     wait();
 
-    // check whatever its dualboot auto partition & we need to locate where the "origin" efi partition is.
-    if blueprint.storage.clone().unwrap().install_method == MethodKind::DUAL
-        && get_firmware_type() == FirmwareKind::UEFI
-    {
-        dual_boot_efi_mount::dualboot_efi_mount_open(
-            blueprint.storage.clone().unwrap().disk_path.unwrap(),
-        );
-    }
+    // this offset is location of original dualboot EFI mounter 
 
     match step::bootloader::install_bootloader(&blueprint) {
         Ok(_) => (),
