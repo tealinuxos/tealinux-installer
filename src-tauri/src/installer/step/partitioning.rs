@@ -1,10 +1,11 @@
 use crate::api::{get_blueprint_from_opt, get_read_from_opt};
+use crate::api::partition::blueprint_set_partition;
 use crate::installer::{BluePrint, Partition};
 use crate::read::{get_read, Read};
 use crate::storage::btrfs::{create_subvolume, mount_subvolume};
 use crate::storage::{
     create_new_partition_table, create_new_partition_table_with_partition, format,
-    format_unallocated, mount, umount,
+    format_unallocated, mount, umount, get_number_from_path
 };
 use duct::cmd;
 use std::fs::{create_dir, create_dir_all};
@@ -110,6 +111,10 @@ fn partitioning_new_partition_table(blueprint: &BluePrint) -> Result<(), Error> 
     let formatted_partitions =
         get_formatted_partitions(disk_path.as_ref().unwrap(), partitions.as_ref().unwrap())?;
 
+    let formatted_partitions_json = serde_json::to_string(&formatted_partitions).expect("Failed to parse Vec<Partition> into String!");
+
+    blueprint_set_partition(formatted_partitions_json)?;
+
     println!("partitioning done");
 
     actual_partitioning(Some(formatted_partitions))?;
@@ -188,15 +193,30 @@ fn get_formatted_partitions(
                 disk_path,
                 partition.start,
                 partition.end,
-                partition.filesystem.as_ref().unwrap(),
+                partition.filesystem.as_deref(),
                 partition.label.clone(),
             )?;
         }
 
         temp_partitions.push(Partition {
-            path,
+            path: path.to_owned(),
             ..partition.to_owned()
-        })
+        });
+
+        if let Some(flags) = &partition.flags
+        {
+            for flag in flags
+            {
+                let number = get_number_from_path(disk_path, path.as_ref().unwrap())
+                    .map(|n| n.to_string());
+
+                if let Some(number) = number
+                {
+                    cmd!("parted", disk_path, "set", number, flag, "on").run()?;
+                }
+            }
+        }
+
     }
 
     Ok(temp_partitions)
@@ -289,6 +309,25 @@ pub fn get_boot_path(blueprint: &BluePrint) -> Option<String> {
     boot_path.cloned()
 }
 
+pub fn get_bios_grub_path(blueprint: &BluePrint) -> Option<String> {
+    let partitions = &blueprint.storage.as_ref().unwrap().partitions;
+    let mut bios_grub_path = None;
+
+    if let Some(partition) = partitions {
+        let bios_grub_path_index = partition.iter().position(|f| {
+            f.path.is_some()
+            && f.flags.is_some()
+            && f.flags.as_ref().unwrap().contains(&"bios_grub".to_string())
+        });
+
+        if let Some(index) = bios_grub_path_index {
+            bios_grub_path = Some(partition[index].path.as_ref().unwrap());
+        }
+    }
+
+    bios_grub_path.cloned()
+}
+
 fn actual_partitioning(partitions: Option<Vec<Partition>>) -> Result<(), Error> {
     if !Path::exists(Path::new("/tealinux-mount")) {
         std::fs::create_dir("/tealinux-mount/")?
@@ -319,7 +358,7 @@ fn actual_partitioning(partitions: Option<Vec<Partition>>) -> Result<(), Error> 
                         root.disk_path.as_ref().unwrap(),
                         root.start,
                         root.end,
-                        root.filesystem.as_ref().unwrap(),
+                        root.filesystem.as_deref(),
                         root.label.clone(),
                     )?;
                 } else if root.format && root.path.is_some() && root.filesystem.is_some() {
