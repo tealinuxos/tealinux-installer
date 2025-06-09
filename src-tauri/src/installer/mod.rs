@@ -17,6 +17,7 @@ use tea_arch_chroot_lib::chroot::bootloader::get_firmware_type;
 use tea_arch_chroot_lib::chroot::*;
 use tea_arch_chroot_lib::prechroot::*;
 use tea_arch_chroot_lib::resource::FirmwareKind;
+use tea_arch_chroot_lib::chroot::shell;
 
 use tea_arch_chroot_lib::resource::MethodKind;
 use tea_partition_generator::dual_boot_efi_mount;
@@ -429,6 +430,9 @@ pub async fn start_install(window: Window) {
 }
 
 fn post_install(account: Account) -> Result<(), Error> {
+
+    shell::change_shell(&account.username, "/usr/bin/fish")?;
+
     cmd!(
         "arch-chroot",
         "/tealinux-mount",
@@ -441,16 +445,6 @@ fn post_install(account: Account) -> Result<(), Error> {
 
     // Remove installer autostart entry
     std::fs::remove_file("/tealinux-mount/etc/xdg/autostart/tealinux-installer.desktop")?;
-
-    cmd!(
-        "arch-chroot",
-        "/tealinux-mount",
-        "chsh",
-        "--shell",
-        "/usr/bin/fish",
-        account.username
-    )
-    .run()?;
 
     Ok(())
 }
