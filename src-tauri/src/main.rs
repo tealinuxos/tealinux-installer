@@ -54,7 +54,6 @@ fn build_tauri()
             blueprint_set_locale,
             blueprint_set_timezone,
             blueprint_set_account,
-            blueprint_set_partition,
             blueprint_set_bootloader,
             blueprint_set_keyboard,
             blueprint_set_storage,

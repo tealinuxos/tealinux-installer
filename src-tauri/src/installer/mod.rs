@@ -56,7 +56,7 @@ pub async fn start_install(window: Window) {
 
     wait();
 
-    let blueprint = step::json::read_blueprint().expect("Failed when reading blueprint file");
+    let mut blueprint = step::json::read_blueprint().expect("Failed when reading blueprint file");
 
     if !Path::exists(Path::new("/tealinux-mount")) {
         match std::fs::create_dir("/tealinux-mount/") {
@@ -99,6 +99,10 @@ pub async fn start_install(window: Window) {
             return ();
         }
     }
+
+    // Refreshing the blueprint to get new disk information
+    // especially the one after being formatted
+    blueprint = step::json::read_blueprint().expect("Failed when reading blueprint file");
 
     // RSYNC system
 

@@ -157,6 +157,7 @@
 
 	onMount(async () => {
 		disks = await getStorageJSON();
+        disks = disks?.length ? disks : null ?? null;
 
 		partitionTable = selectedDisk?.label ?? 'gpt';
 	});
@@ -189,16 +190,6 @@
 			<GlowingText size="[11]" text="Disk" />
 
 			<div class="flex flex-col">
-				<!-- <SelectComponent
-					{disks}
-					bind:value={selectedDisk}
-					displayField="diskPath"
-					sizeField="size"
-					formatter={prettySize}
-					width="100%"
-					height="41px"
-					on:change={({ detail }) => selectDisk(detail.value)}
-				/> -->
 				<SelectComponent
 					options={disks}
 					bind:value={selectedDisk}

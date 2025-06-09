@@ -9,6 +9,7 @@
 	import { randomColor } from 'randomcolor';
 	import Navigation from '../../../lib/components/Navigation.svelte';
 	import GlowingText from '../../../lib/components/ui/GlowingText.svelte';
+	import { showModal, closeModal } from '$lib/stores/modalStore.js';
 
 	let timezone;
 	let mainLocale;
@@ -97,6 +98,21 @@
 
 	const printJson = async () => {
 		await invoke('print_json');
+	};
+
+	const showInstallWarning = () => {
+		showModal({
+			isOpen: false,
+			type: 'error',
+			title: 'All Data Will be Wiped',
+			content: 'Proceeding with this installation will erase all existing data on the selected drive. This action cannot be undone.',
+			confirmText: 'OK',
+			cancelText: 'Cancel',
+			showCancel: true,
+            countdown: 5,
+			onConfirm: () => goto('/installation/install'),
+			onCancel: () => closeModal()
+		});
 	};
 
 	onMount(async () => {
@@ -245,6 +261,6 @@
 <Navigation
 	currentStep={5}
 	currentTitle="Summary"
-	prevPath="/installation"
-	nextPath="/installation/install"
+	prevPath={`/installation/partitioning/${partitioningMethod}`}
+    nextAction={showInstallWarning}
 />

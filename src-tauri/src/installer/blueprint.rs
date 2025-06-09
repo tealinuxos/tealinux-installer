@@ -27,6 +27,7 @@ pub struct Partition {
     pub start: u64,
     pub end: u64,
     pub size: u64,
+    pub flags: Option<Vec<String>>
 }
 
 #[derive(Debug, Serialize, Deserialize)]
