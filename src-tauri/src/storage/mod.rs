@@ -160,7 +160,14 @@ pub fn format_unallocated(disk_path: &str, start: u64, end: u64, filesystem: Opt
 
     if let Some(filesystem) = filesystem
     {
-        cmd!("parted", "--script", "--fix", disk_path, "mkpart", "primary", filesystem, &start, &end).run()?;
+        if filesystem.contains("swap")
+        {
+            cmd!("parted", "--script", "--fix", disk_path, "mkpart", "primary", "linux-swap", &start, &end).run()?;
+        }
+        else
+        {
+            cmd!("parted", "--script", "--fix", disk_path, "mkpart", "primary", filesystem, &start, &end).run()?;
+        }
     }
     else
     {
