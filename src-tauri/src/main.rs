@@ -48,6 +48,7 @@ fn main() {
 fn build_tauri()
 {
     tauri::Builder::default()
+        .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
             get_read_json,
             set_empty_blueprint,
