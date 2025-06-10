@@ -2,7 +2,7 @@
 	import { invoke } from '@tauri-apps/api/core';
 	import { listen } from '@tauri-apps/api/event';
     import Error from '$lib/components/modals/Error.svelte';
-    import { exit } from '@tauri-apps/plugin-process';
+    import { exit } from '/node_modules/@tauri-apps/plugin-process';
 	import { onMount } from 'svelte';
 
 	let percentage = $state(0);

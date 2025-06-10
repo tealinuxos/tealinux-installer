@@ -28,13 +28,13 @@ pub async fn test_partitioning() {
     let blueprint = get_blueprint_from_opt().await;
     let blueprint: BluePrint = serde_json::from_str(&blueprint).unwrap();
 
-    match partitioning(&blueprint) {
+    match partitioning(&blueprint).await {
         Ok(_) => println!("Partitioning Successful"),
         Err(e) => println!("Huh, as expected: {:#?}", e),
     }
 }
 
-pub fn partitioning(blueprint: &BluePrint) -> Result<(), Error> {
+pub async fn partitioning(blueprint: &BluePrint) -> Result<(), Error> {
     let mut result = Ok(());
 
     if let Some(storage) = blueprint.storage.as_ref() {
@@ -80,9 +80,9 @@ pub fn partitioning(blueprint: &BluePrint) -> Result<(), Error> {
             }
             MethodKind::MANUAL => {
                 if storage.new_partition_table {
-                    result = partitioning_new_partition_table(blueprint);
+                    result = partitioning_new_partition_table(blueprint).await;
                 } else {
-                    result = manual_partitioning(blueprint)
+                    result = manual_partitioning(blueprint).await
                 }
             }
         }
@@ -91,7 +91,7 @@ pub fn partitioning(blueprint: &BluePrint) -> Result<(), Error> {
     result
 }
 
-fn partitioning_new_partition_table(blueprint: &BluePrint) -> Result<(), Error> {
+async fn partitioning_new_partition_table(blueprint: &BluePrint) -> Result<(), Error> {
     force_umount();
 
     let disk_path = &blueprint.storage.as_ref().unwrap().disk_path;
@@ -109,7 +109,7 @@ fn partitioning_new_partition_table(blueprint: &BluePrint) -> Result<(), Error> 
     println!("create new partition table done");
 
     let formatted_partitions =
-        get_formatted_partitions(disk_path.as_ref().unwrap(), partitions.as_ref().unwrap())?;
+        get_formatted_partitions(disk_path.as_ref().unwrap(), partitions.as_ref().unwrap(), true).await?;
 
     let formatted_partitions_json = serde_json::to_string(&formatted_partitions).expect("Failed to parse Vec<Partition> into String!");
 
@@ -129,12 +129,14 @@ fn is_intersect(r1: std::ops::RangeInclusive<u64>, r2: std::ops::RangeInclusive<
     start <= end
 }
 
-fn get_formatted_partitions(
+async fn get_formatted_partitions(
     disk_path: &str,
     partitions: &Vec<Partition>,
+    new_partition_table: bool
 ) -> Result<Vec<Partition>, Error> {
     let mut temp_partitions: Vec<Partition> = Vec::new();
-    let disk = get_read().disk;
+    let disk = get_read_from_opt().await;
+    let disk = serde_json::from_str::<Read>(&disk).expect("Failed to parse read!").disk;
     let actual_disk = disk
         .iter()
         .find(|disk| disk.disk_path.clone().unwrap() == *disk_path);
@@ -147,43 +149,46 @@ fn get_formatted_partitions(
 
         if partition.format {
             println!("asked to format");
-            for actual in actual_partition {
-                let number = actual
-                    .number
-                    .clone()
-                    .unwrap_or("0".into())
-                    .parse::<u64>()
-                    .unwrap();
-                let start_sector = actual
-                    .start
-                    .as_ref()
-                    .unwrap()
-                    .trim_end_matches("s")
-                    .parse::<u64>()
-                    .unwrap();
-                let end_sector = actual
-                    .end
-                    .as_ref()
-                    .unwrap()
-                    .trim_end_matches("s")
-                    .parse::<u64>()
-                    .unwrap();
+            if !new_partition_table
+            {
+                for actual in actual_partition {
+                    let number = actual
+                        .number
+                        .clone()
+                        .unwrap_or("0".into())
+                        .parse::<u64>()
+                        .unwrap();
+                    let start_sector = actual
+                        .start
+                        .as_ref()
+                        .unwrap()
+                        .trim_end_matches("s")
+                        .parse::<u64>()
+                        .unwrap();
+                    let end_sector = actual
+                        .end
+                        .as_ref()
+                        .unwrap()
+                        .trim_end_matches("s")
+                        .parse::<u64>()
+                        .unwrap();
 
-                if number != 0
-                    && !deleted_partitions.contains(&number)
-                    && is_intersect(partition.start..=partition.end, start_sector..=end_sector)
-                {
-                    println!("about to format {}", number);
-                    deleted_partitions.push(number);
-                    cmd!(
-                        "parted",
-                        "--script",
-                        partition.disk_path.as_ref().unwrap(),
-                        "rm",
-                        number.to_string()
-                    )
-                    .run()?;
-                    println!("its formatted");
+                    if number != 0
+                        && !deleted_partitions.contains(&number)
+                        && is_intersect(partition.start..=partition.end, start_sector..=end_sector)
+                    {
+                        println!("about to format {}", number);
+                        deleted_partitions.push(number);
+                        cmd!(
+                            "parted",
+                            "--script",
+                            partition.disk_path.as_ref().unwrap(),
+                            "rm",
+                            number.to_string()
+                        )
+                        .run()?;
+                        println!("its formatted");
+                    }
                 }
             }
 
@@ -225,13 +230,13 @@ fn get_formatted_partitions(
     Ok(temp_partitions)
 }
 
-fn manual_partitioning(blueprint: &BluePrint) -> Result<(), Error> {
+async fn manual_partitioning(blueprint: &BluePrint) -> Result<(), Error> {
     let disk_path = &blueprint.storage.as_ref().unwrap().disk_path;
     let partition_table = &blueprint.storage.as_ref().unwrap().partition_table;
     let partitions = blueprint.storage.as_ref().unwrap().partitions.clone();
 
     let formatted_partitions =
-        get_formatted_partitions(disk_path.as_ref().unwrap(), partitions.as_ref().unwrap())?;
+        get_formatted_partitions(disk_path.as_ref().unwrap(), partitions.as_ref().unwrap(), false).await?;
 
     println!("partitioning done");
 
