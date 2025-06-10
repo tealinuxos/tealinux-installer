@@ -283,7 +283,7 @@
 	<div class="flex flex-col p-5 gap-y-2">
 		<div class="flex justify-between">
 			<div class="flex-1 min-w-[300px]">
-				<GlowingText size="[28px]" text="Manual Partitions" />
+				<GlowingText size="[28px]" text="Manual Partitioning" />
 			</div>
 			<div class="flex w-[350px] gap-2.5">
 				<button
