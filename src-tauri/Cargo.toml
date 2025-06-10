@@ -31,7 +31,7 @@ procfs = "0.17.0"
 regex = "1.9.6"
 os_info = "3.11.0"
 karen = { git = "https://github.com/gagahsyuja/karen.git" }
-tauri-plugin-process = "2.0.0-alpha.2"
+tauri-plugin-process = "2"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
