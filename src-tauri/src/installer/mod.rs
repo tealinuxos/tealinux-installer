@@ -301,7 +301,11 @@ pub async fn start_install(window: Window) {
         }
     }
 
+
     // Account
+
+    // Remove installer desktop entry
+    let _ = std::fs::remove_dir_all("/tealinux-mount/etc/skel/Desktop");
     
     let account = match blueprint.account {
         Some(account) => account,
@@ -447,9 +451,6 @@ fn post_install(account: &Account) -> Result<(), Error> {
 
     // Remove liveuser
     let _ = Account::remove_user("liveuser");
-
-    // Remove installer desktop entry
-    let _ = std::fs::remove_dir_all("/tealinux-mount/etc/skel/Desktop");
 
     // Remove installer
     cmd!(
