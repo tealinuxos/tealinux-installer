@@ -92,7 +92,7 @@ pub async fn start_install(window: Window) {
 
     wait();
 
-    match step::partitioning::partitioning(&blueprint) {
+    match step::partitioning::partitioning(&blueprint).await {
         Ok(_) => (),
         Err(_) => {
             let _ = window.emit(
