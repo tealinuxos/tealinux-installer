@@ -135,12 +135,10 @@ async fn get_formatted_partitions(
     new_partition_table: bool
 ) -> Result<Vec<Partition>, Error> {
     let mut temp_partitions: Vec<Partition> = Vec::new();
-    let disk = get_read_from_opt().await;
-    let disk = serde_json::from_str::<Read>(&disk).expect("Failed to parse read!").disk;
+    let disk = get_read().disk;
     let actual_disk = disk
         .iter()
         .find(|disk| disk.disk_path.clone().unwrap() == *disk_path);
-    let actual_partition = actual_disk.as_ref().unwrap().partitions.as_ref().unwrap();
 
     let mut deleted_partitions: Vec<u64> = Vec::new();
 
@@ -151,6 +149,8 @@ async fn get_formatted_partitions(
             println!("asked to format");
             if !new_partition_table
             {
+                let actual_partition = actual_disk.as_ref().unwrap().partitions.as_ref().unwrap();
+                
                 for actual in actual_partition {
                     let number = actual
                         .number
