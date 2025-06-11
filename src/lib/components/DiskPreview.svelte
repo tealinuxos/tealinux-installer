@@ -39,11 +39,12 @@
 
 {#if colors}
 	<!-- color bar -->
-	<div class="flex mb-2 h-5 w-full overflow-hidden relative">
-		<span
-			class="inline-block leading-normal uppercase bg-[#303030]/50 h-full text-center px-3 align-middle font-jakarta absolute right-0 text-xs font-[600]"
-			>{prettySize(disk.size.slice(0, -1))}</span
-		>
+    <div class="grid place-items-center mb-2 h-5 w-full overflow-hidden relative">
+        <span
+            class="absolute right-0 bg-[#303030]/50 text-center px-3 font-jakarta text-xs font-[600] h-full flex items-center justify-center"
+        >
+            {prettySize(disk.size.slice(0, -1))}
+        </span>
 		<div class="h-full flex overflow-hidden w-full">
 			{#key noPartitionTable}
 				{#if noPartitionTable || !disk}
