@@ -41,11 +41,11 @@
 	<!-- color bar -->
     <div class="grid place-items-center mb-2 h-5 w-full overflow-hidden relative">
         <span
-            class="absolute right-0 bg-[#303030]/50 text-center px-3 font-jakarta text-xs font-[600] h-full flex items-center justify-center"
+            class="absolute right-0 bg-[#303030]/50 text-center px-2 font-jakarta text-xs font-[600] h-full flex items-center justify-center"
         >
             {prettySize(disk.size.slice(0, -1))}
         </span>
-		<div class="h-full flex overflow-hidden w-full">
+		<div class="h-full flex overflow-hidden w-full rounded-xs">
 			{#key noPartitionTable}
 				{#if noPartitionTable || !disk}
 					<div style="width: 100%; background-color: #525252" class="h-full"></div>
