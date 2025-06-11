@@ -50,58 +50,66 @@
 
 {#if modal.isOpen}
 	{#if modal.type === 'error'}
-		<div class="absolute inset-0 z-50 flex items-center justify-center bg-black/50">
-		<div 
-			class="inline-flex p-6 flex-col items-center gap-4 rounded-xl border-2 border-red-500 bg-black max-w-sm w-full mx-4"
-			style="box-shadow: 0 0 15px rgba(224, 1, 1, 0.5), inset 0 0 8px rgba(224, 1, 1, 0.3);"
-		>
-			<svg
-			width="64"
-			height="64"
-			viewBox="0 0 24 24"
-			fill="none"
-			xmlns="http://www.w3.org/2000/svg"
-			class="text-red-500"
-			>
-			<path
-				d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z"
-				fill="currentColor"
-			/>
-			</svg>
+      <div class="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-80">
+            <div
+                style="-webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px)"
+                class="absolute inset-0 bg-black/50"
+                on:click={handleCancel}
+            ></div>
+            
+            <div
+                class="flex flex-col min-w-[434px] max-h-full justify-center items-center p-4 bg-black rounded-[10px] border border-[#f87171] shadow-[0_0_30px_rgba(239,68,68,0.25)] overflow-auto z-90"
+            >
+                <div class="w-full p-6 z-10">
+                    <!-- Warning Icon -->
+                    <div class="flex justify-center mb-4">
+                        <div class="relative">
+                            <div class="absolute inset-0 rounded-full bg-red-500 blur-md opacity-30 animate-pulse"></div>
+                            <svg
+                                width="64"
+                                height="64"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="text-red-400 relative z-10"
+                            >
+                                <path
+                                    d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z"
+                                    fill="currentColor"
+                                />
+                            </svg>
+                        </div>
+                    </div>
 
-			<h2 class="text-white text-xl font-bold text-center">
-			{modal.title || 'All Data Will be Wiped'}
-			</h2>
+                    <!-- Title -->
+                    <h2 class="text-2xl font-bold text-center mb-4 bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent">
+                        {$modalStore.title || 'Warning'}
+                    </h2>
 
-			<p class="text-gray-300 text-base text-center leading-snug">
-			{@html modal.content || `
-				Proceeding with this installation will erase all
-				existing data on the selected drive. This action
-				cannot be undone.
-			`}
-			</p>
+                    <!-- Content -->
+                    <div class="text-gray-300/90 text-center text-sm leading-relaxed max-w-xs mx-auto mb-6">
+                        {@html $modalStore.content || 'This action cannot be undone.'}
+                    </div>
 
-			<div class="flex gap-4 mt-4 w-full justify-center">
-			{#if modal.showCancel !== false}
-				<button
-				on:click={handleCancel}
-				class="px-5 py-2 rounded-full border border-red-500 text-red-400 hover:bg-[#240301] transition-colors"
-				>
-				Cancel
-				</button>
-			{/if}
-			
-			<button
-				on:click={handleConfirm}
-				disabled={disabled}
-				class="px-5 py-2 rounded-full bg-red-900/50 border border-red-500 text-red-300 hover:bg-red-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-				style="box-shadow: 0 0 10px rgba(224, 1, 1, 0.5);"
-			>
-				Confirm {#if countdown >= 0}({countdown}){/if}
-			</button>
-			</div>
-		</div>
-		</div>
+                    <!-- Buttons -->
+                    <div class="flex gap-2 mt-4">
+                        <button
+                            class="w-full px-4 py-2 rounded text-white border border-red-500/50 hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(239,68,68,0.8)] disabled:opacity-50 transition-colors"
+                            on:click={handleCancel}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            class="w-full px-4 py-2 rounded text-white bg-red-600/80 border border-red-500/50 hover:bg-red-700 active:shadow-[0_0_7.167px_rgba(239,68,68,0.8)] disabled:opacity-50 transition-colors"
+                            on:click={handleConfirm}
+                            disabled={disabled}
+                        >
+                            Confirm {#if countdown >= 0}({countdown}){/if}
+                        </button>
+                    </div>
+                </div>
+            </div>
+    </div>
 	{:else}
 		<!-- Original Modal (all other types) -->
 		<div class="fixed inset-0 z-50 overflow-y-auto">
