@@ -343,9 +343,18 @@
 				<div
 					class="flex flex-col p-[15px] gap-[8px] self-stretch rounded-[10.267px] border border-[#3C6350] bg-[#101010]"
 				>
-					<GlowingText size="[11]" text="Select Partition to Replace" />
-
-
+					<div class="flex flex-row space-x-2">
+						<PreviewButton
+							title={Preview.BEFORE}
+							selected={selectedPreview === Preview.BEFORE}
+							onclick={() => (selectedPreview = Preview.BEFORE)}
+						/>
+						<PreviewButton
+							title={Preview.AFTER}
+							selected={selectedPreview === Preview.AFTER}
+							onclick={() => (selectedPreview = Preview.AFTER)}
+						/>
+					</div>
 					<div class="space-y-[6px] w-full">
 						{#if selectedPreview === Preview.BEFORE && selectedDisk}
 							{#key selectedDisk}

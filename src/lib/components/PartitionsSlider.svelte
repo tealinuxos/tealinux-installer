@@ -51,7 +51,7 @@
 	$effect(() => {
 		if (selectedPartition) {
 			if (Number(selectedPartition.size.slice(0, -1)) < 41943040) {
-				message = 'The selected partition does meet minimum size requirement of 20GB';
+				message = 'The selected partition does not meet minimum size requirement of 20GB';
 				disableNext = true;
 			} else {
 				message = 'TealinuxOS can be installed on this partition';
@@ -82,10 +82,10 @@
 
 		<div class="mb-2 mt-1 flex justify-between items-center">
 			<GlowingText
-				size="lg"
+				size="md"
 				text={`${partition.partitionPath || 'Unallocated'} ${partition.name ? ` - ${partition.name}` : ''}`}
 			/>
-			<p class="text-xs font-[200]">
+			<p class="text-xs font-[200] uppercase font-bold">
 				{partitionTable ? partitionTable : 'Unknown Partition Table'}
 			</p>
 		</div>
@@ -109,7 +109,7 @@
 					</div>
 				</div>
 				<!-- information -->
-				<div class="flex flex-wrap gap-y-2 max-h-[50px] overflow-y-auto mb-4 w-fit">
+				<div class="flex flex-wrap gap-y-2 max-h-[50px] overflow-y-auto mb-0 w-fit">
 					{#each partitions as partition, i}
 						{@const color = colors[i]}
 						{@const prettySize = prettyBytes(parseInt(partition.size) * 512)}
@@ -127,7 +127,7 @@
 									? 'border-radius: 9.489px; border: 1.423px solid #26A768; background: #032A17; color: white'
 									: 'border-radius: 9.489px; border: 1.423px solid #3C6350; background: #101010; color: white'
 							}"
-							on:click={() => changeSelectedPartition(i)}
+							on:click={() => { if (!disabled) changeSelectedPartition(i) }}
 						>
 							<div
 								style="background-color: {color}"
@@ -141,7 +141,10 @@
 					{/each}
 				</div>
 				{#key message}
-					<div class="flex items-center justify-between w-full gap-4">
+					<div
+                        class="flex items-center justify-between w-full font-semibold gap-4 pb-2
+                            {disableNext ? 'text-red-500' : 'text-green-tealinux'}"
+                    >
 						<p class="text-sm">{message}</p>
 					</div>
 				{/key}
