@@ -23,7 +23,7 @@
 		try {
             // await new Promise(resolve => setTimeout(resolve, 3000)) // Testing purpose
 
-			await invoke('start_install'); // Danger!!! Comment this line when developing
+			//await invoke('start_install'); // Danger!!! Comment this line when developing
 
             if (rebootChecked) {
                 await reboot();
