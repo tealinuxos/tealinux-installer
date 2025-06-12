@@ -50,6 +50,15 @@ body {
 	-webkit-user-select: none;
 	user-select: none;
 }
+
+button:focus,
+input:focus,
+select:focus,
+textarea:focus,
+a:focus,
+[tabindex]:focus {
+	@apply outline-1 outline-offset-2 outline-emerald-400;
+}
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
