@@ -61,7 +61,19 @@ pub async fn start_install(window: Window) {
 
     wait();
 
-    let mut blueprint = step::json::read_blueprint().expect("Failed when reading blueprint file");
+    let mut blueprint = match step::json::read_blueprint()
+    {
+        Ok(bp) => bp,
+        Err(_) => {
+            let _ = window.emit(
+                "ERROR",
+                self::payload::Error {
+                    message: "Failed to read blueprint file".into(),
+                },
+            );
+            return ();
+        }
+    };
 
     if !Path::exists(Path::new("/tealinux-mount")) {
         match std::fs::create_dir("/tealinux-mount/") {
@@ -107,7 +119,19 @@ pub async fn start_install(window: Window) {
 
     // Refreshing the blueprint to get new disk information
     // especially the one after being formatted
-    blueprint = step::json::read_blueprint().expect("Failed when reading blueprint file");
+    blueprint = match step::json::read_blueprint()
+    {
+        Ok(bp) => bp,
+        Err(_) => {
+            let _ = window.emit(
+                "ERROR",
+                self::payload::Error {
+                    message: "Failed to read blueprint file".into(),
+                },
+            );
+            return ();
+        }
+    };
 
     // RSYNC system
 
@@ -216,7 +240,19 @@ pub async fn start_install(window: Window) {
     // return;
 
     if blueprint.storage.clone().unwrap().install_method != MethodKind::MANUAL {
-        Os::append_swap_fstab(&blueprint.storage.clone().unwrap().into());
+        match Os::append_swap_fstab(&blueprint.storage.clone().unwrap().into())
+        {
+            Ok(_) => (),
+            Err(_) => {
+                let _ = window.emit(
+                    "ERROR",
+                    self::payload::Error {
+                        message: "Error generating fstab".into(),
+                    },
+                );
+                return ();
+            }
+        }
     }
 
     // Chroot
@@ -387,7 +423,19 @@ pub async fn start_install(window: Window) {
 
     let desktop_environment = read.desktop_environment.name;
 
-    environment_specific_config(desktop_environment, &account);
+    match environment_specific_config(desktop_environment, &account)
+    {
+        Ok(_) => (),
+        Err(_) => {
+            let _ = window.emit(
+                "ERROR",
+                self::payload::Error {
+                    message: "Failed applying specific desktop environment configuration.".into(),
+                },
+            );
+            return ();
+        }
+    }
 
     // Finishing up
 
@@ -399,7 +447,19 @@ pub async fn start_install(window: Window) {
         },
     );
 
-    let _ = post_install(&account);
+    match post_install(&account)
+    {
+        Ok(_) => (),
+        Err(_) => {
+            let _ = window.emit(
+                "ERROR",
+                self::payload::Error {
+                    message: "Failed to during post install step".into(),
+                },
+            );
+            return ();
+        }
+    }
 
     // Umount previously mounted partition
 
@@ -436,9 +496,7 @@ fn environment_specific_config(desktop_environment: String, account: &Account) -
                 account.set_sddm_automatic_login()?;
             }
         }
-        _ => {
-                
-        }
+        _ => ()
     }
 
     Ok(())
@@ -462,9 +520,6 @@ fn post_install(account: &Account) -> Result<(), Error> {
         "tealinux-installer-git"
     )
     .run()?;
-
-    // Remove installer autostart entry
-    std::fs::remove_file("/tealinux-mount/etc/xdg/autostart/tealinux-installer.desktop")?;
 
     Ok(())
 }
