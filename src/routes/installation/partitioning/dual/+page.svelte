@@ -31,7 +31,7 @@
 	let selectedDisk = $state(null);
 	let selectedDiskAfter = $state(null);
 	let selectedFilesystem = $state('ext4');
-	let selectedPreview = $state(Preview.AFTER);
+	let selectedPreview = $state(Preview.BEFORE);
 	let selectedPartition = $state(null);
 	let partitionTable = $state(null);
 	let swapSize = $state(2048);
@@ -110,7 +110,15 @@
 
 		let size = useSwap ? swapSize : 0;
 
-		diskAfter = getDiskAfter(disk, selectedFilesystem, partitionTable, size);
+        let selectedPartitionPath = disableNext || isRefreshing ? null : selectedPartition?.partitionPath ?? null;
+
+        if (selectedPartitionPath) {
+            selectedPreview = Preview.AFTER;
+        } else {
+            selectedPreview = Preview.BEFORE;
+        }
+
+		diskAfter = getDiskAfter(disk, selectedFilesystem, partitionTable, size, "dual", selectedPartitionPath, "dual");
 	}
 
 	const selectDisk = (disk) => {
@@ -142,8 +150,6 @@
 
 			let diskPath = blueprint.storage.diskPath;
 			let installMethod = blueprint.storage.installMethod;
-
-			console.log(selectedPartition);
 
 			let start_nosuffix = Number(selectedPartition.start.slice(0, -1));
 			let end_nosuffix = Number(selectedPartition.end.slice(0, -1));
@@ -379,5 +385,5 @@
 	currentTitle="Dual Boot"
 	prevPath="/installation/partitioning"
 	nextAction={handlePartitioning}
-	{disableNext}
+	disableNext={disableNext || isLoading}
 />
