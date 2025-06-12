@@ -8,8 +8,10 @@ mod storage;
 mod system;
 mod utils;
 
+use crate::installer::step::partitioning::test_partitioning;
 use api::account::*;
 use api::auto_partition::*;
+use api::firmware::*;
 use api::firmware::*;
 use api::keyboard::*;
 use api::locale::*;
@@ -18,36 +20,40 @@ use api::storage::*;
 use api::timezone::*;
 use api::*;
 use installer::{is_online, print_json, start_install};
-use api::firmware::*;
 use storage::umount_all_target;
 use system::reboot::reboot;
 use system::spawn::*;
 use tauri::RunEvent;
+use tauri::Url;
+use tauri::WebviewUrl;
 use users::get_current_uid;
-use crate::installer::step::partitioning::test_partitioning;
 
 fn main() {
-    match get_current_uid()
-    {
+    match get_current_uid() {
         0 => {
             build_tauri();
         }
         _ => {
-            karen::pkexec_with_env(&["WAYLAND_DISPLAY", "XDG_RUNTIME_DIR", "XDG_SESSION_TYPE", "XDG_CURRENT_DESKTOP"]).unwrap();
+            karen::pkexec_with_env(&[
+                "WAYLAND_DISPLAY",
+                "XDG_RUNTIME_DIR",
+                "XDG_SESSION_TYPE",
+                "XDG_CURRENT_DESKTOP",
+            ])
+            .unwrap();
 
             duct::cmd!("xhost", "si:localuser:root")
                 .run()
                 .expect("Failed to run xhost, does it exist?");
-
 
             build_tauri();
         }
     }
 }
 
-fn build_tauri()
-{
+fn build_tauri() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
             get_read_json,
@@ -78,15 +84,28 @@ fn build_tauri()
             get_other_os_json,
             set_cosmic_keymap,
             read_refresh_disk,
-            test_partitioning // remove this on production
+            test_partitioning, // remove this on production
+            open_website
         ])
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
         .run(|_app_handle, _event| {
-            if let RunEvent::Exit = _event
-            {
+            if let RunEvent::Exit = _event {
                 let _ = duct::cmd!("xhost", "-si:localuser:root").run();
                 let _ = umount_all_target("/tealinux-mount");
             }
         });
+}
+
+use tauri::{AppHandle, Manager };
+use tauri::webview::WebviewWindowBuilder;
+
+#[tauri::command]
+fn open_website(app: AppHandle) {
+    let url = WebviewUrl::External("https://tealinuxos.org".parse().unwrap());
+
+    WebviewWindowBuilder::new(&app, "webview", url)
+        .title("TeaLinuxOS")
+        .build()
+        .unwrap();
 }

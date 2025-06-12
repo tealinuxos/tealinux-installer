@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import Tealinux from '$lib/assets/Vector.png';
 	import Loading from '$lib/components/Loading.svelte';
+    import { openUrl } from "@tauri-apps/plugin-opener";
 
 	let isLoading = true;
 	let loadingText = 'Initializing TeaLinux...';
@@ -43,20 +44,20 @@
 
 	const initializeSystem = async () => {
 		try {
-			// loadingText = 'Checking connection...';
-			// await isOnline();
-			// await new Promise((resolve) => setTimeout(resolve, 500)); // Small delay for UX
-			//
-			// loadingText = 'Preparing installation...';
-			// await setBlueprintJSON();
-			// await new Promise((resolve) => setTimeout(resolve, 500));
-			//
-			// loadingText = 'Loading configuration...';
-			// await setReadJSON();
-			// await new Promise((resolve) => setTimeout(resolve, 500));
-			//
-			// loadingText = 'Almost ready...';
-			// await new Promise((resolve) => setTimeout(resolve, 800));
+			loadingText = 'Checking connection...';
+			await isOnline();
+			await new Promise((resolve) => setTimeout(resolve, 500)); // Small delay for UX
+
+			loadingText = 'Preparing installation...';
+			await setBlueprintJSON();
+			await new Promise((resolve) => setTimeout(resolve, 500));
+
+			loadingText = 'Loading configuration...';
+			await setReadJSON();
+			await new Promise((resolve) => setTimeout(resolve, 500));
+
+			loadingText = 'Almost ready...';
+			await new Promise((resolve) => setTimeout(resolve, 800));
 
 			isInitialized = true;
 			isLoading = false;
@@ -70,6 +71,12 @@
 			}, 2000);
 		}
 	};
+
+    const openWebsite = async () => {
+
+        // await openUrl("https://tealinuxos.org", "firefox");
+        await invoke("open_website");
+    }
 
 	onMount(() => {
 		initializeSystem();
@@ -105,11 +112,11 @@
 				<h1
 					class="font-archivo font-semibold text-6xl -tracking-[1.5%] mb-4 bg-gradient-to-r from-green-tealinux to-red-200 bg-clip-text text-transparent"
 				>
-					Welcome to TeaLinux OS!
+					Welcome to<br />TeaLinuxOS Celia!
 				</h1>
 			</div>
 
-            <div class="flex flex-col space-y-8">
+            <div class="flex flex-col space-y-3">
                 <!-- Start Button -->
                 <div class="p-2 animate-slide-up-delay">
                     <a
@@ -124,16 +131,16 @@
                     </a>
                 </div>
                 <div class="p-0 animate-slide-up-delay">
-                    <a
-                        href="https://tealinuxos.org"
+                    <button
+                        onclick={openWebsite}
                         class="hover:-translate-y-1 
                        transition-all duration-300 rounded-full hover:text-green-tealinux text-gray-500
-                       font-semibold text-lg py-4 px-28 border-0 border-green-600/30
+                       font-semibold text-lg py-4 px-28 
                        transform hover:scale-105 active:scale-95
-                       focus:outline-none focus:ring-4 focus:ring-green-500/50"
+                       focus:outline-none"
                     >
                         How to Install?
-                    </a>
+                    </button>
                 </div>
             </div>
 		</div>
