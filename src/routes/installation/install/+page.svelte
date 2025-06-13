@@ -70,7 +70,6 @@
 	</div>
 
 		<div class="w-full flex flex-col items-center"> 
-			<span class="font-poppinsemibold text-2xl tracking-[-5%] block mb-4">{message}</span>
 			<div class="flex flex-col justify-center items-center mt-5 w-[1050px]">
 				<div class="flex flex-col w-full p-[20px] items-center flex-shrink-0 rounded-[7px] bg-[rgba(0,0,0,0.3)]">
 					<div class="flex items-center w-full">
@@ -83,7 +82,7 @@
 						<span class="font-poppinmedium text-xl text-[#4CDA95] whitespace-nowrap ml-3">{percentage}%</span>
 					</div>
 					<div class="flex justify-between w-full mt-1">
-						<div class="text-left font-jakarta text-[#4CDA95] font-medium flex items-center">
+						<div class="animate-pulse text-left font-jakarta text-[#4CDA95] font-medium flex items-center">
 							<p>{message}</p>	
 						</div>
 						<div class="text-right font-jakarta  font-medium flex items-center mr-[56px]">

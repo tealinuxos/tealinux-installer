@@ -36,7 +36,7 @@
 	let partitionTable = $state(null);
 	let swapSize = $state(2048);
 	let isRefreshing = $state(false);
-	let useSwap = $state(true);
+	let useSwap = $state(false);
 	let disableNext = $state(true);
     let information = $state("Looking for other installed operating system...");
     let otherExist = $state(false);
@@ -79,9 +79,7 @@
 		let response = await invoke('get_other_os_json');
 		let json = JSON.parse(response);
 
-		// let others = json.length ? json.filter((os) => os.path.includes(path)) : null;
-
-        let others = [{name: "Windows", path: "/dev/sdx"}];
+		let others = json.length ? json.filter((os) => os.path.includes(path)) : null;
 
 		return others;
 	};
@@ -332,15 +330,6 @@
 					<div class="flex gap-2">
 						{#key useSwap}
 							<CardTextArea
-								initialDevice="SWAP"
-								caption="Recommended"
-								showCaption={true}
-								showIcon={false}
-								onclick={() => decideSwap(true)}
-								isSelected={useSwap}
-                                disabled={isRefreshing || !otherExist}
-							/>
-							<CardTextArea
 								initialDevice="NO SWAP"
 								caption="No problem"
 								showCaption={true}
@@ -349,15 +338,24 @@
 								isSelected={!useSwap}
                                 disabled={isRefreshing || !otherExist}
 							/>
+							<CardTextArea
+								initialDevice="SWAP"
+								caption="Recommended"
+								showCaption={true}
+								showIcon={false}
+								onclick={() => decideSwap(true)}
+								isSelected={useSwap}
+                                disabled={isRefreshing || !otherExist}
+							/>
 						{/key}
 					</div>
 				</div>
 				
 
+                <GlowingText size="[11]" text="Disk Preview" />
 				<div
 					class="flex flex-col p-[15px] gap-[8px] self-stretch rounded-[10.267px] border border-[#3C6350] bg-[#101010]"
 				>
-					<GlowingText size="[11]" text="Disk Preview" />
 					<div class="flex flex-row space-x-2">
 						<PreviewButton
 							title={Preview.BEFORE}
