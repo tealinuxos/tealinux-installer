@@ -2,18 +2,22 @@ const mibToSector = (mib) => {
     return Number((mib * 1024 * 1024) / 512);
 };
 
-export const getDiskAfter = ( diskBefore, rootFilesystem = "ext4", partitionTable, swapSize = 0, method = "single", selectedPartitionPath = null) => {
+export const getDiskAfter = ( diskBefore, rootFilesystem = "ext4", partitionTable, swapSize = 0, method = "single", selectedPartitionStart = null, selectedPartitionEnd) => {
 
     let size = Number(diskBefore.size.slice(0, -1));
     let diskPath = diskBefore.diskPath;
     let newPartitions = [];
     let partitionNumber = 1;
 
-    if (method === "single" || !selectedPartitionPath) {
+    if (method === "single" || (!selectedPartitionStart && !selectedPartitionEnd)) {
 
         /// EFI PARTITION
 
         if (partitionTable === "gpt") {
+
+            let path = `${diskPath}${partitionNumber}`;
+
+            if (diskPath && diskPath.includes("nvme")) path = `${diskPath}p${partitionNumber}`;
 
             newPartitions.push({
                 number: partitionNumber,
@@ -83,17 +87,16 @@ export const getDiskAfter = ( diskBefore, rootFilesystem = "ext4", partitionTabl
             uuid: null
         });
     } else {
-        let selectedPartitionIndex = diskBefore?.partitions?.findIndex(p => p.partitionPath === selectedPartitionPath) ?? -1;
+        let selectedPartitionIndex = diskBefore?.partitions?.findIndex(p => { return p.start === selectedPartitionStart && p.end === selectedPartitionEnd }) ?? -1;
 
         if (selectedPartitionIndex !== -1) {
-            let selectedPartition = diskBefore.partitions[selectedPartitionIndex]
-            newPartitions = {
-                ...selectedPartition,
-                filesystem: rootFilesystem,
-                flags: partitionTable === "mbr" ? [ "boot" ] : null,
-                mountpoint: [ "/" ],
-                name: "TealinuxOS"
-            }
+            let partitions = diskBefore.partitions;
+            let mapped = partitions.map(p => ({ ...p, mountpoint: null }));
+            partitions = mapped;
+            partitions[selectedPartitionIndex].name = "TeaLinuxOS";
+            partitions[selectedPartitionIndex].mountpoint = "/";
+            partitions[selectedPartitionIndex].flags = partitionTable === "mbr" ? [ "boot" ] : null,
+            newPartitions = partitions;
         }
     }
 

@@ -112,7 +112,7 @@
 				<div class="flex flex-wrap gap-y-2 max-h-[50px] overflow-y-auto mb-0 w-fit">
 					{#each partitions as partition, i}
 						{@const color = colors[i]}
-						{@const prettySize = prettyBytes(parseInt(partition.size) * 512)}
+						{@const prettySize = prettyBytes(parseInt(partition.size) * 512, { binary: true })}
 						{@const path = partition.partitionPath == null ? 'Unallocated' : partition.partitionPath.slice(5)}
 						{@const filesystem = partition.filesystem == null 
 							? path == 'Unallocated' 

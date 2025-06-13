@@ -40,6 +40,8 @@
 	let disableNext = $state(true);
     let information = $state("Looking for other installed operating system...");
     let otherExist = $state(false);
+    let selectedPartitionStart = null;
+    let selectedPartitionEnd = null;
 
 	const getBlueprintJSON = async () => {
 		let blueprint = await getBlueprint();
@@ -77,7 +79,9 @@
 		let response = await invoke('get_other_os_json');
 		let json = JSON.parse(response);
 
-		let others = json.length ? json.filter((os) => os.path.includes(path)) : null;
+		// let others = json.length ? json.filter((os) => os.path.includes(path)) : null;
+
+        let others = [{name: "Windows", path: "/dev/sdx"}];
 
 		return others;
 	};
@@ -110,15 +114,16 @@
 
 		let size = useSwap ? swapSize : 0;
 
-        let selectedPartitionPath = disableNext || isRefreshing ? null : selectedPartition?.partitionPath ?? null;
+        selectedPartitionStart = selectedPartition?.start ?? null;
+        selectedPartitionEnd = selectedPartition?.end ?? null;
 
-        if (selectedPartitionPath) {
+		diskAfter = getDiskAfter(disk, selectedFilesystem, partitionTable, size, "dual", selectedPartitionStart, selectedPartitionEnd);
+
+        if (selectedPartitionStart && selectedPartitionEnd && !disableNext) {
             selectedPreview = Preview.AFTER;
         } else {
             selectedPreview = Preview.BEFORE;
         }
-
-		diskAfter = getDiskAfter(disk, selectedFilesystem, partitionTable, size, "dual", selectedPartitionPath, "dual");
 	}
 
 	const selectDisk = (disk) => {
@@ -189,9 +194,12 @@
 	};
 
 	$effect(() => {
+        // disableNext;
+        // isRefreshing;
+        selectedPartition;
+        selectedPreview = Preview.BEFORE;
 		if (selectedDisk) {
 			updateDiskPreview(selectedDisk);
-			selectedPreview = Preview.AFTER;
 		}
 	});
 
@@ -349,6 +357,7 @@
 				<div
 					class="flex flex-col p-[15px] gap-[8px] self-stretch rounded-[10.267px] border border-[#3C6350] bg-[#101010]"
 				>
+					<GlowingText size="[11]" text="Disk Preview" />
 					<div class="flex flex-row space-x-2">
 						<PreviewButton
 							title={Preview.BEFORE}
@@ -366,9 +375,9 @@
 							{#key selectedDisk}
 								<DiskPreview disk={selectedDisk} />
 							{/key}
-						{:else if selectedPreview === Preview.AFTER && diskAfter}
+						{:else if selectedPreview === Preview.AFTER && diskAfter && !disableNext}
 							{#key diskAfter}
-								<DiskPreview disk={diskAfter} />
+								<DiskPreview disk={diskAfter} showLabel={true} />
 							{/key}
 						{:else}
 							<div class="text-center py-4 text-gray-400">No disk data available</div>
@@ -385,5 +394,5 @@
 	currentTitle="Dual Boot"
 	prevPath="/installation/partitioning"
 	nextAction={handlePartitioning}
-	disableNext={disableNext || isLoading}
+	disableNext={disableNext || isRefreshing}
 />
