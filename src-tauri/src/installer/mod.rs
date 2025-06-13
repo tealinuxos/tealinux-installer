@@ -239,21 +239,21 @@ pub async fn start_install(window: Window) {
 
     // return;
 
-    if blueprint.storage.clone().unwrap().install_method != MethodKind::MANUAL {
-        match Os::append_swap_fstab(&blueprint.storage.clone().unwrap().into())
-        {
-            Ok(_) => (),
-            Err(_) => {
-                let _ = window.emit(
-                    "ERROR",
-                    self::payload::Error {
-                        message: "Error generating fstab".into(),
-                    },
-                );
-                return ();
-            }
-        }
-    }
+    // if blueprint.storage.clone().unwrap().install_method != MethodKind::MANUAL {
+    //     match Os::append_swap_fstab(&blueprint.storage.clone().unwrap().into())
+    //     {
+    //         Ok(_) => (),
+    //         Err(_) => {
+    //             let _ = window.emit(
+    //                 "ERROR",
+    //                 self::payload::Error {
+    //                     message: "Error appending swap to fstab".into(),
+    //                 },
+    //             );
+    //             return ();
+    //         }
+    //     }
+    // }
 
     // Chroot
 

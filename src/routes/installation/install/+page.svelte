@@ -109,7 +109,7 @@
 	<div class="flex-1 flex text-left min-w-[812px] w-[812px] justify-between items-center">
 		<img src="/tealinux.svg" alt="logo" class="w-[222px] h-[233px]" />
 		<div class="max-w-[541px]">
-			<p class="font-[500] text-5xl leading-[1.4] h-[146px] text-green-tealinux">
+			<p class="font-[500] text-5xl leading-[1.4] h-[146px] text-green-tealinux font-bold">
                 Thank you for choosing TeaLinuxOS!
 			</p>
 			<p class="font-jakarta text-xl w-[482px] mt-2">
