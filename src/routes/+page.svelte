@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 	import Tealinux from '$lib/assets/Vector.png';
 	import Loading from '$lib/components/Loading.svelte';
-    import { openUrl } from "@tauri-apps/plugin-opener";
+    // import { openUrl } from "@tauri-apps/plugin-opener";
 
 	let isLoading = true;
 	let loadingText = 'Initializing TeaLinux...';
