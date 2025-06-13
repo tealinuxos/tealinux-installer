@@ -23,7 +23,7 @@
 		try {
             // await new Promise(resolve => setTimeout(resolve, 3000)) // Testing purpose
 
-			//await invoke('start_install'); // Danger!!! Comment this line when developing
+			await invoke('start_install'); // Danger!!! Comment this line when developing
 
             if (rebootChecked) {
                 await reboot();
@@ -110,13 +110,11 @@
 	<div class="flex-1 flex text-left min-w-[812px] w-[812px] justify-between items-center">
 		<img src="/tealinux.svg" alt="logo" class="w-[222px] h-[233px]" />
 		<div class="max-w-[541px]">
-			<p class="font-[500] text-5xl leading-[1.4] h-[146px]">
-				TeaLinuxOS is installed and ready to use
+			<p class="font-[500] text-5xl leading-[1.4] h-[146px] text-green-tealinux">
+                Thank you for choosing TeaLinuxOS!
 			</p>
 			<p class="font-jakarta text-xl w-[482px] mt-2">
-				Tea Linux OS, built on Arch Linux, offers cutting-edge tools and features for creators,
-				coders, and administrators. Empower your productivity with the latest innovations in this
-				release.
+                TeaLinuxOS is installed and ready to use.
 			</p>
 			
 			<div class="flex gap-4 mt-6">
