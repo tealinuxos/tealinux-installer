@@ -1,6 +1,6 @@
 {
   "name": "tealinux-installer",
-  "version": "0.0.1",
+  "version": "2.0.0",
   "devDependencies": {
     "@playwright/test": "^1.28.1",
     "@smui/textfield": "^8.0.0-beta.3",
