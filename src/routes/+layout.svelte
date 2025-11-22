@@ -1,13 +1,12 @@
-<script>
-    import "../app.css";
-    /**
-     * @typedef {Object} Props
-     * @property {import('svelte').Snippet} [children]
-     */
+<script lang="ts">
+	import type { Snippet } from 'svelte';
+	import '../app.css';
 
-    /** @type {Props} */
-    let { children } = $props();
+	interface Props {
+		children: Snippet;
+	}
+
+	let { children }: Props = $props();
 </script>
 
 {@render children?.()}
-
