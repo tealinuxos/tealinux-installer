@@ -1,5 +1,5 @@
 {
-	"$schema": "../node_modules/@tauri-apps/cli/schema.json",
+	"$schema": "https://schema.tauri.app/config/2",
 	"build": {
 		"beforeBuildCommand": "bun run build",
 		"beforeDevCommand": "bun run dev",
@@ -59,7 +59,7 @@
 				"maxHeight": 720,
 				"useHttpsScheme": true,
 				"center": true,
-                "decorations": false
+				"decorations": false
 			}
 		],
 		"security": {
