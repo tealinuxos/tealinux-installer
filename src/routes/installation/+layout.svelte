@@ -1,8 +1,9 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import { cubicOut } from 'svelte/easing'; 
+	import { cubicOut } from 'svelte/easing';
 	import { page } from '$app/stores';
+	import Modal from '$lib/components/modals/Modal.svelte';
 
 	interface Props {
 		children: Snippet;
@@ -20,6 +21,7 @@
 				in:fade={{ duration: 300, easing: cubicOut }}
 				class="col-start-1 row-start-1 flex flex-col justify-between w-full h-full bg-tealinux"
 			>
+				<Modal />
 				{@render children?.()}
 			</div>
 		{/key}
