@@ -1,121 +1,108 @@
-<script>
-	import { onMount } from 'svelte';
+<script lang="ts">
 	import { invoke } from '@tauri-apps/api/core';
-	import { getBlueprint, refreshDisk } from '../global.js';
-	import { goto } from '$app/navigation';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
-	import { afterNavigate } from '$app/navigation';
 	import { partitionMethod } from '$lib/stores/informationStore.js';
 
-	let prevRoute = '';
+	interface AccountInfo {
+		fullname: string;
+		username: string;
+		hostname: string;
+		password: string;
+		confirmPassword: string;
+		autologin: boolean;
+	}
 
-	let fullname, username, hostname, password, confirmPassword, autologin;
-	let isAdministrator = false;
-	let passwordsMatch = false;
-	let passwordVisible = false;
-	let passwordConfirmVisible = false;
-	let showPasswordIndicator = false;
+	interface PasswordControl {
+		passwordVisible: boolean;
+		passwordConfirmVisible: boolean;
+	}
+
+	type StrengthLevel = 0 | 1 | 2 | 3 | 4;
+
+	let accountInfo = $state<AccountInfo>({
+		fullname: '',
+		username: '',
+		hostname: '',
+		password: '',
+		confirmPassword: '',
+		autologin: false
+	});
+
+	let passwordControl = $state<PasswordControl>({
+		passwordVisible: false,
+		passwordConfirmVisible: false
+	});
 
 	const partitioningMethod = $partitionMethod;
 
+	let passwordMatch = $derived.by(() => {
+		if (accountInfo.password !== accountInfo.confirmPassword) {
+			return false;
+		}
+		return true;
+	});
+
+	let passwordStrength: StrengthLevel = $derived.by(() => {
+		let strength = 0;
+
+		if (accountInfo.password.length > 8) strength += 1;
+		if (accountInfo.password.length > 12) strength += 1;
+		if (/[A-Z]/.test(accountInfo.password)) strength += 1;
+		if (/[a-z]/.test(accountInfo.password)) strength += 1;
+		if (/[0-9]/.test(accountInfo.password)) strength += 1;
+		if (/[^A-Za-z0-9]/.test(accountInfo.password)) strength += 1;
+
+		return Math.min(strength, 4) as StrengthLevel;
+	});
+
+	let passwordStrengthWidth: Record<StrengthLevel, number> = $derived.by(() => {
+		return {
+			0: 0,
+			1: 25,
+			2: 50,
+			3: 75,
+			4: 100
+		};
+	});
+
+	const passwordColor: Record<StrengthLevel, string> = {
+		0: '',
+		1: 'bg-[#FF453A]',
+		2: 'bg-[#FF9F0B]',
+		3: 'bg-[#FFD60A]',
+		4: 'bg-[#30D158]'
+	};
+
+	const passwordStrengthText: Record<StrengthLevel, string> = {
+		0: '',
+		1: 'Weak',
+		2: 'Medium',
+		3: 'Strong',
+		4: 'Very Strong'
+	};
+
 	function togglePasswordVisibility() {
-		passwordVisible = !passwordVisible;
+		passwordControl.passwordVisible = !passwordControl.passwordVisible;
 	}
 
 	function togglePasswordConfirmVisibility() {
-		passwordConfirmVisible = !passwordConfirmVisible;
+		passwordControl.passwordConfirmVisible = !passwordControl.passwordConfirmVisible;
 	}
 
 	const handleSetAccount = async () => {
-		if (password !== confirmPassword) {
-			passwordsMatch = false;
+		if (passwordMatch === false) {
 			return;
 		}
-		passwordsMatch = true;
 
-		await invoke('blueprint_set_account', { fullname, username, hostname, password, autologin });
-	};
-
-	$: if (password && confirmPassword && password === confirmPassword) {
-		passwordsMatch = true;
-	} else {
-		passwordsMatch = false;
-	}
-
-	function checkPasswordStrength(password) {
-		if (!password) return 0;
-
-		let strength = 0;
-
-		// Length check
-		if (password.length > 8) strength += 1;
-		if (password.length > 12) strength += 1;
-
-		// Character variety checks
-		if (/[A-Z]/.test(password)) strength += 1;
-		if (/[a-z]/.test(password)) strength += 1;
-		if (/[0-9]/.test(password)) strength += 1;
-		if (/[^A-Za-z0-9]/.test(password)) strength += 1;
-
-		return Math.min(strength, 4);
-	}
-
-	function getStrengthWidth(password) {
-		const strength = checkPasswordStrength(password);
-		return Math.min(strength, 3) * 33.33;
-	}
-
-	function getStrengthColor(password) {
-		const strength = checkPasswordStrength(password);
-		switch (strength) {
-			case 0:
-				return 'bg-transparent';
-			case 1:
-				return 'bg-[#FF453A]'; // weak
-			case 2:
-				return 'bg-[#FF9F0B]'; // medium
-			case 3:
-				return 'bg-[#26A768]'; // strong
-			default:
-				return 'bg-transparent';
-		}
-	}
-
-	$: showPasswordIndicator = password && password.length > 0;
-
-	function getStrengthText(password) {
-		const strength = checkPasswordStrength(password);
-		switch (strength) {
-			case 0:
-				return '';
-			case 1:
-				return 'Weak';
-			case 2:
-				return 'Medium';
-			case 3:
-			case 4:
-				return 'Strong';
-			default:
-				return '';
-		}
-	}
-
-	afterNavigate(({ from }) => {
-		prevRoute = from?.url.pathname;
-	});
-
-	onMount(() => {
-		getBlueprint().then((blueprint) => {
-			if (blueprint.account !== null) {
-				fullname = blueprint.account.fullname;
-				username = blueprint.account.username;
-				hostname = blueprint.account.hostname;
-				password = blueprint.account.password;
-				confirmPassword = blueprint.account.password;
-			}
+		await invoke('blueprint_set_account', {
+			fullname: accountInfo.fullname,
+			username: accountInfo.username,
+			hostname: accountInfo.hostname,
+			password: accountInfo.password,
+			autologin: accountInfo.autologin
 		});
-	});
+	};
 </script>
 
 <TwoSide>
@@ -137,7 +124,7 @@
 			<form class="flex flex-col h-[85dvh] space-y-4">
 				<!-- Full Name -->
 				<div class="w-[400px] mx-auto">
-					<label class="block text-sm font-medium text-[#26A768] mb-2">Full Name</label>
+					<label for="fullName" class="block text-sm font-medium text-[#26A768] mb-2">Full Name</label>
 					<div class="flex items-center gap-3">
 						<svg
 							width="36"
@@ -157,7 +144,7 @@
 							<input
 								class="w-full h-full outline-none text-sm text-white text-opacity-70 focus:placeholder-white/40 px-3 bg-transparent"
 								type="text"
-								bind:value={fullname}
+								bind:value={accountInfo.fullname}
 								placeholder="Enter your full name"
 							/>
 						</div>
@@ -166,7 +153,7 @@
 
 				<!-- Computer Name -->
 				<div class="w-[400px] mx-auto">
-					<label class="block text-sm font-medium text-[#26A768] mb-2">Computer Name</label>
+					<label for="computerName" class="block text-sm font-medium text-[#26A768] mb-2">Computer Name</label>
 					<div class="flex items-center gap-3">
 						<svg
 							width="36"
@@ -186,7 +173,7 @@
 							<input
 								class="w-full h-full outline-none text-sm text-white text-opacity-70 focus:placeholder-white/40 px-3 bg-transparent"
 								type="text"
-								bind:value={hostname}
+								bind:value={accountInfo.hostname}
 								placeholder="Enter your computer name"
 							/>
 						</div>
@@ -195,7 +182,7 @@
 
 				<!-- Username -->
 				<div class="w-[400px] mx-auto">
-					<label class="block text-sm font-medium text-[#26A768] mb-2">User Name</label>
+					<label for="userName" class="block text-sm font-medium text-[#26A768] mb-2">User Name</label>
 					<div class="flex items-center gap-3">
 						<svg
 							width="36"
@@ -204,7 +191,6 @@
 							fill="none"
 							xmlns="http://www.w3.org/2000/svg"
 							class="shrink-0"
-							`
 						>
 							<circle cx="24" cy="24" r="24" fill="#1A1F1E" />
 							<rect x="14" y="14" width="20" height="16" rx="2" stroke="#4CDA95" stroke-width="2" />
@@ -216,7 +202,7 @@
 							<input
 								class="w-full h-full outline-none text-sm text-white text-opacity-70 focus:placeholder-white/40 px-3 bg-transparent"
 								type="text"
-								bind:value={username}
+								bind:value={accountInfo.username}
 								placeholder="Enter your user name"
 							/>
 						</div>
@@ -225,7 +211,7 @@
 
 				<!-- Password -->
 				<div class="w-[400px] mx-auto">
-					<label class="block text-sm font-medium text-[#26A768] mb-2">Password</label>
+					<label for="password" class="block text-sm font-medium text-[#26A768] mb-2">Password</label>
 					<div class="flex items-center gap-3">
 						<svg
 							width="36"
@@ -242,25 +228,17 @@
 						<div
 							class="relative flex-1 h-[45px] rounded-[9.489px] overflow-hidden border border-[#4CDA95] bg-[rgba(30,47,39,0.31)]"
 						>
-							{#if passwordVisible}
-								<input
-									class="w-full h-full outline-none text-sm text-white text-opacity-70 placeholder-[#3C6350] focus:placeholder-white/40 px-3 bg-transparent"
-									type="text"
-									bind:value={password}
-									placeholder="Enter your password"
-								/>
-							{:else}
-								<input
-									class="w-full h-full outline-none text-sm text-white text-opacity-70 focus:placeholder-white/40 px-3 bg-transparent"
-									type="password"
-									bind:value={password}
-									placeholder="Enter your password"
-								/>
-							{/if}
+							<input
+								class="w-full h-full outline-none text-sm text-white text-opacity-70 placeholder-[#3C6350] focus:placeholder-white/40 px-3 bg-transparent"
+								type={passwordControl.passwordVisible ? 'text' : 'password'}
+								bind:value={accountInfo.password}
+								placeholder="Enter your password"
+							/>
+
 							<button
 								type="button"
 								class="absolute right-3 top-1/2 -translate-y-1/2 group"
-								on:click={togglePasswordVisibility}
+								onclick={togglePasswordVisibility}
 							>
 								<svg
 									width="20"
@@ -270,7 +248,7 @@
 									xmlns="http://www.w3.org/2000/svg"
 									class="transition-all duration-300 group-hover:scale-110"
 								>
-									{#if passwordVisible}
+									{#if passwordControl.passwordVisible}
 										<!-- Visible eye icon -->
 										<path
 											d="M12 5C5.636 5 1 12 1 12C1 12 5.636 19 12 19C18.364 19 23 12 23 12C23 12 18.364 5 12 5Z"
@@ -303,23 +281,24 @@
 					</div>
 
 					<!-- Password Strength Indicator -->
-					
-						<div class="flex items-center mt-2 ml-[48px]">
-							<div class="flex-1 h-[4px] bg-gray-700 rounded-full overflow-hidden">
-								<div
-									class="h-full rounded-full transition-all duration-300 {getStrengthColor(
-										password
-									)}"
-									style="width: {getStrengthWidth(password)}%"
-								></div>
-							</div>
-							<span class="ml-3 text-xs text-white font-medium">{getStrengthText(password)}</span>
+
+					<div class="flex items-center mt-2 ml-[48px]">
+						<div class="flex-1 h-[4px] bg-gray-700 rounded-full overflow-hidden">
+							<div
+								class="h-full rounded-full transition-all duration-300 {passwordColor[
+									passwordStrength
+								]}"
+								style="width: {passwordStrengthWidth[passwordStrength]}%"
+							></div>
 						</div>
-					
+						<span class="ml-3 text-xs text-white font-medium"
+							>{passwordStrengthText[passwordStrength]}</span
+						>
+					</div>
 				</div>
 				<!-- Confirm Password -->
 				<div class="w-[400px] mx-auto">
-					<label class="block text-sm font-medium text-[#26A768] mb-2">Confirm Password</label>
+					<label for="confirmPassword" class="block text-sm font-medium text-[#26A768] mb-2">Confirm Password</label>
 					<div class="flex items-center gap-3">
 						<svg
 							width="36"
@@ -336,25 +315,17 @@
 						<div
 							class="relative flex-1 h-[45px] rounded-[9.489px] overflow-hidden border border-[#4CDA95] bg-[rgba(30,47,39,0.31)]"
 						>
-							{#if passwordConfirmVisible}
-								<input
-									class="w-full h-full outline-none text-sm text-white text-opacity-70 focus:placeholder-white/40 px-3 bg-transparent"
-									type="text"
-									bind:value={confirmPassword}
-									placeholder="Confirm your password"
-								/>
-							{:else}
-								<input
-									class="w-full h-full outline-none text-sm text-white text-opacity-70 focus:placeholder-white/40 px-3 bg-transparent"
-									type="password"
-									bind:value={confirmPassword}
-									placeholder="Confirm your password"
-								/>
-							{/if}
+							<input
+								class="w-full h-full outline-none text-sm text-white text-opacity-70 focus:placeholder-white/40 px-3 bg-transparent"
+								type={passwordControl.passwordConfirmVisible ? 'text' : 'password'}
+								bind:value={accountInfo.confirmPassword}
+								placeholder="Confirm your password"
+							/>
+
 							<button
 								type="button"
 								class="absolute right-3 top-1/2 -translate-y-1/2 group"
-								on:click={togglePasswordConfirmVisibility}
+								onclick={togglePasswordConfirmVisibility}
 							>
 								<svg
 									width="20"
@@ -364,7 +335,7 @@
 									xmlns="http://www.w3.org/2000/svg"
 									class="transition-all duration-300 group-hover:scale-110"
 								>
-									{#if passwordConfirmVisible}
+									{#if passwordControl.passwordConfirmVisible}
 										<!-- Visible eye icon -->
 										<path
 											d="M12 5C5.636 5 1 12 1 12C1 12 5.636 19 12 19C18.364 19 23 12 23 12C23 12 18.364 5 12 5Z"
@@ -396,7 +367,7 @@
 						</div>
 					</div>
 					<div class="flex items-center mt-1 ml-[48px]">
-						{#if passwordsMatch === false && password}
+						{#if passwordMatch === false && accountInfo.password}
 							<p class="text-red-500 text-[14px] mt-[5px]">Passwords do not match</p>
 						{/if}
 					</div>
@@ -408,7 +379,7 @@
 								type="checkbox"
 								id="automaticLogin"
 								class="absolute w-full h-full opacity-0 cursor-pointer z-10"
-								bind:checked={autologin}
+								bind:checked={accountInfo.autologin}
 							/>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -448,10 +419,10 @@
 	prevPath={`/installation/partitioning/${partitioningMethod}`}
 	nextPath="/installation/summary"
 	nextAction={handleSetAccount}
-	disableNext={!passwordsMatch ||
-		!fullname ||
-		!username ||
-		!hostname ||
-		!password ||
-		!confirmPassword}
+	disableNext={!passwordMatch ||
+		!accountInfo.fullname ||
+		!accountInfo.username ||
+		!accountInfo.hostname ||
+		!accountInfo.password ||
+		!accountInfo.confirmPassword}
 />
