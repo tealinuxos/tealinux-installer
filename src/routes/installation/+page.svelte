@@ -1,57 +1,15 @@
-<script>
-	import { invoke } from '@tauri-apps/api/core';
-	import { onMount } from 'svelte';
+<script lang="ts">
 	import { getRead } from './global.js';
 	import prettyBytes from 'pretty-bytes';
-	import { randomColor } from 'randomcolor';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
 	import GlowingText from '$lib/components/ui/GlowingText.svelte';
-	import DiskSlider from '../../lib/components/DiskSlider.svelte';
-	import Navigation from '../../lib/components/Navigation.svelte';
-	import { showModal } from '$lib/stores/modalStore';
-
-	const showSuccessModal = () => {
-		showModal({
-			title: 'Success!',
-			content: 'Your action was completed successfully.',
-			type: 'success'
-		});
-	};
-
-	const showConfirmationModal = () => {
-		showModal({
-			title: 'Are you sure?',
-			content: 'This action cannot be undone.',
-			type: 'warning',
-			showCancel: true,
-			onConfirm: () => {
-				console.log('Confirmed!');
-			}
-		});
-	};
-
-	const showErrorModal = () => {
-		showModal({
-			isOpen: false,
-			type: 'error',
-			title: 'Error !',
-			content: 'ini error',
-			confirmText: 'OK',
-			cancelText: 'Cancel',
-			showCancel: true,
-			onConfirm: null
-		});
-	};
+	import Navigation from '$lib/components/Navigation.svelte';
+	import DiskSlider from '$lib/components/DiskSlider.svelte';
 
 	const getStorageJSON = async () => {
 		let json = await getRead();
 
-		json = json?.disk
-                ? json.disk.length
-                    ? json.disk
-                    : null
-                : null
-            ?? null;
+		json = json?.disk?.length ? json.disk : null;
 
 		return json;
 	};
@@ -60,36 +18,15 @@
 		let storage = await getStorageJSON();
 		let total = 0;
 
-        if (storage && storage.length) {
-            for (let i of storage.keys()) {
-                let size = storage[i].size.slice(0, -1);
+		if (storage && storage.length) {
+			for (let i of storage.keys()) {
+				let size = storage[i].size.slice(0, -1);
 
-                total += parseInt(size);
-            }
-        }
+				total += parseInt(size);
+			}
+		}
 
 		return total;
-	};
-
-	const getColors = (disks, partIdx) => {
-        if (disks[partIdx].partitions) {
-
-            let length = disks[partIdx].partitions.length;
-
-            let colors = [];
-
-            for (let i = 0; i < length; i++) {
-                colors.push(
-                    randomColor({
-                        luminosity: 'bright',
-                        hue: 'random'
-                    })
-                );
-            }
-            return colors;
-        }
-
-        return "#454545";
 	};
 
 	const checkUnknown = (s) => {
@@ -99,18 +36,9 @@
 			return s;
 		}
 	};
-
-	// onMount(() => {
-	// 	getStorageJSON().then((disks) => {
-	// 		getColors(disks, 0);
-	// 	});
-	// });
 </script>
 
 {#await getRead() then json}
-	<!-- <pre>
-		{JSON.stringify(json, null, 2)}
-	</pre> -->
 	<TwoSide>
 		{#snippet left()}
 			<div class="w-[288px] space-y-[15px]">
@@ -121,7 +49,7 @@
 					<h1 class="font-archivo font-[600] text-[40px] tracking-[-1.8px]">TeaLinux OS</h1>
 				</div>
 				<p class="font-jakarta text-sm font-[200] tracking-[-0.56px] text-center">
-                    <i>"Nikmatnya sebuah racikan"</i>
+					<i>"Nikmatnya sebuah racikan"</i>
 				</p>
 			</div>
 		{/snippet}
