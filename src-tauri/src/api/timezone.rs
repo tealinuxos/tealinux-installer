@@ -3,12 +3,14 @@ use tea_arch_chroot_lib::chroot::Timezone;
 use crate::installer::BluePrint;
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_timezone_json() -> String
 {
     Timezones::list_json()
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn blueprint_set_timezone(region: String, city: String)
 {
     let timezone = Timezone::new(&region, &city);

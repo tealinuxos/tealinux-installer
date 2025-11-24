@@ -8,25 +8,17 @@ mod storage;
 mod system;
 mod utils;
 
-use crate::installer::step::partitioning::test_partitioning;
-use api::account::*;
-use api::auto_partition::*;
-use api::firmware::*;
-use api::firmware::*;
-use api::keyboard::*;
-use api::locale::*;
-use api::partition::*;
-use api::storage::*;
-use api::timezone::*;
-use api::*;
-use installer::{is_online, print_json, start_install};
 use storage::umount_all_target;
-use system::reboot::reboot;
-use system::spawn::*;
+use tauri::webview::WebviewWindowBuilder;
 use tauri::RunEvent;
 use tauri::Url;
 use tauri::WebviewUrl;
+use tauri::{AppHandle, Manager};
+
+use specta_typescript::BigIntExportBehavior;
+use specta_typescript::Typescript;
 use users::get_current_uid;
+// use tauri_specta::{collect_commands, Builder};
 
 fn main() {
     match get_current_uid() {
@@ -52,41 +44,63 @@ fn main() {
 }
 
 fn build_tauri() {
+    let tauri_specta_builder = tauri_specta::Builder::<tauri::Wry>::new()
+        .commands(tauri_specta::collect_commands![
+            api::get_read_json,
+            api::set_read_json,
+            api::set_empty_blueprint,
+            api::get_filesystem_json,
+            api::get_read_from_opt,
+            api::get_blueprint_from_opt,
+            api::read_blueprint,
+            api::get_other_os_json,
+            api::locale::blueprint_set_locale,
+            api::locale::get_locale_json,
+            api::timezone::blueprint_set_timezone,
+            api::timezone::get_timezone_json,
+            api::account::blueprint_set_account,
+            api::firmware::blueprint_set_bootloader,
+            api::keyboard::blueprint_set_keyboard,
+            api::keyboard::get_keyboard_json,
+            api::keyboard::set_cosmic_keymap,
+            api::partition::get_disk_lists_key_val,
+            api::partition::get_disk_lists_key_val_with_otheros_check,
+            api::auto_partition::autogen_partition_select_disk,
+            api::storage::blueprint_set_storage,
+            api::storage::read_refresh_disk,
+            /*
+             * from ./installer/
+             */
+            installer::start_install,
+            installer::is_online,
+            installer::print_json,
+            installer::step::partitioning::test_partitioning,
+            /*
+             * from ./system/
+             */
+            system::reboot::reboot,
+            system::spawn::spawn_gparted,
+            system::spawn::spawn_terminal,
+            open_website,
+        ])
+        .typ::<installer::BluePrint>();
+    let mut specta_tsconfig: Typescript = Typescript::default();
+    specta_tsconfig.bigint = BigIntExportBehavior::BigInt;
+
+    tauri_specta_builder
+        .export(specta_tsconfig, "../src/bindings.ts")
+        .expect("Failed to export typescript bindings");
+
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_process::init())
-        .invoke_handler(tauri::generate_handler![
-            get_read_json,
-            set_empty_blueprint,
-            blueprint_set_locale,
-            blueprint_set_timezone,
-            blueprint_set_account,
-            blueprint_set_bootloader,
-            blueprint_set_keyboard,
-            blueprint_set_storage,
-            set_read_json,
-            get_locale_json,
-            get_timezone_json,
-            start_install,
-            is_online,
-            get_filesystem_json,
-            print_json,
-            reboot,
-            get_read_from_opt,
-            get_blueprint_from_opt,
-            get_keyboard_json,
-            read_blueprint,
-            spawn_gparted,
-            spawn_terminal,
-            get_disk_lists_key_val,        // defined in partition api
-            autogen_partition_select_disk, // defined in auto_partition
-            get_disk_lists_key_val_with_otheros_check, // defined in partition api
-            get_other_os_json,
-            set_cosmic_keymap,
-            read_refresh_disk,
-            test_partitioning, // remove this on production
-            open_website
-        ])
+        .invoke_handler(tauri_specta_builder.invoke_handler())
+        .setup(move |app| {
+            // This is also required if you want to use events
+            tauri_specta_builder.mount_events(app);
+
+            Ok(())
+        })
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
         .run(|_app_handle, _event| {
@@ -97,10 +111,13 @@ fn build_tauri() {
         });
 }
 
-use tauri::{AppHandle, Manager };
-use tauri::webview::WebviewWindowBuilder;
+// fn build_specta_binding() {
+//     let mut builder = tauri_specta::Builder::<tauri::Wry>::new()
+//         .commands(collect_commands![])
+// }
 
 #[tauri::command]
+#[specta::specta]
 fn open_website(app: AppHandle) {
     let url = WebviewUrl::External("https://tealinuxos.org".parse().unwrap());
 

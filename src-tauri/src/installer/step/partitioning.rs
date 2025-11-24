@@ -24,6 +24,7 @@ fn force_umount() {
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn test_partitioning() {
     let blueprint = get_blueprint_from_opt().await;
     let blueprint: BluePrint = serde_json::from_str(&blueprint).unwrap();

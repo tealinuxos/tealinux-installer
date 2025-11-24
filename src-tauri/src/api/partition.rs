@@ -62,6 +62,7 @@ pub fn blueprint_set_partition(partition: String) -> Result<(), Error>
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn set_auto_config_partition() -> () {
     let mut blueprint: Result<crate::installer::BluePrint, std::io::Error> = super::get_blueprint();
 
@@ -107,6 +108,7 @@ async fn _get_disk_lists() -> Vec<Disklists> {
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_disk_lists_key_val() -> String {
     println!("invoked");
     let ret = self::_get_disk_lists().await;
@@ -127,6 +129,7 @@ struct DiskListsKeyValHasOs {
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_disk_lists_key_val_with_otheros_check() -> String {
     println!("invoked");
 

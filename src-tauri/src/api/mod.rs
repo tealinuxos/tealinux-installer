@@ -19,6 +19,7 @@ pub mod auto_partition;
 pub mod os;
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_read_json() -> String
 {
     let read = get_read();
@@ -29,6 +30,7 @@ pub async fn get_read_json() -> String
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_read_from_opt() -> String
 {
     let path = "/opt/tea-installer/read.json";
@@ -44,6 +46,7 @@ pub async fn get_read_from_opt() -> String
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_blueprint_from_opt() -> String
 {
     let path = "/opt/tea-installer/installer.json";
@@ -68,6 +71,7 @@ pub async fn get_blueprint_from_opt() -> String
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn set_read_json()
 {
     let json = self::get_read_json().await;
@@ -85,6 +89,7 @@ pub async fn set_read_json()
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn set_empty_blueprint()
 {
     let path = Path::new("/opt/tea-installer/");
@@ -138,6 +143,7 @@ pub fn write_read(read: Read) -> Result<(), Error>
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_filesystem_json() -> String
 {
     let filesystem = filesystem_list();
@@ -146,6 +152,7 @@ pub async fn get_filesystem_json() -> String
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn read_blueprint()
 {
     let blueprint = self::get_blueprint().unwrap();
@@ -154,6 +161,7 @@ pub async fn read_blueprint()
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_other_os_json() -> String
 {
     let other_os = get_other_os();

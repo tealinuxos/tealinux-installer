@@ -23,9 +23,9 @@ online = "4.0.2"
 sysinfo = "0.30.12"
 users = "0.11.0"
 battery = "0.7.8"
-tea-partition-api-lib = { git = "https://github.com/tealinuxos/tea-partition-api-lib", branch = "main" }
-tea-arch-chroot-lib = { git = "https://github.com/tealinuxos/tea-arch-chroot-lib" }
-tea_partition_generator = { git = "https://github.com/tealinuxos/tea_partition_generator" }
+tea-partition-api-lib = { path = "../../tea-partition-api-lib" }
+tea-arch-chroot-lib = { path = "../../tea-arch-chroot-lib" }
+tea_partition_generator = { path = "../../tea_partition_generator" }
 uname = "0.1.1"
 procfs = "0.17.0"
 regex = "1.9.6"
@@ -33,6 +33,9 @@ os_info = "3.11.0"
 karen = { git = "https://github.com/gagahsyuja/karen.git" }
 tauri-plugin-process = "2"
 tauri-plugin-opener = "2"
+specta = "=2.0.0-rc.22"
+tauri-specta = { version = "=2.0.0-rc.21", features = ["derive", "typescript"] }
+specta-typescript = "0.0.9"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

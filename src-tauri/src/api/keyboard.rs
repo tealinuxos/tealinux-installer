@@ -3,6 +3,7 @@ use tea_arch_chroot_lib::chroot::keyboard;
 use crate::installer;
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_keyboard_json() -> String
 {
     let keyboard = Keyboard::list();
@@ -11,6 +12,7 @@ pub async fn get_keyboard_json() -> String
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn blueprint_set_keyboard(layout: String, variant: Option<String>)
 {
     let keyboard = installer::Keyboard { layout: Some(layout), variant };
@@ -23,6 +25,7 @@ pub async fn blueprint_set_keyboard(layout: String, variant: Option<String>)
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn set_cosmic_keymap(live: bool, layout: String, variant: Option<String>)
 {
     let keymap = keyboard::Keyboard::new(layout, variant);

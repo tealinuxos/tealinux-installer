@@ -1,6 +1,7 @@
 use tea_arch_chroot_lib::chroot::Account;
 
 #[tauri::command]
+#[specta::specta]
 pub async fn blueprint_set_account(fullname: String, username: String, hostname: String, password: String, autologin: bool)
 {
     let account = Account::new(&fullname, &username, &hostname, &password, autologin);

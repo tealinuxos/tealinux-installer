@@ -1,6 +1,7 @@
 use crate::installer::Bootloader;
 
 #[tauri::command]
+#[specta::specta]
 pub fn blueprint_set_bootloader(bootloader: String)
 {
     let bootloader: Bootloader = serde_json::from_str(&bootloader).unwrap();
