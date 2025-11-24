@@ -66,7 +66,16 @@ TEALINUX_BUILD=dev bunx tauri dev
 TEALINUX_BUILD=prod bunx tauri dev
 ```
 
+## TypeScript Bindings
 
+This project uses [tauri-specta](https://github.com/specta-rs/tauri-specta) to provide type-safe communication between the Rust backend and the Frontend. The bindings are generated into `src/bindings.ts`.
+
+If you modify Rust commands or structs, you must regenerate the bindings manually. We use unit tests to generate them to avoid file permission issues (since the app runs as root).
+
+To regenerate bindings:
+```bash
+cd src-tauri && cargo test
+```
 
 ## Contributing
 To contribute, here's list of [`TODO`](https://github.com/tealinuxos/tealinux-installer/blob/master/TODO.md). Thank you for considering it!
