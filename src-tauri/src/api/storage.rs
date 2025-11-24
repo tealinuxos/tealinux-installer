@@ -4,6 +4,7 @@ use std::io::Error;
 use tea_partition_api_lib::read::get_partition::parted_list_partition;
 
 #[tauri::command]
+#[specta::specta]
 pub async fn blueprint_set_storage(storage: String)
 {
     let storage: Storage = serde_json::from_str(&storage).unwrap();
@@ -21,6 +22,7 @@ pub async fn blueprint_set_storage(storage: String)
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn read_refresh_disk()
 {
     let fresh_disk = parted_list_partition();

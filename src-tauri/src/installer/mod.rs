@@ -39,6 +39,7 @@ fn wait() {
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn start_install(window: Window) {
 
     let read = get_read();
@@ -525,6 +526,7 @@ fn post_install(account: &Account) -> Result<(), Error> {
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn is_online() -> bool {
     let online = Online::new();
 
@@ -532,6 +534,7 @@ pub async fn is_online() -> bool {
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn print_json() {
     let file = File::open("/opt/tea-installer/installer.json").unwrap();
     let reader = BufReader::new(file);

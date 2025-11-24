@@ -6,12 +6,14 @@ use std::path::Path;
 use crate::installer::BluePrint;
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_locale_json() -> String
 {
     Locales::list_json()
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn blueprint_set_locale(locale: String)
 {
     let locale = Locale::new(&locale);

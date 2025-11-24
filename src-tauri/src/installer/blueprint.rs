@@ -1,10 +1,11 @@
 use serde::{Deserialize, Serialize};
+use specta::Type as SpectaType;
 use tea_arch_chroot_lib::chroot::Account;
 use tea_arch_chroot_lib::chroot::Locale;
 use tea_arch_chroot_lib::chroot::Timezone;
 use tea_arch_chroot_lib::resource::{FirmwareKind, MethodKind};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, SpectaType)]
 pub struct BluePrint {
     pub account: Option<Account>,
     pub locale: Option<Locale>,
@@ -14,7 +15,7 @@ pub struct BluePrint {
     pub keyboard: Option<Keyboard>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, SpectaType)]
 #[serde(rename_all = "camelCase")]
 pub struct Partition {
     pub number: u64,
@@ -27,31 +28,31 @@ pub struct Partition {
     pub start: u64,
     pub end: u64,
     pub size: u64,
-    pub flags: Option<Vec<String>>
+    pub flags: Option<Vec<String>>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, SpectaType)]
 #[serde(rename_all = "camelCase")]
 pub struct Bootloader {
     pub firmware_type: FirmwareKind,
     pub path: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, SpectaType)]
 #[serde(rename_all = "camelCase")]
 pub struct Keyboard {
     pub layout: Option<String>,
     pub variant: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, SpectaType)]
 #[serde(rename_all = "camelCase")]
 pub struct OriginalSector {
     pub start: Option<u64>,
     pub end: Option<u64>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, SpectaType)]
 #[serde(rename_all = "camelCase")]
 pub struct Storage {
     pub original_sector: Option<OriginalSector>, // only in dualboot mode only

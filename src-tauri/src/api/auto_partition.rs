@@ -12,6 +12,7 @@ use tea_partition_generator::core::{PartitionGenerator, TeaPartitionGenerator};
 use tea_partition_generator::dual_boot_blockdev::{DualBootBlockdevice, DualbootBlkstuff};
 
 #[tauri::command]
+#[specta::specta]
 pub async fn autogen_partition_select_disk(
     blkname: String,
     mode: String,
@@ -120,6 +121,7 @@ pub async fn autogen_partition_select_disk(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_partition_sector_lists(selected_disks: String) -> Vec<ListsAllSpace> {
     let ctx = TeaPartitionGenerator::new(selected_disks);
     return ctx.find_partition_sector_areav();
