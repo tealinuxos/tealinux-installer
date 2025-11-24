@@ -20,22 +20,9 @@
 - appmenu-gtk-module
 
 To install the required dependencies on a Linux system using `pacman`, run the following command:
+
 ```bash
-sudo pacman -Sy \
-  webkit2gtk-4.1 \
-  base-devel \
-  curl \
-  wget \
-  file \
-  openssl \
-  appmenu-gtk-module \
-  libappindicator-gtk3 \
-  librsvg \ 
-  lshw \ 
-  dmidecode \ 
-  rsync \ 
-  fuse2 \ 
-  gcc-libs \ 
+sudo pacman -Sy webkit2gtk-4.1 base-devel curl wget file openssl appmenu-gtk-module libappindicator-gtk3 librsvg lshw dmidecode rsync fuse2 gcc-libs ccache
 ```
 
 ## Running
