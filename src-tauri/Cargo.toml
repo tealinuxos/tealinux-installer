@@ -33,6 +33,8 @@ os_info = "3.11.0"
 karen = { git = "https://github.com/gagahsyuja/karen.git" }
 tauri-plugin-process = "2"
 tauri-plugin-opener = "2"
+specta = "=2.0.0-rc.22"
+tauri-specta = { version = "=2.0.0-rc.21", features = ["derive", "typescript"] }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
