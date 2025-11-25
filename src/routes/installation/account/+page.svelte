@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { invoke } from '@tauri-apps/api/core';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
 	import { partitionMethod } from '$lib/stores/informationStore.js';
+	import { commands } from '$types/commands';
 
 	interface AccountInfo {
 		fullname: string;
@@ -95,23 +95,23 @@
 			return;
 		}
 
-		await invoke('blueprint_set_account', {
-			fullname: accountInfo.fullname,
-			username: accountInfo.username,
-			hostname: accountInfo.hostname,
-			password: accountInfo.password,
-			autologin: accountInfo.autologin
-		});
+		await commands.blueprintSetAccount(
+			accountInfo.fullname,
+			accountInfo.username,
+			accountInfo.hostname,
+			accountInfo.password,
+			accountInfo.autologin
+		);
 	};
 </script>
 
 <TwoSide>
 	{#snippet left()}
 		<div class="mx-[35px] space-y-[15px]">
-			<h1 class="font-archivo font-[600] text-[28px]">
+			<h1 class="font-archivo font-semibold text-[28px]">
 				Create a <span class="text-green-tealinux">User</span><br />
 			</h1>
-			<p class="font-jakarta text-sm font-[200]">
+			<p class="font-jakarta text-sm font-extralight">
 				Set up a user by defining a username, creating a password, or even enabling automatic login
 				for quicker access, though this may reduce security, especially on shared devices.
 			</p>
@@ -124,7 +124,9 @@
 			<form class="flex flex-col h-[85dvh] space-y-4">
 				<!-- Full Name -->
 				<div class="w-[400px] mx-auto">
-					<label for="fullName" class="block text-sm font-medium text-[#26A768] mb-2">Full Name</label>
+					<label for="fullName" class="block text-sm font-medium text-[#26A768] mb-2"
+						>Full Name</label
+					>
 					<div class="flex items-center gap-3">
 						<svg
 							width="36"
@@ -153,7 +155,9 @@
 
 				<!-- Computer Name -->
 				<div class="w-[400px] mx-auto">
-					<label for="computerName" class="block text-sm font-medium text-[#26A768] mb-2">Computer Name</label>
+					<label for="computerName" class="block text-sm font-medium text-[#26A768] mb-2"
+						>Computer Name</label
+					>
 					<div class="flex items-center gap-3">
 						<svg
 							width="36"
@@ -182,7 +186,9 @@
 
 				<!-- Username -->
 				<div class="w-[400px] mx-auto">
-					<label for="userName" class="block text-sm font-medium text-[#26A768] mb-2">User Name</label>
+					<label for="userName" class="block text-sm font-medium text-[#26A768] mb-2"
+						>User Name</label
+					>
 					<div class="flex items-center gap-3">
 						<svg
 							width="36"
@@ -211,7 +217,9 @@
 
 				<!-- Password -->
 				<div class="w-[400px] mx-auto">
-					<label for="password" class="block text-sm font-medium text-[#26A768] mb-2">Password</label>
+					<label for="password" class="block text-sm font-medium text-[#26A768] mb-2"
+						>Password</label
+					>
 					<div class="flex items-center gap-3">
 						<svg
 							width="36"
@@ -282,8 +290,8 @@
 
 					<!-- Password Strength Indicator -->
 
-					<div class="flex items-center mt-2 ml-[48px]">
-						<div class="flex-1 h-[4px] bg-gray-700 rounded-full overflow-hidden">
+					<div class="flex items-center mt-2 ml-12">
+						<div class="flex-1 h-1 bg-gray-700 rounded-full overflow-hidden">
 							<div
 								class="h-full rounded-full transition-all duration-300 {passwordColor[
 									passwordStrength
@@ -298,7 +306,9 @@
 				</div>
 				<!-- Confirm Password -->
 				<div class="w-[400px] mx-auto">
-					<label for="confirmPassword" class="block text-sm font-medium text-[#26A768] mb-2">Confirm Password</label>
+					<label for="confirmPassword" class="block text-sm font-medium text-[#26A768] mb-2"
+						>Confirm Password</label
+					>
 					<div class="flex items-center gap-3">
 						<svg
 							width="36"
@@ -366,7 +376,7 @@
 							</button>
 						</div>
 					</div>
-					<div class="flex items-center mt-1 ml-[48px]">
+					<div class="flex items-center mt-1 ml-12">
 						{#if passwordMatch === false && accountInfo.password}
 							<p class="text-red-500 text-[14px] mt-[5px]">Passwords do not match</p>
 						{/if}
