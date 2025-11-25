@@ -8,13 +8,13 @@ mod storage;
 mod system;
 mod utils;
 
+use specta_typescript::BigIntExportBehavior;
+use specta_typescript::Typescript;
 use storage::umount_all_target;
 use tauri::webview::WebviewWindowBuilder;
 use tauri::AppHandle;
 use tauri::RunEvent;
 use tauri::WebviewUrl;
-use specta_typescript::BigIntExportBehavior;
-use specta_typescript::Typescript;
 use users::get_current_uid;
 
 fn get_specta_builder() -> tauri_specta::Builder<tauri::Wry> {
@@ -91,7 +91,7 @@ fn build_tauri() {
         let mut specta_tsconfig: Typescript = Typescript::default();
         specta_tsconfig.bigint = BigIntExportBehavior::BigInt;
 
-        let _ = tauri_specta_builder.export(specta_tsconfig, "../src/bindings.ts");
+        let _ = tauri_specta_builder.export(specta_tsconfig, "../src/types/commands.ts");
     }
 
     tauri::Builder::default()
@@ -137,9 +137,9 @@ mod tests {
         specta_tsconfig.bigint = BigIntExportBehavior::BigInt;
 
         get_specta_builder()
-            .export(specta_tsconfig, "../src/bindings.ts")
+            .export(specta_tsconfig, "../src/types/commands.ts")
             .expect("Failed to export typescript bindings");
 
-        println!("Bindings generated successfully at ../src/bindings.ts");
+        println!("Bindings generated successfully at ../src/types/commands.ts");
     }
 }
