@@ -1,50 +1,69 @@
-<script>
+<script lang="ts">
 	import { goto } from '$app/navigation';
-	import Button from './ui/Button.svelte';
+	import { resolve } from '$app/paths';
+	import type { RouteId } from '$app/types';
 	import GlowingText from './ui/GlowingText.svelte';
 	import Link from './ui/Link.svelte';
 
-	export let totalSteps = 7;
-	export let currentStep = 1;
-	export let currentTitle = 'Installation';
-	export let prevPath = '';
-	export let nextPath = '';
-	export let nextAction = null;
-	export let prevAction = null;
-    export let disableNext = false;
+	interface Props {
+		currentStep: number;
+		currentTitle: string;
+		prevPath?: RouteId;
+		nextPath: RouteId;
+		prevAction?: null | (() => Promise<void>);
+		nextAction?: null | (() => Promise<void>);
+		disableNext?: boolean;
+	}
 
-	let isLoadingNext = false;
-	let isLoadingBack = false;
+	interface Loading {
+		prev: boolean;
+		next: boolean;
+	}
 
-	function handleNext() {
-		isLoadingNext = true;
+	const totalSteps: number = 7;
+
+	let {
+		currentStep = 1,
+		currentTitle = 'Installation',
+		prevPath = '/',
+		nextPath = '/',
+		disableNext = false,
+		nextAction = null,
+		prevAction = null
+	}: Props = $props();
+
+	let isLoading = $state<Loading>({
+		next: false,
+		prev: false
+	});
+
+	async function handleNext() {
+		isLoading.next = true;
 
 		if (nextAction) {
-			Promise.resolve(nextAction()).then(() => {
-				isLoadingNext = false;
+			await nextAction();
+			isLoading.next = false;
 
-				if (nextPath) {
-					goto(nextPath);
-				}
-			});
+			if (nextPath) {
+				goto(resolve(nextPath));
+			}
 		} else {
-			goto(nextPath);
+			goto(resolve(nextPath));
 		}
 	}
 
-	function handlePrev() {
-		isLoadingBack = true;
+	async function handlePrev() {
+		isLoading.prev = true;
 
 		if (prevAction) {
-			Promise.resolve(prevAction()).then(() => {
-				isLoadingBack = false;
+			await prevAction();
+			isLoading.prev = false;
 
-				if (prevPath) {
-					goto(prevPath);
-				}
-			});
+			if (nextPath) {
+				goto(resolve(prevPath));
+			}
 		} else {
-			goto(prevPath);
+			goto(resolve(prevPath));
 		}
 	}
 </script>
@@ -53,46 +72,36 @@
 	<div class="flex items-center justify-between w-full bg-black/30 px-4 p-1">
 		<!-- Tombol Kembali -->
 		<div class="flex items-center gap-6">
-			<!-- <Button
-				isDisabled={isLoadingNext || isLoadingBack || currentStep === 1 || !prevPath}
-				onclick={handlePrev}
-				btnText={isLoadingBack ? '....' : 'Back'}
-			/> -->
 			<Link
-				isDisabled={isLoadingNext || isLoadingBack || currentStep === 1 || !prevPath}
-				btnText={isLoadingBack ? '....' : 'Back'}
+				isDisabled={isLoading.next || isLoading.prev || currentStep === 1 || !prevPath}
+				btnText={isLoading.prev ? '....' : 'Previous'}
 				onclick={handlePrev}
+				aria-label="Go to previous step"
 				href={prevPath || '#'}
 			/>
 			<div class="flex items-center gap-1">
-				{#each Array(totalSteps).fill() as _, index}
+				{#each Array(totalSteps), index}
 					<div
-						class="rounded-[8px] transition-all ease-in-out duration-300"
-						style={currentStep === index + 1
-							? 'background: #26A768; width: 25px; height: 4px;'
-							: 'background: #D9D9D9; width: 15px; height: 4px;'}
+						class={`${currentStep === index + 1 ? 'bg-[#26A768] w-[25px]' : 'bg-[#D9D9D9] w-[15px]'} h-1 rounded-lg transition-all ease-in-out duration-300`}
 					></div>
 				{/each}
 			</div>
 		</div>
 
 		<!-- Judul halaman dinamis -->
-		<div class="flex flex-col items-center justify-between space-y-2 my-[10px]">
+		<div class="flex flex-col items-center justify-between space-y-2 my-2.5">
 			<GlowingText text={currentTitle} />
 		</div>
 
 		<!-- Tombol Selanjutnya -->
-		<!-- <Button
-			isDisabled={isLoadingNext || isLoadingBack || currentStep === totalSteps || (!nextPath && !nextAction)}
-			onclick={handleNext}
-			btnText={isLoadingNext ? "...." : "Next"}
-		/> -->
 		<Link
-			isDisabled={disableNext || isLoadingNext ||
-				isLoadingBack ||
+			isDisabled={disableNext ||
+				isLoading.next ||
+				isLoading.prev ||
 				currentStep === totalSteps ||
 				(!nextPath && !nextAction)}
-			btnText={isLoadingNext ? '....' : 'Next'}
+			btnText={isLoading.prev ? '....' : 'Next'}
+			aria-label="Go to next step"
 			onclick={handleNext}
 			href={nextPath || '#'}
 		/>
