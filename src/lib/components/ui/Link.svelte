@@ -13,7 +13,7 @@
 	let { isDisabled = false, btnText = 'Button', href = '#', ...rest }: Props = $props();
 
 	const baseClasses =
-		'grid w-[102px] max-w-[102px] place-items-center py-[6px] px-[27px] text-md bg-[#101010] rounded-sm border-[0.3px] border-[#3C6350] transition-all duration-300';
+		'flex items-center justify-center w-[102px] max-w-[102px] py-[6px] px-[27px] text-md bg-[#101010] rounded-sm border-[0.3px] border-[#3C6350] transition-all duration-300';
 
 	const stateClasses = $derived(
 		isDisabled
