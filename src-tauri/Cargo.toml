@@ -36,6 +36,9 @@ tauri-plugin-opener = "2"
 specta = "=2.0.0-rc.22"
 tauri-specta = { version = "=2.0.0-rc.21", features = ["derive", "typescript"] }
 specta-typescript = "0.0.9"
+fern = "0.7.1"
+humantime = "2.3.0"
+log = "0.4.27"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

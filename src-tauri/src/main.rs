@@ -10,6 +10,8 @@ mod utils;
 
 use specta_typescript::BigIntExportBehavior;
 use specta_typescript::Typescript;
+use std::process;
+use std::time::SystemTime;
 use storage::umount_all_target;
 use tauri::webview::WebviewWindowBuilder;
 use tauri::AppHandle;
@@ -20,7 +22,7 @@ use users::get_current_uid;
 fn get_specta_builder() -> tauri_specta::Builder<tauri::Wry> {
     tauri_specta::Builder::<tauri::Wry>::new()
         .commands(tauri_specta::collect_commands![
-            api::get_read_json,
+            api::get_read_json, /* probably unused */
             api::set_read_json,
             api::set_empty_blueprint,
             api::get_filesystem_json,
@@ -60,6 +62,24 @@ fn get_specta_builder() -> tauri_specta::Builder<tauri::Wry> {
         .typ::<installer::BluePrint>()
 }
 
+fn setup_fern_logger() -> Result<(), fern::InitError> {
+    fern::Dispatch::new()
+        .format(|out, message, record| {
+            out.finish(format_args!(
+                "[{} {} {}] {}",
+                humantime::format_rfc3339_seconds(SystemTime::now()),
+                record.level(),
+                record.target(),
+                message
+            ))
+        })
+        .level(log::LevelFilter::Debug)
+        .chain(std::io::stdout())
+        .chain(fern::log_file("output.log")?)
+        .apply()?;
+    Ok(())
+}
+
 fn main() {
     match get_current_uid() {
         0 => {
@@ -84,6 +104,17 @@ fn main() {
 }
 
 fn build_tauri() {
+    let fern_logger_ret = self::setup_fern_logger();
+    if let Err(fern_logger_err) = fern_logger_ret {
+        match fern_logger_err {
+            fern::InitError::Io(e) => eprintln!("tealinux-error: {}", e.to_string()),
+            fern::InitError::SetLoggerError(e) => {
+                println!("error: {}", e);
+            }
+        }
+        self::emerg_exit();
+    }
+
     let tauri_specta_builder = get_specta_builder();
 
     #[cfg(debug_assertions)]
@@ -119,10 +150,20 @@ fn build_tauri() {
 fn open_website(app: AppHandle) {
     let url = WebviewUrl::External("https://tealinuxos.org".parse().unwrap());
 
-    WebviewWindowBuilder::new(&app, "webview", url)
-        .title("TeaLinuxOS")
-        .build()
-        .unwrap();
+    let ret: Result<tauri::WebviewWindow, tauri::Error> =
+        WebviewWindowBuilder::new(&app, "webview", url)
+            .title("TeaLinuxOS")
+            .build();
+
+    /* handle into modal */
+    if let Err(tauri_web_view_err) = ret {
+        eprintln!("{}", tauri_web_view_err);
+    }
+}
+
+fn emerg_exit() {
+    /* todo: capture all stdout and send into our server for logging */
+    process::exit(-1);
 }
 
 #[cfg(test)]
