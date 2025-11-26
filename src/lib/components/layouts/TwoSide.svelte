@@ -1,9 +1,22 @@
-<script>
-	let { gap, left, right } = $props(); // Optional: Add a gap between the sides
-	gap = gap || 'gap-4'; // Default gap if not provided
+<script lang="ts">
+	import { cn } from '$lib/utils/cn';
+	import type { Snippet } from 'svelte';
+
+	interface Props {
+		class?: string;
+		left: Snippet;
+		right: Snippet;
+	}
+
+	let { left, right, class: cls }: Props = $props();
 </script>
 
-<div class="flex h-full max-h-[630px] flex-1 items-center justify-between p-[15px] py-0 text-white">
+<div
+	class={cn(
+		'flex h-full max-h-[630px] flex-1 items-center justify-between p-[15px] py-0 text-white',
+		cls
+	)}
+>
 	<div class="flex flex-1 items-center justify-center">
 		<!-- <slot name="left"/> -->
 		{@render left()}
