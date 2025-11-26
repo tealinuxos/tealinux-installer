@@ -21,7 +21,7 @@
 			in:scale={{ duration: 800, delay: 200, easing: backOut }}
 			out:scale={{ duration: 500, easing: quintOut }}
 		>
-			{#each Array(layers) as _, i (i)}
+			{#each Array(layers), i (i)}
 				<div
 					class="absolute inset-0 flex items-center justify-center hexagon-layer"
 					style="
@@ -69,11 +69,11 @@
 			in:fade={{ duration: 600, delay: 800 }}
 			out:fade={{ duration: 300, delay: 100 }}
 		>
-			{#each Array(3) as _, i (i)}
+			{#each Array(3), i (i)}
 				<div
 					class="w-2 h-2 bg-green-500 rounded-full animate-bounce"
 					style="animation-delay: {i * 100}ms;"
-				/>
+				></div>
 			{/each}
 		</div>
 	</div>
