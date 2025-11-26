@@ -1,177 +1,246 @@
-<script>
-	import { onMount } from "svelte";
+<script lang="ts" generics="T">
+	import { onMount } from 'svelte';
+
+	interface Props {
+		show: boolean;
+		onclick: (item: T) => void;
+		data: T[] | null;
+		notFoundMessage?: string;
+		field?: keyof T | null;
+		selectedLabel: string | null;
+		keyword?: string;
+	}
 
 	let {
 		show = $bindable(),
-		onclick = () => console.log('clicked'),
+		onclick,
 		data,
-		title = 'This is a title',
-		notFoundMessage = 'Message not found',
+		notFoundMessage = 'Data not found',
 		field = null,
-		selected,
-        nullValue
-	} = $props();
+		selectedLabel,
+		keyword = $bindable('')
+	}: Props = $props();
 
-	let filteredData = $state(data);
-	let tempSelected = $state(null);
-	let keyword = $state('');
-    let selectedIndex = $state(0);
+	let tempSelected = $state<T | null>(null);
+	let selectedIndex = $state(0);
 
-	function filter(term) {
-		term = term.toLowerCase();
+	let filteredData = $derived.by(() => {
+		if (!data) return [];
+		if (!keyword.trim()) return data;
 
-		if (field) {
-			filteredData = data?.filter((e) => e[field].toLowerCase().includes(term));
-		} else {
-			filteredData = data?.filter((e) => e.toLowerCase().includes(term));
+		const term = keyword.toLowerCase();
+		return data.filter((item) => {
+			const val = getValue(item);
+			return String(val).toLowerCase().includes(term);
+		});
+	});
+
+	const getValue = (item: T): string => {
+		if (field && typeof item === 'object' && item !== null) {
+			return String(item[field]);
 		}
-	}
+		return String(item);
+	};
 
-	function handleSelect(item, index) {
+	const getDescription = (item: T): string => {
+		if (typeof item === 'object' && item !== null && 'description' in item) {
+			/* eslint-disable @typescript-eslint/no-explicit-any */
+			return String((item as any).description);
+		}
+		return '';
+	};
+
+	function handleSelect(item: T) {
 		tempSelected = item;
-        selectedIndex = index;
+		confirmSelection();
 	}
 
 	function confirmSelection() {
-        let value = tempSelected ? tempSelected : selected;
-        onclick(value);
+		if (tempSelected) {
+			onclick(tempSelected);
+		} else if (filteredData.length === 1) {
+			onclick(filteredData[0]);
+		}
 		show = false;
+		keyword = '';
 	}
 
 	function cancelSelection() {
 		show = false;
+		keyword = '';
 	}
 
-    const scrollToSelected = (selected) => {
-        let el = document.getElementById(selected);
-        if (el) {
-            el.scrollIntoView({
-                behavior: "smooth"
-            })
-        }
-    }
+	const scrollToSelected = (label: string | null) => {
+		if (!label) return;
+		setTimeout(() => {
+			let el = document.getElementById(`option-${label}`);
+			if (el) {
+				el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			}
+		}, 100);
+	};
 
-    const onKeyDown = (event) => {
+	const onKeyDown = (event: KeyboardEvent) => {
+		if (!show) return;
 
-        if (!tempSelected) {
-            selectedIndex = data?.findIndex(d => field ? d[field] === selected : d === selected);
-            tempSelected = data ? data[selectedIndex] : null;
-        }
+		const list = filteredData;
+		if (!list.length) return;
 
-        if (data?.length) {
-            switch(event.keyCode) {
-                case 40:
-                    if (selectedIndex < data?.length) {
-                        tempSelected = data[selectedIndex + 1];
-                        selectedIndex += 1;
-                    }
-                    break;
-                case 38:
-                    if (selectedIndex > 0) {
-                        tempSelected = data[selectedIndex - 1];
-                        selectedIndex -= 1;
-                    }
-                    break;
-            }
-        }
-    }
+		switch (event.key) {
+			case 'ArrowDown':
+				event.preventDefault();
+				if (selectedIndex < list.length - 1) {
+					selectedIndex++;
+					tempSelected = list[selectedIndex];
+					scrollToSelected(getValue(tempSelected));
+				}
+				break;
+			case 'ArrowUp':
+				event.preventDefault();
+				if (selectedIndex > 0) {
+					selectedIndex--;
+					tempSelected = list[selectedIndex];
+					scrollToSelected(getValue(tempSelected));
+				}
+				break;
+			case 'Enter':
+				event.preventDefault();
+				if (!tempSelected && list.length > 0) {
+					tempSelected = list[0];
+				}
+				confirmSelection();
+				break;
+			case 'Escape':
+				event.preventDefault();
+				cancelSelection();
+				break;
+		}
+	};
 
 	$effect(() => {
-		filter(keyword);
+		if (keyword || keyword === '') {
+			selectedIndex = 0;
+			tempSelected = filteredData.length > 0 ? filteredData[0] : null;
+		}
 	});
 
-    onMount(() => {
-        scrollToSelected(selected);
-    })
+	onMount(() => {
+		if (selectedLabel) {
+			scrollToSelected(selectedLabel);
+			const found = data?.find((d) => getValue(d) === selectedLabel);
+			if (found) tempSelected = found;
+		}
+	});
 </script>
 
-<div class="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-80">
-    <div
-        style="-webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px)"
-        class="absolute inset-0 bg-black/50"
-        on:click={() => (show = false)}
-    ></div>
-    <div
-        class="flex flex-col min-w-[434px] max-h-full justify-center items-center p-4 bg-black rounded-[10px] border border-[#3C6350] shadow-[0_0_30px_rgba(38,167,104,0.25)] overflow-auto z-90"
-    >
-        <div class="w-full p-6 z-10">
-            <div class="relative flex items-center w-full">
-                <!-- Search icon -->
-                <div class="absolute left-3 text-[#26A768]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                </div>
+<div class="fixed inset-0 flex items-center justify-center z-9999">
+	<div
+		class="absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity"
+		onclick={cancelSelection}
+		role="button"
+		tabindex="-1"
+		onkeydown={(e) => e.key === 'Escape' && cancelSelection()}
+	></div>
 
-                <!-- Input field -->
-                <input
-                    type="text"
-                    bind:value={keyword} 
-                    class="flex items-center justify-between w-full h-[35px] pl-9 pr-8 bg-[#122C1F] text-white rounded-[4px] border border-[#26A768] border-opacity-100 focus:outline-none focus:ring-1 focus:ring-[#26A768]"
-                    style="border-width: 1.3px"
-                    autofocus
-                />
+	<div
+		class="relative flex flex-col w-[434px] max-h-[80vh] p-4 bg-[#0a0a0a] rounded-[14px] border border-[#3C6350] shadow-[0_0_30px_rgba(38,167,104,0.15)] z-10"
+	>
+		<div class="w-full p-2 space-y-4">
+			<div class="relative flex items-center w-full">
+				<div class="absolute left-3 text-[#26A768]">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<circle cx="11" cy="11" r="8"></circle>
+						<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+					</svg>
+				</div>
 
-                <!-- ESC icon -->
-                <div class="absolute right-3 text-[#26A768] cursor-pointer" on:click={() => (keyword = '')}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </div>
-            </div>
-            <br>
-            <!-- Daftar item -->
-            <div class="max-h-60 overflow-auto space-y-2">
-                {#if data?.length > 0}
-                    {#key tempSelected}
-                        {#each filteredData as data, index}
-                            {@const item = field ? data[field] : data}
-                            {@const selectedItem = tempSelected
-                                ? field
-                                    ? tempSelected[field]
-                                        ? tempSelected[field]
-                                        : selected
-                                    : tempSelected
-                                        ? tempSelected
-                                        : selected
-                                : selected
-                            }
-                            <div 
-                                class={`flex items-center justify-between p-[3px_16px] h-[40px] rounded-[8px] cursor-pointer 
-                                    ${selectedItem === item ? 
-                                        'bg-[#122C1F] text-white' : 
-                                        'bg-[rgba(29,33,31,0.7)] text-white hover:bg-[#122C1F]'}`}
-                                on:click={() => handleSelect(data, index)}
-                                id={item}
-                            >
-                                <span>{item}</span>
-                                <span class="text-sm text-gray-400">{item.description || ''}</span>
-                            </div>
-                        {/each}
-                    {/key}
-                {:else}
-                    <div class="text-white">{notFoundMessage}</div>
-                {/if}
-            </div>
-            <div class="flex gap-2 mt-4">
-                <button
-                    class="w-full px-4 py-2 rounded text-white border border-[#3C6350] hover:bg-[#1a1a1a] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)] disabled:opacity-50"
-                    on:click={cancelSelection}
-                >
-                    Cancel
-                </button>
-                <button
-                    class="w-full px-4 py-2 rounded text-white bg-[#26A768] border border-[#3C6350] hover:bg-[#1E8A56] active:shadow-[0_0_7.167px_rgba(38,167,104,0.8)] disabled:opacity-50"
-                    on:click={confirmSelection}
-                    disabled={!tempSelected}
-                >
-                    Confirm
-                </button>
-            </div>
-        </div>
-    </div>
+				<!-- svelte-ignore a11y_autofocus -->
+				<input
+					type="text"
+					bind:value={keyword}
+					class="w-full h-10 pl-10 pr-10 bg-[#122C1F]/50 text-white rounded-lg border border-[#26A768] focus:outline-none focus:ring-2 focus:ring-[#26A768] focus:border-transparent placeholder-white/30 transition-all"
+					placeholder="Search..."
+					autofocus
+				/>
+
+				{#if keyword}
+					<button
+						class="absolute right-3 text-[#26A768] hover:text-white transition-colors"
+						onclick={() => (keyword = '')}
+						aria-label="Clear search"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						>
+							<line x1="18" y1="6" x2="6" y2="18"></line>
+							<line x1="6" y1="6" x2="18" y2="18"></line>
+						</svg>
+					</button>
+				{/if}
+			</div>
+
+			<hr class="border-[#3C6350]/30" />
+
+			<div class="max-h-[300px] overflow-y-auto space-y-1 pr-1 custom-scrollbar">
+				{#if filteredData.length > 0}
+					{#each filteredData as item, index (index)}
+						{@const value = getValue(item)}
+						{@const desc = getDescription(item)}
+						{@const isSelected =
+							tempSelected === item || (!tempSelected && value === selectedLabel)}
+
+						<div
+							id={`option-${value}`}
+							class={`flex items-center justify-between px-4 py-2.5 rounded-lg cursor-pointer transition-all duration-200
+                                ${
+																	isSelected
+																		? 'bg-[#26A768] text-white shadow-lg shadow-[#26A768]/20'
+																		: 'text-gray-300 hover:bg-[#122C1F] hover:text-white'
+																}`}
+							onclick={() => handleSelect(item)}
+							onmouseenter={() => {
+								tempSelected = item;
+								selectedIndex = index;
+							}}
+							role="option"
+							aria-selected={isSelected}
+							tabindex="0"
+							onkeydown={(e) => e.key === 'Enter' && handleSelect(item)}
+						>
+							<span class="font-medium text-sm">{value}</span>
+							{#if desc}
+								<span class={`text-xs ${isSelected ? 'text-white/80' : 'text-gray-500'}`}
+									>{desc}</span
+								>
+							{/if}
+						</div>
+					{/each}
+				{:else}
+					<div class="py-8 text-center text-gray-500 flex flex-col items-center gap-2">
+						<span>{notFoundMessage}</span>
+					</div>
+				{/if}
+			</div>
+		</div>
+	</div>
 </div>
 
-<svelte:window on:keydown={onKeyDown} />
+<svelte:window onkeydown={onKeyDown} />

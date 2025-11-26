@@ -1,103 +1,117 @@
-<script>
-    import { getCurrency } from 'locale-currency';
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import { getCurrency } from 'locale-currency';
 
-    let {
-        selectedLocale,
-        selectedRegion = "Asia",
-        selectedCity = "Jakarta"
-    } = $props();
+	interface Props {
+		selectedLocale: string | null;
+		selectedRegion: string | null;
+		selectedCity: string | null;
+	}
 
-    let selectedTimezone = $state(null);
+	let { selectedLocale, selectedRegion = 'Asia', selectedCity = 'Jakarta' }: Props = $props();
 
-    let date = $state(new Date());
-	let dateOptions = {
-		weekday: 'short',
-		year: 'numeric',
-		month: 'short',
-		day: 'numeric'
-	};
-	let number = 1234567.89;
-	let price = 1234.56;
+	let date = $state(new Date());
 
-	let timePreview = $state('');
-	let datePreview = $state('');
-	let numberPreview = $state('');
-	let currencyPreview = $state('');
+	const demoNumber = 1234567.89;
+	const demoPrice = 1234.56;
 
-    const getShortLocale = (locale) => {
+	let safeLocale = $derived.by(() => {
+		if (!selectedLocale) return 'en-US';
 
-        let pattern = /([a-z]+)_([A-Z]+)/;
-        let matched = locale.match(pattern);
+		const pattern = /([a-z]{2})_([A-Z]{2})/;
+		const matched = selectedLocale.match(pattern);
 
-        let shortLocale = matched[1] + '-' + matched[2];
+		if (matched) {
+			return `${matched[1]}-${matched[2]}`;
+		}
 
-        return shortLocale;
-    }
+		return selectedLocale.substring(0, 5).replace('_', '-');
+	});
 
-	const handlePreview = () => {
-		if (selectedLocale != null) {
-			let short = getShortLocale(selectedLocale);
+	let selectedTimezone = $derived.by(() => {
+		if (selectedRegion && selectedCity) {
+			return `${selectedRegion}/${selectedCity}`;
+		}
+		return null;
+	});
 
-			// timePreview = date.toLocaleDateString(short, dateOptions);
-			numberPreview = number.toLocaleString(short);
+	let numberPreview = $derived.by(() => {
+		try {
+			return demoNumber.toLocaleString(safeLocale);
+		} catch (e) {
+			console.log(e);
+			return demoNumber.toLocaleString();
+		}
+	});
 
-			let currencyCode = getCurrency(short);
-
-			let currency = new Intl.NumberFormat(short, {
+	let currencyPreview = $derived.by(() => {
+		try {
+			const currencyCode = getCurrency(safeLocale) || 'USD';
+			const formatter = new Intl.NumberFormat(safeLocale, {
 				style: 'currency',
 				currency: currencyCode
 			});
+			return formatter.format(demoPrice);
+		} catch (e) {
+			console.log(e);
+			return `$${demoPrice}`;
+		}
+	});
 
-			currencyPreview = currency.format(price);
-        }
+	let datePreview = $derived.by(() => {
+		try {
+			const dateFormat = new Intl.DateTimeFormat(safeLocale, {
+				timeZone: selectedTimezone || undefined,
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric',
+				weekday: 'short'
+			});
+			return dateFormat.format(date);
+		} catch (e) {
+			console.log(e);
+			return date.toDateString();
+		}
+	});
 
-        if (selectedTimezone !== null) {
-			let timeFormat = new Intl.DateTimeFormat([], {
-				timeZone: selectedTimezone,
+	let timePreview = $derived.by(() => {
+		try {
+			const timeFormat = new Intl.DateTimeFormat(safeLocale, {
+				timeZone: selectedTimezone || undefined,
 				hour: 'numeric',
 				minute: 'numeric',
 				second: 'numeric',
 				hour12: false
 			});
-			let dateFormat = new Intl.DateTimeFormat([], {
-				timeZone: selectedTimezone,
-				year: 'numeric',
-				month: 'long',
-				day: 'numeric'
-			});
-			datePreview = dateFormat.format(date);
-			timePreview = timeFormat.format(date);
+			return timeFormat.format(date);
+		} catch (e) {
+			console.log(e);
+			return date.toLocaleTimeString();
 		}
-	};
+	});
 
-    setInterval(() => {
-        date = new Date();
-    }, 1000);
-
-	$effect(() => {
-		selectedLocale, handlePreview();
-        selectedTimezone = selectedRegion
-            ? selectedCity
-                ? `${selectedRegion}/${selectedCity}`
-                : null
-            : null;
+	onMount(() => {
+		const interval = setInterval(() => {
+			date = new Date();
+		}, 1000);
+		return () => clearInterval(interval);
 	});
 </script>
 
-<div class="flex flex-col gap-y-[10px]">
-    <!-- preview item -->
-    <div class="flex gap-x-4">
-        <img src="/icons/clock-vector.svg" alt="clock" />
-        <span>{timePreview}</span>
-    </div>
-    <!-- preview item -->
-    <div class="flex gap-x-4">
-        <img src="/icons/calendar-vector.svg" alt="clock" />
-        <span>{datePreview}</span>
-    </div>
-    <!-- preview item -->
-    <div class="flex gap-x-4">
-        <img src="/icons/currency-vector.svg" alt="clock" />
-        <span>{numberPreview} - {currencyPreview}</span>
-    </div>
+<div class="flex flex-col gap-y-2.5">
+	<!-- preview item -->
+	<div class="flex gap-x-4">
+		<img src="/icons/clock-vector.svg" alt="clock" />
+		<span>{timePreview}</span>
+	</div>
+	<!-- preview item -->
+	<div class="flex gap-x-4">
+		<img src="/icons/calendar-vector.svg" alt="clock" />
+		<span>{datePreview}</span>
+	</div>
+	<!-- preview item -->
+	<div class="flex gap-x-4">
+		<img src="/icons/currency-vector.svg" alt="clock" />
+		<span>{numberPreview} - {currencyPreview}</span>
+	</div>
 </div>

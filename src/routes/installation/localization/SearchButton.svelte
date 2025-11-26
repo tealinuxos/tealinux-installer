@@ -1,20 +1,33 @@
-<script>
+<script lang="ts" generics="T">
 	import Modal from './Modal.svelte';
+
+	interface Props {
+		show: boolean;
+		data: T[] | null;
+		field?: keyof T | null;
+		title?: string;
+		notFoundMessage?: string;
+		onclick: (item: T) => void;
+		selected: string | null;
+		nullValue?: string | null;
+		keyword?: string;
+	}
 
 	let {
 		show = $bindable(),
 		data = $bindable(),
 		field = null,
-		title = 'This is a title',
-		notFoundMessage = 'Message not found',
-		onclick = () => console.log('clicked'),
+		title = 'Select Item',
+		notFoundMessage = 'Not found',
+		onclick,
 		selected = $bindable(),
-		nullValue
-	} = $props();
+		nullValue,
+		keyword = $bindable('')
+	}: Props = $props();
 </script>
 
 <div
-	class="flex p-[10px] border border-border bg-[#101010] rounded-[14px] items-center text-[15px] justify-between h-fit w-full cursor-pointer"
+	class="flex p-2.5 border border-border bg-[#101010] rounded-[14px] items-center text-[15px] justify-between h-fit w-full cursor-pointer hover:border-[#26A768] transition-colors"
 	onclick={() => (show = true)}
 	onkeydown={(e) => {
 		if (e.key === 'Enter') {
@@ -29,8 +42,10 @@
 	role="button"
 	tabindex="0"
 >
-	<div>
-		<span>{selected ? selected : nullValue}</span>
+	<div class="truncate pr-2">
+		<span class={!selected ? 'text-gray-500' : 'text-white'}>
+			{selected ? selected : (nullValue ?? title)}
+		</span>
 	</div>
 
 	<div>
@@ -49,5 +64,13 @@
 </div>
 
 {#if show}
-	<Modal bind:show {data} {onclick} {field} {title} {notFoundMessage} {selected} {nullValue} />
+	<Modal
+		bind:show
+		bind:keyword
+		{data}
+		{onclick}
+		{field}
+		{notFoundMessage}
+		selectedLabel={selected}
+	/>
 {/if}
