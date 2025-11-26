@@ -10,7 +10,8 @@ const config = {
 		}),
 		alias: {
 			$lib: 'src/lib',
-			$types: 'src/types'
+			$types: 'src/types',
+			$utils: 'src/lib/utils'
 		}
 	}
 };

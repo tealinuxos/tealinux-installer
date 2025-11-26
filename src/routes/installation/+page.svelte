@@ -1,27 +1,16 @@
 <script lang="ts">
 	import type { Disk, ReadFromOpt } from '$types/read-from-opt.js';
-	import { commands } from '$types/commands.js';
 	import { onMount } from 'svelte';
 	import prettyBytes from 'pretty-bytes';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
 	import GlowingText from '$lib/components/ui/GlowingText.svelte';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import DiskSlider from '$lib/components/DiskSlider.svelte';
+	import { getSystemInfo } from '$lib/utils/read_utils';
 
 	let systemInfo = $state<ReadFromOpt | null>(null);
 	let totalStorage = $state<number>(0);
 	let isLoading = $state<boolean>(true);
-
-	const getSystemInfo = async (): Promise<ReadFromOpt | null> => {
-		try {
-			const data = await commands.getReadFromOpt();
-			const json: ReadFromOpt = typeof data === 'string' ? JSON.parse(data) : data;
-			return json;
-		} catch (error) {
-			console.error('Error fetching system info:', error);
-			return null;
-		}
-	};
 
 	const calculateTotalStorage = (disks: Disk[] | undefined): number => {
 		if (!disks || disks.length === 0) return 0;
