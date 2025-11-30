@@ -1,14 +1,22 @@
-<script>
-    let {
-        title = 'default title',
-        selected = false,
-        onclick = () => console.log('pressed')
-    } = $props();
+<script lang="ts">
+	import type { MouseEventHandler } from 'svelte/elements';
+	import { cn } from '$lib/utils/cn';
+
+	interface Props {
+		title: string;
+		selected: boolean;
+		onclick: MouseEventHandler<HTMLButtonElement>;
+	}
+
+	let { title, selected = false, onclick }: Props = $props();
 </script>
 
 <button
-    onclick={onclick}
-    class="{selected ? "text-[#26A768]" :  "text-[#17613D]"} font-jakarta text-[14.667px] font-[600] leading-normal tracking-[-0.66px]"
+	{onclick}
+	class={cn(
+		selected ? 'text-[#26A768]' : 'text-[#17613D]',
+		'font-jakarta text-[14.667px] font-semibold leading-normal tracking-[-0.66px]'
+	)}
 >
-    {title}
+	{title}
 </button>
