@@ -1,197 +1,171 @@
-<script>
+<script lang="ts" generics="T">
+	import type { HTMLAttributes } from 'svelte/elements';
+	import { cn } from '$lib/utils/cn';
 
-  let {
-    options = [],
-    value = $bindable(),
-    displayField = 'name',
-    sizeField = '',
-    formatter = null,
-    width = '100%',
-    height = '46.656px',
-    loadingText = "Loading...",
-    defaultText = "Select an option",
-    notFoundText= "No option",
-    simpleMode = false,
-    isLoading = false,
-    error = null
-  } = $props();
+	type OptionType = T;
 
-  let isOpen = $state(false);
-  let selectElement = $state(null);
+	interface Props extends Omit<HTMLAttributes<HTMLElement>, 'onselect'> {
+		options?: OptionType[] | null;
+		value?: OptionType | null;
+		onselect?: (option: OptionType) => void;
+		displayField?: string;
+		sizeField?: string;
+		formatter?: ((size: number) => string) | null;
+		loadingText?: string;
+		defaultText?: string;
+		notFoundText?: string;
+		simpleMode?: boolean;
+		isLoading?: boolean;
+		error?: string | null;
+	}
 
-  function handleClickOutside(event) {
-    if (selectElement && !selectElement.contains(event.target)) {
-      isOpen = false;
-    }
-  }
+	let {
+		options = [],
+		value = $bindable(),
+		displayField = 'name',
+		sizeField = '',
+		formatter = null,
+		loadingText = 'Loading...',
+		defaultText = 'Select an option',
+		notFoundText = 'No option',
+		simpleMode = false,
+		isLoading = false,
+		error = null,
+		...props
+	}: Props = $props();
 
-  function toggleDropdown() {
-    if (!isLoading && !error) {
-      isOpen = !isOpen;
-    }
-  }
+	let isOpen = $state(false);
+	let selectElement = $state<HTMLDivElement | null>(null);
 
-  function selectOption(option) {
-    value = option;
-    isOpen = false;
-  }
+	function handleClickOutside(event: MouseEvent) {
+		if (selectElement && event.target instanceof Node && !selectElement.contains(event.target)) {
+			isOpen = false;
+		}
+	}
 
-  function getDisplayText(option) {
-    if (isLoading) return loadingText;
-    if (error) return errorText;
-    if (!options) return notFoundText;
-    if (!option) return defaultText;
-    
-    if (typeof option === 'object') {
-      const display = displayField ? option[displayField] : option.name || option.value;
-      if (simpleMode) return display;
-      const size = sizeField && option[sizeField] ? ` (${formatSize(option[sizeField])})` : '';
-      return `${display}${size}`;
-    }
-    return option;
-  }
+	function toggleDropdown() {
+		if (!isLoading && !error) {
+			isOpen = !isOpen;
+		}
+	}
 
-  function formatSize(size) {
-    if (!size || typeof size !== 'string') return '';
-    try {
-      const sizeInBytes = Number(size.slice(0, -1));
-      return formatter ? formatter(sizeInBytes) : `${(sizeInBytes * 512 / (1024 ** 3)).toFixed(2)} GB`;
-    } catch {
-      return '';
-    }
-  }
+	function selectOption(option: OptionType) {
+		value = option;
+		isOpen = false;
+	}
 
-  $effect(() => {
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  });
+	function getDisplayText(option: OptionType | null | undefined): string {
+		if (isLoading) return loadingText;
+		if (error) return error;
+		if (!options || options.length === 0) return notFoundText;
+		if (!option) return defaultText;
+
+		if (typeof option === 'object') {
+			// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+			const opt = option as Record<string, any>;
+
+			const display = displayField && opt[displayField] ? opt[displayField] : opt.name || opt.value;
+
+			if (simpleMode) return String(display);
+
+			const size = sizeField && opt[sizeField] ? ` (${formatSize(opt[sizeField])})` : '';
+
+			return `${display}${size}`;
+		}
+
+		return String(option);
+	}
+
+	function formatSize(size: string | unknown): string {
+		if (!size || typeof size !== 'string') return '';
+		try {
+			const sizeInBytes = Number(size.slice(0, -1));
+
+			if (isNaN(sizeInBytes)) return '';
+
+			return formatter
+				? formatter(sizeInBytes)
+				: `${((sizeInBytes * 512) / 1024 ** 3).toFixed(2)} GB`;
+		} catch {
+			return '';
+		}
+	}
+
+	$effect(() => {
+		document.addEventListener('click', handleClickOutside);
+		return () => document.removeEventListener('click', handleClickOutside);
+	});
 </script>
 
-<div class="custom-select" bind:this={selectElement} style="width: {width}; height: {height}">
-  <div 
-    class="selected-value" 
-    onclick={() => { if (options) toggleDropdown() }}
-    style:border-color={isOpen ? '#26A768' : '#3C6350'}
-    class:disabled={isLoading || error || !options}
-  >
-    <div class="selected-text">
-      {getDisplayText(value)}
-    </div>
-    
-    {#if !isLoading && !error}
-      <div class="icon" class:rotate={isOpen}>
-        <svg width="14" height="9" viewBox="0 0 14 9" fill="none">
-          <path d="M1 1.33325L7 7.33325L13 1.33325" stroke="#26A768" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-    {:else if isLoading}
-      <div class="spinner"></div>
-    {/if}
-  </div>
-  
-  {#if isOpen && !isLoading && !error}
-    <div class="dropdown-options">
-      {#each options as option (option.value || option)}
-        <div 
-          class="option {value === option ? 'selected' : ''}"
-          onclick={() => selectOption(option)}
-        >
-          {getDisplayText(option)}
-        </div>
-      {/each}
-    </div>
-  {/if}
+<div
+	class={cn('relative flex h-12 w-full flex-col items-stretch gap-2.5', props.class)}
+	bind:this={selectElement}
+>
+	<div
+		onclick={() => {
+			if (options) toggleDropdown();
+		}}
+		role="button"
+		tabindex="0"
+		onkeydown={(e) => e.key === 'Enter' && toggleDropdown()}
+		class={cn(
+			'flex min-h-[42px] items-center justify-between px-[15px] py-[9px]',
+			'rounded-[14px] border-[1.3px] bg-[#101010]',
+			'font-jakarta text-[13px] font-semibold text-[#26a768]',
+			'cursor-pointer transition-colors duration-200 ease-in-out',
+			isOpen ? 'border-[#26A768]' : 'border-[#3C6350]',
+			isLoading || !!error || !options ? 'pointer-events-none cursor-not-allowed opacity-70' : '',
+			isLoading ? 'animate-pulse cursor-wait bg-[#0a1f16]' : ''
+		)}
+	>
+		<div class="overflow-hidden text-ellipsis whitespace-nowrap pr-2">
+			{getDisplayText(value)}
+		</div>
+
+		{#if !isLoading && !error}
+			<div class={cn('flex transition-transform duration-200 ease-out', isOpen && 'rotate-180')}>
+				<svg width="14" height="9" viewBox="0 0 14 9" fill="none">
+					<path
+						d="M1 1.33325L7 7.33325L13 1.33325"
+						stroke="#26A768"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					/>
+				</svg>
+			</div>
+		{:else if isLoading}
+			<div
+				class="size-3.5 animate-spin rounded-full border-2 border-[#26a768]/30 border-t-[#26a768]"
+			></div>
+		{/if}
+	</div>
+
+	{#if isOpen && !isLoading && !error}
+		<div
+			class={cn(
+				'absolute left-0 right-0 top-full z-50 mt-[5px]',
+				'max-h-[200px] overflow-y-auto',
+				'rounded-[14px] border border-[#3C6350] bg-[#101010] shadow-xl',
+				'[&::-webkit-scrollbar-thumb]:rounded-[10px] [&::-webkit-scrollbar-thumb]:bg-border',
+				'[&::-webkit-scrollbar]:w-.15'
+			)}
+		>
+			{#each options as option (option)}
+				<div
+					onclick={() => selectOption(option)}
+					role="option"
+					tabindex="0"
+					aria-selected={value === option}
+					onkeydown={(e) => e.key === 'Enter' && selectOption(option)}
+					class={cn(
+						'cursor-pointer px-[15px] py-2.5 font-jakarta text-[13px] transition-colors duration-200',
+						value === option ? 'bg-[#032b17] text-[#4cda95]' : 'text-white hover:bg-[#032b17]'
+					)}
+				>
+					{getDisplayText(option)}
+				</div>
+			{/each}
+		</div>
+	{/if}
 </div>
-
-
-
-
-<style>
-  .custom-select {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-self: stretch;
-  }
-  
-  .selected-value {
-    display: flex;
-    padding: 9px 15px;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: 14px;
-    border: 1.3px solid #3C6350;
-    background: #101010;
-    cursor: pointer;
-    transition: border-color 0.2s ease;
-    color: #26A768;
-    font-family: 'Jakarta', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-  }
-  
-  .selected-value.disabled {
-    cursor: not-allowed;
-    opacity: 0.7;
-  }
-  
-  .dropdown-options {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    max-height: 200px;
-    overflow-y: auto;
-    background: #101010;
-    border: 1px solid #3C6350;
-    border-radius: 14px;
-    z-index: 1000;
-    margin-top: 5px;
-  }
-  
-  .option {
-    padding: 10px 15px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    color: white;
-    font-family: 'Jakarta', sans-serif;
-    font-size: 13px;
-  }
-  
-  .option:hover {
-    background-color: #032B17;
-  }
-  
-  .option.selected {
-    background-color: #032B17;
-    color: #4CDA95;
-  }
-  
-  .icon {
-    transition: transform 0.2s ease;
-  }
-  
-  .icon.rotate {
-    transform: rotate(180deg);
-  }
-  
-  .selected-text {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  .spinner {
-    width: 14px;
-    height: 14px;
-    border: 2px solid rgba(38, 167, 104, 0.3);
-    border-radius: 50%;
-    border-top-color: #26A768;
-    animation: spin 1s ease-in-out infinite;
-  }
-  
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-</style>
