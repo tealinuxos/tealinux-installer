@@ -1,5 +1,5 @@
-<script>
-	import { partitionMethod } from '$lib/stores/informationStore.js';
+<script lang="ts">
+	import { partitionMethod } from '$lib/stores/informationStore';
 	import { goto } from '$app/navigation';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
 	import { invoke } from '@tauri-apps/api/core';
@@ -105,11 +105,12 @@
 			isOpen: false,
 			type: 'error',
 			title: 'All Data Will be Wiped',
-			content: 'Proceeding with this installation will erase all existing data on the selected drive. This action cannot be undone.',
+			content:
+				'Proceeding with this installation will erase all existing data on the selected drive. This action cannot be undone.',
 			confirmText: 'OK',
 			cancelText: 'Cancel',
 			showCancel: true,
-            countdown: 5,
+			countdown: 5,
 			onConfirm: () => goto('/installation/install'),
 			onCancel: () => closeModal()
 		});
@@ -237,7 +238,11 @@
 									<tr class="border-b border-[#3C6350]">
 										<td class="p-3">{partition.path || 'Unallocated'}</td>
 										<td class="p-3">{partition.filesystem || '-'}</td>
-										<td class="p-3">{partition.filesystem === "swap" ? "[SWAP]" : partition.mountpoint || '-'}</td>
+										<td class="p-3"
+											>{partition.filesystem === 'swap'
+												? '[SWAP]'
+												: partition.mountpoint || '-'}</td
+										>
 										<td class="p-3">{partition.format ? 'Yes' : 'No'}</td>
 									</tr>
 								{/each}
@@ -262,5 +267,5 @@
 	currentStep={5}
 	currentTitle="Summary"
 	prevPath={`/installation/partitioning/${partitioningMethod}`}
-    nextAction={showInstallWarning}
+	nextAction={showInstallWarning}
 />
