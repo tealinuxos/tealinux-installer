@@ -7,7 +7,7 @@
 		initialDevice: string;
 		caption: string;
 		showCaption: boolean;
-		showIcon: false;
+		showIcon: boolean;
 		isSelected: boolean;
 		description?: string;
 	}
