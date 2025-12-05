@@ -2,7 +2,7 @@
 	import type { Keyboard, Variant } from '$types/keyboard-variant.js';
 	import type { Locale } from '$types/locale-variant.js';
 	import type { Timezone } from '$types/timezone-variant.js';
-	import { afterNavigate } from '$app/navigation';
+	import type { RouteId } from '$app/types';
 	import { onMount } from 'svelte';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
 	import GlowingText from '$lib/components/ui/GlowingText.svelte';
@@ -16,9 +16,10 @@
 	} from '$lib/utils/read_utils.js';
 	import { commands } from '$types/commands.js';
 	import Navigation from '$lib/components/Navigation.svelte';
+	import { afterNavigate } from '$app/navigation';
 
 	// Additional variables
-	let prevRoute = $state<string | null>(null);
+	let prevRoute = $state<RouteId | null>(null);
 
 	// Locale
 	let locales = $state<Locale[] | null>([]);
@@ -195,7 +196,7 @@
 	};
 
 	afterNavigate(({ from }) => {
-		prevRoute = from?.url.pathname ?? null;
+		prevRoute = from?.url.pathname as RouteId;
 		console.log(prevRoute);
 	});
 
