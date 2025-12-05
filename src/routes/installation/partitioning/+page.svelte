@@ -1,11 +1,6 @@
 <script lang="ts">
 	import type { Disk } from '$types/read-from-opt.js';
-	import type {
-		BootPath,
-		BootType,
-		PreviewKey,
-		PreviewLabel
-	} from '$types/installation/partitioning/partitioning.types';
+	import { Method, Preview, type BootPath } from '$types/installation/partitioning/partitioning.types';
 	import { partitionMethod } from '$lib/stores/informationStore';
 	import { onMount } from 'svelte';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
@@ -19,17 +14,6 @@
 	import { prettySize } from '$lib/essentials.js';
 	import { getSystemInfo } from '$lib/utils/read_utils.js';
 	import { commands, type Storage } from '$types/commands';
-
-	const Method: Record<BootType, BootPath> = {
-		SINGLE: 'single',
-		DUAL: 'dual',
-		MANUAL: 'manual'
-	};
-
-	const Preview: Record<PreviewKey, PreviewLabel> = {
-		BEFORE: 'Before',
-		AFTER: 'After'
-	};
 
 	let disks = $state<Disk[] | null>(null);
 	let selectedDisk = $state<Disk | null>(null);
@@ -58,7 +42,7 @@
 		if (selectedDisk && selectedMethod) {
 			let storage_skel: Storage;
 			// TODO: CHECK THE BEHAVIOR OF ORIGINAL SECTOR
-			
+
 			switch (selectedMethod) {
 				case Method.SINGLE:
 					storage_skel = {
