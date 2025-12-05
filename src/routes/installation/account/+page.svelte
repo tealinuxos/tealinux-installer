@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { type BootPath } from '$types/installation/partitioning/partitioning.types';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
 	import { partitionMethod } from '$lib/stores/informationStore.js';
@@ -426,7 +427,7 @@
 <Navigation
 	currentStep={5}
 	currentTitle="User"
-	prevPath={`/installation/partitioning/${partitioningMethod}`}
+	prevPath={`/installation/partitioning/${partitioningMethod as BootPath}`}
 	nextPath="/installation/summary"
 	nextAction={handleSetAccount}
 	disableNext={!passwordMatch ||
