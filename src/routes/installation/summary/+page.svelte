@@ -2,105 +2,23 @@
 	import { partitionMethod } from '$lib/stores/informationStore';
 	import { goto } from '$app/navigation';
 	import TwoSide from '$lib/components/layouts/TwoSide.svelte';
-	import { invoke } from '@tauri-apps/api/core';
-	import { onMount } from 'svelte';
-	import { getRead, getBlueprint } from '../global.js';
-	import prettyBytes from 'pretty-bytes';
-	import { randomColor } from 'randomcolor';
-	import Navigation from '../../../lib/components/Navigation.svelte';
-	import GlowingText from '../../../lib/components/ui/GlowingText.svelte';
 	import { showModal, closeModal } from '$lib/stores/modalStore.js';
-
-	let timezone;
-	let mainLocale;
-	let locales;
-	let formattedPartitions;
-	let assignedPartitions;
-	let passwordVisible = $state(false);
-	let blueprint = $state(null);
+	import GlowingText from '$lib/components/ui/GlowingText.svelte';
+	import Navigation from '$lib/components/Navigation.svelte';
+	import { getBlueprintInfo } from '$lib/utils/read_utils.js';
+	import { resolve } from '$app/paths';
 
 	const partitioningMethod = $partitionMethod;
 
-	const getBlueprintJSON = async () => {
-		let blueprint = await getBlueprint();
-		return blueprint;
-	};
-
-	const getDisk = async () => {
-		let blueprint = await getBlueprint();
-		return blueprint.storage.partitions;
-	};
-
-	const getDiskSize = async () => {
-		let disk = await getDisk();
-		let size = 0;
-
-		for (let i of disk.keys()) {
-			size += disk[i].size;
-		}
-
-		return size;
-	};
-
-	const getStorageJSON = async () => {
-		let json = await getRead();
-		json = json.disk.filter((disk) => disk.partitions !== null);
-
-		return json;
-	};
-
-	const setSummary = async () => {
-		let json = await getBlueprint();
-		console.log(json);
-
-		timezone = json.timezone.region + '/' + json.timezone.city;
-		mainLocale = json.locale.main;
-
-		let partitions = json.disk.filter(
-			(partition) => partition.format !== false || partition.mountpoint !== null
-		);
-
-		formattedPartitions = partitions.filter((partition) => partition.format !== null);
-		assignedPartitions = partitions.filter((partition) => partition.mountpoint !== null);
-	};
-
 	const navigateToUserAccount = () => {
-		goto('/installation/account');
+		goto(resolve('/installation/account'));
 	};
 
 	const navigateToLocalization = () => {
-		goto('/installation/localization');
+		goto(resolve('/installation/localization'));
 	};
 
-	const getPartitioningMethod = () => {
-		if (!blueprint?.storage) return null;
-		return blueprint.storage.installMethod;
-	};
-
-	const navigateToPartitioning = () => {
-		const method = getPartitioningMethod();
-		if (!method) return;
-
-		switch (method) {
-			case 'single':
-				goto('/installation/partitioning/single');
-				break;
-			case 'dual':
-				goto('/installation/partitioning/dual');
-				break;
-			case 'manual':
-				goto('/installation/partitioning/manual');
-				break;
-			default:
-				goto('/installation/partitioning');
-		}
-	};
-
-	const printJson = async () => {
-		await invoke('print_json');
-	};
-
-	const showInstallWarning = () => {
+	const showInstallWarning = async () => {
 		showModal({
 			isOpen: false,
 			type: 'error',
@@ -111,24 +29,19 @@
 			cancelText: 'Cancel',
 			showCancel: true,
 			countdown: 5,
-			onConfirm: () => goto('/installation/install'),
+			onConfirm: () => goto(resolve('/installation/install')),
 			onCancel: () => closeModal()
 		});
 	};
-
-	onMount(async () => {
-		blueprint = await getBlueprintJSON();
-		console.log($partitionMethod);
-	});
 </script>
 
 <TwoSide>
 	{#snippet left()}
-		<div class="w-[288px] space-y-[15px]">
-			<div class="flex space-x-[14px]">
-				<h1 class="font-archivo font-[600] text-[30px] tracking-[-1.8px]">Review your choices</h1>
-			</div>
-			<p class="font-jakarta text-sm font-[200] tracking-[-0.56px] text-center">
+		<div class="mx-[35px] space-y-[15px]">
+			<h1 class="font-archivo font-semibold text-[28px]">
+				Review your <span class="text-green-tealinux">choices</span><br />
+			</h1>
+			<p class="font-jakarta text-sm font-extralight">
 				Review your choices carefully to ensure everything is ready before proceeding with the
 				installation.
 			</p>
@@ -136,23 +49,16 @@
 	{/snippet}
 
 	{#snippet right()}
-		{#await getBlueprint() then blueprint}
-			{@const keyboard =
-				blueprint.keyboard === null
-					? 'To be filled'
-					: blueprint.keyboard.layout + ' - ' + blueprint.keyboard.variant}
-			{@const timezoneRegion =
-				blueprint.timezone === null ? 'To be filled' : blueprint.timezone.region}
-			{@const timezoneCity = blueprint.timezone === null ? 'To be filled' : blueprint.timezone.city}
-			{@const locale = blueprint.locale === null ? 'To be filled' : blueprint.locale.main}
-			{@const userFullname =
-				blueprint.account === null ? 'To be filled' : blueprint.account.fullname}
-			{@const userUsername =
-				blueprint.account === null ? 'To be filled' : blueprint.account.username}
-			{@const userHostname =
-				blueprint.account === null ? 'To be filled' : blueprint.account.hostname}
-			{@const userPassword =
-				blueprint.account === null ? 'To be filled' : blueprint.account.password}
+		{#await getBlueprintInfo() then blueprint}
+			{@const keyboard = blueprint?.keyboard
+				? `${blueprint.keyboard.layout} - ${blueprint.keyboard.variant}`
+				: 'To be filled'}
+			{@const timezoneRegion = blueprint?.timezone?.region ?? 'To be filled'}
+			{@const timezoneCity = blueprint?.timezone?.city ?? 'To be filled'}
+			{@const locale = blueprint?.locale?.main ?? 'To be filled'}
+			{@const userFullname = blueprint?.account?.fullname ?? 'To be filled'}
+			{@const userUsername = blueprint?.account?.username ?? 'To be filled'}
+			{@const userHostname = blueprint?.account?.hostname ?? 'To be filled'}
 
 			<div class="flex flex-col space-y-2">
 				<div class="flex space-x-2">
@@ -162,26 +68,26 @@
 						<div>
 							<GlowingText size="[15]" text="User account" />
 							<div class="space-y-4 text-[15px] mt-4">
-								<div class="leading-none space-y-[10px]">
-									<p class="font-[500]">Full name</p>
-									<span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{userFullname}</span>
+								<div class="leading-none space-y-2.5">
+									<p class="font-medium">Full name</p>
+									<span class="ml-1 font-poppin text-gray-500 text-[14px]">{userFullname}</span>
 								</div>
 
-								<div class="leading-none space-y-[10px]">
-									<p class="font-[500]">Computer name</p>
-									<span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{userHostname}</span>
+								<div class="leading-none space-y-2.5">
+									<p class="font-medium">Computer name</p>
+									<span class="ml-1 font-poppin text-gray-500 text-[14px]">{userHostname}</span>
 								</div>
 
-								<div class="leading-none space-y-[10px]">
-									<p class="font-[500]">Username</p>
-									<span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{userUsername}</span>
+								<div class="leading-none space-y-2.5">
+									<p class="font-medium">Username</p>
+									<span class="ml-1 font-poppin text-gray-500 text-[14px]">{userUsername}</span>
 								</div>
 							</div>
 						</div>
 						<div class="flex justify-end mt-4">
 							<button
 								onclick={navigateToUserAccount}
-								class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
+								class="flex h-8 px-[9px] items-center justify-center gap-2.5 rounded-sm border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
 							>
 								Edit
 							</button>
@@ -194,26 +100,26 @@
 						<div>
 							<GlowingText size="[15]" text="Localization" />
 							<div class="space-y-4 text-[15px] mt-4">
-								<div class="leading-none space-y-[10px]">
-									<p class="font-[500]">Locale</p>
-									<span class="ml-[4px] font-poppin text-gray-500 text-[14px]">{locale}</span>
+								<div class="leading-none space-y-2.5">
+									<p class="font-medium">Locale</p>
+									<span class="ml-1 font-poppin text-gray-500 text-[14px]">{locale}</span>
 								</div>
-								<div class="leading-none space-y-[10px]">
-									<p class="font-[500]">Time Zone</p>
-									<span class="ml-[4px] font-poppin text-gray-500 text-[14px]"
+								<div class="leading-none space-y-2.5">
+									<p class="font-medium">Time Zone</p>
+									<span class="ml-1 font-poppin text-gray-500 text-[14px]"
 										>{timezoneRegion}/{timezoneCity}</span
 									>
 								</div>
-								<div class="leading-none space-y-[10px]">
-									<p class="font-[500]">Keyboard</p>
-									<span class="ml-[12px] font-poppin text-gray-500 text-[14px]">{keyboard}</span>
+								<div class="leading-none space-y-2.5">
+									<p class="font-medium">Keyboard</p>
+									<span class="ml-1 font-poppin text-gray-500 text-[14px]">{keyboard}</span>
 								</div>
 							</div>
 						</div>
 						<div class="flex justify-end mt-4">
 							<button
 								onclick={navigateToLocalization}
-								class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
+								class="flex h-8 px-[9px] items-center justify-center gap-2.5 rounded-sm border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
 							>
 								Edit
 							</button>
@@ -234,7 +140,7 @@
 								</tr>
 							</thead>
 							<tbody class="text-[#FFFEFB] font-['Poppins'] text-[14px]">
-								{#each blueprint.storage.partitions as partition}
+								{#each blueprint?.storage?.partitions as partition (partition.path)}
 									<tr class="border-b border-[#3C6350]">
 										<td class="p-3">{partition.path || 'Unallocated'}</td>
 										<td class="p-3">{partition.filesystem || '-'}</td>
@@ -251,8 +157,8 @@
 					</div>
 					<div class="flex justify-end mt-4">
 						<button
-							onclick={() => goto(`/installation/partitioning/${partitioningMethod}`)}
-							class="flex h-8 px-[9px] items-center justify-center gap-[10px] rounded-[4px] border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
+							onclick={() => goto(resolve(`/installation/partitioning/${partitioningMethod}`))}
+							class="flex h-8 px-[9px] items-center justify-center gap-2.5 rounded-sm border-[0.3px] border-[#3C6350] bg-[#101010] text-white font-['Poppins'] text-[14px] transition-all duration-200 hover:shadow-[0_0_9px_#00B85E] active:shadow-[0_0_9px_#00B85E] disabled:opacity-50 disabled:hover:shadow-none"
 						>
 							Edit Storage
 						</button>
@@ -266,6 +172,7 @@
 <Navigation
 	currentStep={5}
 	currentTitle="Summary"
-	prevPath={`/installation/partitioning/${partitioningMethod}`}
+	prevPath="/installation/account"
+	nextPath="/installation/summary"
 	nextAction={showInstallWarning}
 />
