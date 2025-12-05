@@ -5,7 +5,7 @@
 	interface Props extends HTMLAttributes<HTMLButtonElement> {
 		disabled?: boolean;
 		initialDevice: string;
-		caption: string;
+		caption?: string;
 		showCaption: boolean;
 		showIcon: boolean;
 		isSelected: boolean;
