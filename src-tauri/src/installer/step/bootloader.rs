@@ -100,8 +100,7 @@ pub fn install_bootloader(blueprint: &BluePrint) -> Result<(), Error>
                     get_boot_path(blueprint)
                 };
 
-                let path = path.map(|p| format!("/dev/{}", p));
-
+                let path = path.map(|p| format!("{}", p));
                 bootloader::install_grub_bootloader(FirmwareKind::BIOS, path, None)?;
             }
         }
