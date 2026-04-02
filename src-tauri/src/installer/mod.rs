@@ -2,23 +2,24 @@ pub mod blueprint;
 mod payload;
 pub mod step;
 
-use crate::read::get_read;
 use self::payload::Payload;
 use super::read::online::Online;
 use super::storage::umount_all_target;
+use crate::read::get_read;
 use duct::cmd;
 use std::fs::File;
-use std::io::{BufReader, Error};
+use std::io::{BufRead, BufReader, Error};
 use std::path::Path;
+use std::process::{Command, Stdio};
 use std::thread::sleep;
 use std::time::Duration;
 use tauri::Emitter;
 use tauri::Window;
 use tea_arch_chroot_lib::chroot::bootloader::get_firmware_type;
+use tea_arch_chroot_lib::chroot::shell;
 use tea_arch_chroot_lib::chroot::*;
 use tea_arch_chroot_lib::prechroot::*;
 use tea_arch_chroot_lib::resource::FirmwareKind;
-use tea_arch_chroot_lib::chroot::shell;
 
 use tea_arch_chroot_lib::resource::MethodKind;
 use tea_partition_generator::dual_boot_efi_mount;
@@ -38,9 +39,85 @@ fn wait() {
     sleep(delay);
 }
 
+/// Menjalankan rsync dari squashfs ke target, mem-parse output --progress secara
+/// real-time, dan mengirim event INSTALL dengan persentase antara 20–29%.
+fn run_rsync_with_progress(window: &Window) -> Result<(), Error> {
+    let mut child = Command::new("rsync")
+        .args([
+            "-aAXHv",
+            "--progress",
+            "/run/archiso/airootfs/",
+            "/tealinux-mount/",
+        ])
+        .stdout(Stdio::piped())
+        .stderr(Stdio::null())
+        .spawn()
+        .map_err(|e| Error::new(std::io::ErrorKind::Other, e.to_string()))?;
+
+    // Kumpulkan total file terlebih dahulu dari stdout
+    // Format progress rsync per-file:
+    //   "      1,234,567  45%    1.23MB/s    0:00:05"
+    // Format ringkasan akhir berisi "to-chk=X/Y" — kita parse X dan Y
+    // untuk menghitung berapa file sudah selesai → persentase 20-29%.
+
+    let stdout = child
+        .stdout
+        .take()
+        .ok_or_else(|| Error::new(std::io::ErrorKind::Other, "Cannot capture rsync stdout"))?;
+
+    let reader = BufReader::new(stdout);
+
+    // Regex sederhana: cocokkan "to-chk=DONE/TOTAL" dari baris ringkasan rsync
+    // Contoh: "            3,815,123 100%    1.21MB/s    0:00:03 (xfr#42, to-chk=58/512)"
+    let re_tochk = regex::Regex::new(r"to-chk=(\d+)/(\d+)")
+        .map_err(|e| Error::new(std::io::ErrorKind::Other, e.to_string()))?;
+
+    for line in reader.lines() {
+        let line = match line {
+            Ok(l) => l,
+            Err(_) => continue,
+        };
+
+        if let Some(caps) = re_tochk.captures(&line) {
+            // remaining = to-chk (berapa file yang belum disalin)
+            let remaining: u64 = caps[1].parse().unwrap_or(0);
+            let total: u64 = caps[2].parse().unwrap_or(1);
+
+            if total > 0 {
+                // done = total - remaining
+                let done = total.saturating_sub(remaining);
+                // Map ke rentang 20–29%
+                // Saat done=0 → 20%, saat done=total → 29%
+                let pct = 20 + ((done * 9) / total);
+                let pct = pct.min(29) as u32;
+
+                let _ = window.emit(
+                    "INSTALL",
+                    Payload {
+                        percentage: pct,
+                        message: format!("Copying files… ({}/{})", done, total),
+                    },
+                );
+            }
+        }
+    }
+
+    let status = child
+        .wait()
+        .map_err(|e| Error::new(std::io::ErrorKind::Other, e.to_string()))?;
+
+    if status.success() {
+        Ok(())
+    } else {
+        Err(Error::new(
+            std::io::ErrorKind::Other,
+            format!("rsync exited with status: {}", status),
+        ))
+    }
+}
+
 #[tauri::command]
 pub async fn start_install(window: Window) {
-
     let read = get_read();
 
     // Reading JSON into Blueprint
@@ -61,8 +138,7 @@ pub async fn start_install(window: Window) {
 
     wait();
 
-    let mut blueprint = match step::json::read_blueprint()
-    {
+    let mut blueprint = match step::json::read_blueprint() {
         Ok(bp) => bp,
         Err(_) => {
             let _ = window.emit(
@@ -119,8 +195,7 @@ pub async fn start_install(window: Window) {
 
     // Refreshing the blueprint to get new disk information
     // especially the one after being formatted
-    blueprint = match step::json::read_blueprint()
-    {
+    blueprint = match step::json::read_blueprint() {
         Ok(bp) => bp,
         Err(_) => {
             let _ = window.emit(
@@ -145,7 +220,7 @@ pub async fn start_install(window: Window) {
 
     wait();
 
-    match rsync::start_rsync().await {
+    match run_rsync_with_progress(&window) {
         Ok(_) => (),
         Err(_) => {
             let _ = window.emit(
@@ -322,7 +397,7 @@ pub async fn start_install(window: Window) {
 
     wait();
 
-    // this offset is location of original dualboot EFI mounter 
+    // this offset is location of original dualboot EFI mounter
 
     match step::bootloader::install_bootloader(&blueprint) {
         Ok(_) => (),
@@ -337,18 +412,16 @@ pub async fn start_install(window: Window) {
         }
     }
 
-
     // Account
 
     // Remove installer desktop entry
     let _ = std::fs::remove_dir_all("/tealinux-mount/etc/skel/Desktop");
-    
+
     let account = match blueprint.account {
         Some(account) => account,
         None => Account::new("", "", "", "", false),
     };
 
-    
     let _ = window.emit(
         "INSTALL",
         Payload {
@@ -423,8 +496,7 @@ pub async fn start_install(window: Window) {
 
     let desktop_environment = read.desktop_environment.name;
 
-    match environment_specific_config(desktop_environment, &account)
-    {
+    match environment_specific_config(desktop_environment, &account) {
         Ok(_) => (),
         Err(_) => {
             let _ = window.emit(
@@ -447,8 +519,7 @@ pub async fn start_install(window: Window) {
         },
     );
 
-    match post_install(&account)
-    {
+    match post_install(&account) {
         Ok(_) => (),
         Err(_) => {
             let _ = window.emit(
@@ -480,30 +551,28 @@ pub async fn start_install(window: Window) {
     );
 }
 
-fn environment_specific_config(desktop_environment: String, account: &Account) -> Result<(), Error>
-{
-    match desktop_environment.to_lowercase().as_ref()
-    {
+fn environment_specific_config(
+    desktop_environment: String,
+    account: &Account,
+) -> Result<(), Error> {
+    match desktop_environment.to_lowercase().as_ref() {
         "cosmic" => {
-            if account.autologin
-            {
+            if account.autologin {
                 account.set_cosmic_automatic_login()?;
             }
-        },
+        }
         "kde" => {
-            if account.autologin
-            {
+            if account.autologin {
                 account.set_sddm_automatic_login()?;
             }
         }
-        _ => ()
+        _ => (),
     }
 
     Ok(())
 }
 
 fn post_install(account: &Account) -> Result<(), Error> {
-
     // Change shell to fish
     shell::change_shell(&account.username, "/usr/bin/fish")?;
 
