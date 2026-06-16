@@ -112,7 +112,7 @@
 				<h1
 					class="font-archivo font-semibold text-6xl -tracking-[1.5%] mb-4 bg-gradient-to-r from-green-tealinux to-red-200 bg-clip-text text-transparent"
 				>
-					Welcome to<br />TeaLinuxOS Celia!
+					Welcome to<br />TeaLinuxOS Lilya!
 				</h1>
 			</div>
 
